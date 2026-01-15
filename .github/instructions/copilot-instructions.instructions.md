@@ -1,88 +1,203 @@
-# Proyecto: Tienda de Textiles
+# Proyecto: Muma Estudio - Tienda de Textiles
 
-## Stack
+## Stack Tecnológico
 
-- **Next.js 14** (App Router) + TypeScript
-- **Supabase** (PostgreSQL + Storage)
-- **Tailwind CSS** (estilos)
-- **React Hook Form + Zod** (formularios)
-- **Deploy:** Vercel
+- **Next.js 16** (App Router) + **TypeScript** (strict mode)
+- **Supabase** (PostgreSQL + Storage) con separación client/server
+- **Tailwind CSS 4** (utility-first, light mode)
+- **React Hook Form + Zod** (formularios - futuro)
+- **Deploy:** Vercel con integración Supabase
 
 ## Contexto del Negocio
 
-E-commerce de manteles, servilletas y caminos de mesa. Productos con variaciones de tamaño/color.
+Tienda online de textiles artesanales: manteles, servilletas y caminos de mesa.
+Productos con múltiples variaciones (tamaño/color).
 
-- **V1 (actual):** Catálogo + consultas por WhatsApp
-- **V2 (futuro):** Carrito + Mercado Pago
+- **V1 (MVP actual):** Catálogo visual + consultas por WhatsApp
+- **V2 (futuro):** Carrito de compras + Mercado Pago
 
 ---
 
-## Reglas de Código
+## Reglas Fundamentales de Código
 
-### TypeScript
-
-- Siempre tipos explícitos, nunca `any`
-- Preferir `interface` para objetos, `type` para unions
-- Nombres de UI/datos en español, código en inglés
+### TypeScript Estricto
 
 ```typescript
+// ✅ SIEMPRE
+- Tipos explícitos en funciones y variables
+- interface para objetos, type para unions
+- Nombres de datos/UI en español, código en inglés
+- NUNCA usar 'any'
+
 // ✅ Bien
-interface Product {
-  nombre: string; // Datos en español
+interface Producto {
+  nombre: string;      // Props de negocio en español
   precio: number;
+}
+
+async function getProductos(): Promise<Producto[]> {
+  // Implementación
 }
 
 // ❌ Evitar
 let data: any;
-const products = []; // Sin tipo explícito
+const productos = [];  // Sin tipo
+function get() {}      // Sin tipos de retorno
 ```
 
-### React
+---
 
-- **Server Components** por defecto
-- Solo `'use client'` cuando uses: hooks, eventos, browser APIs
-- Orden: imports → types → component → handlers → JSX
+### React: Server vs Client Components
 
 ```typescript
-// Server Component (por defecto)
-export function ProductList() {
-  const products = await getProducts();
-  return ...;
+// ✅ REGLA DE ORO
+Por defecto: Server Component (sin 'use client')
+Usar 'use client' SOLO cuando necesites:
+  - useState, useEffect, otros hooks
+  - onClick, onChange, event handlers
+  - Browser APIs (window, document, localStorage)
+
+// ✅ Server Component (por defecto)
+export async function ProductosPage() {
+  const productos = await getProductos();  // Query directa
+  return <ProductGrid productos={productos} />;
 }
 
-// Client Component (solo cuando es necesario)
+// ✅ Client Component (solo cuando es necesario)
 'use client';
-export function ProductCard() {
-  const [liked, setLiked] = useState(false);
-  return ...;
+export function ProductFilter() {
+  const [filtro, setFiltro] = useState('');
+  const handleChange = (e) => setFiltro(e.target.value);
+  return <input onChange={handleChange} />;
 }
 ```
 
-### Tailwind
+---
 
-- Clases en múltiples líneas para legibilidad
-- Mobile-first (sin prefijo → sm → md → lg)
-- Usar `clsx` para condicionales
+### Supabase: Separación Client/Server
+
+**CRÍTICO:** Usar el cliente correcto según el contexto
+
+```typescript
+// ✅ En Server Components y queries
+import { createClient } from "@/lib/supabase/server";
+
+export async function getProductos() {
+  const supabase = await createClient(); // Server client
+  // ...
+}
+
+// ✅ En Client Components (interactividad)
+("use client");
+import { createClient } from "@/lib/supabase/client";
+
+export function LikeButton() {
+  const supabase = createClient(); // Browser client
+  // ...
+}
+
+// ❌ NUNCA mezclar
+("use client");
+import { createClient } from "@/lib/supabase/server"; // ERROR
+```
+
+---
+
+### Tailwind CSS
 
 ```tsx
-// ✅ Bien
+// ✅ Formato legible en múltiples líneas
 <div className="
-  flex items-center gap-4
-  p-4 rounded-lg
-  bg-white hover:shadow-lg
-  md:flex-row md:gap-6
+  flex items-center justify-between
+  px-4 py-6 rounded-lg
+  bg-background border border-border
+  hover:shadow-lg transition-shadow
+  md:px-8 md:py-8
 ">
 
-// ❌ Evitar CSS inline
+// ✅ Mobile-first (sin prefijo → sm → md → lg → xl)
+<div className="
+  grid grid-cols-1        // Mobile: 1 columna
+  sm:grid-cols-2          // Tablet: 2 columnas
+  lg:grid-cols-3          // Desktop: 3 columnas
+">
+
+// ✅ Usar variables CSS del proyecto
+<div className="bg-background text-foreground border-border">
+
+// ✅ Condicionales con clsx
+import clsx from 'clsx';
+<div className={clsx(
+  'base-classes',
+  isActive && 'active-classes',
+  isPending && 'opacity-50'
+)}>
+
+// ❌ NUNCA CSS inline
 <div style={{ padding: '16px' }}>
 ```
 
-### Naming
+---
 
-- Componentes: `ProductCard.tsx` (PascalCase)
-- Funciones/vars: `fetchProducts`, `isLoading` (camelCase)
-- Constantes: `API_ROUTES` (UPPER_SNAKE_CASE)
-- Booleans: `isX`, `hasX`, `shouldX`
+### Convenciones de Nombres
+
+```typescript
+// Archivos
+ProductCard.tsx; // Componentes: PascalCase
+productUtils.ts; // Utilidades: camelCase
+API_ROUTES.ts; // Constantes: UPPER_SNAKE_CASE
+
+// Variables y funciones
+const productList = []; // camelCase
+const isLoading = false; // Booleans: isX, hasX, shouldX
+function fetchProducts() {} // camelCase
+const WHATSAPP_NUMBER = "..."; // Constantes: UPPER_SNAKE
+
+// Componentes
+export function ProductCard() {} // PascalCase
+const ProductGrid = () => {}; // PascalCase
+```
+
+---
+
+## Constantes Centralizadas
+
+**IMPORTANTE:** Usar siempre constantes en lugar de valores hardcoded
+
+```typescript
+// ✅ SIEMPRE importar de lib/constants/
+import { SITE_CONFIG, WHATSAPP, STORAGE, ERROR_MESSAGES } from '@/lib/constants'
+import { NAV_LINKS, SOCIAL_LINKS } from '@/lib/constants/navigation'
+
+// ✅ Uso correcto
+<h1>{SITE_CONFIG.name}</h1>
+<span>{SITE_CONFIG.tagline}</span>
+
+const whatsappUrl = WHATSAPP.getUrl(`Hola! Me interesa ${producto.nombre}`)
+
+const imagePath = `${STORAGE.productsPath}/manteles/foto.jpg`
+
+if (!productos.length) {
+  return <p>{ERROR_MESSAGES.noProducts}</p>
+}
+
+// ❌ EVITAR hardcoded strings
+<h1>Muma Estudio</h1>                    // ❌ Usar SITE_CONFIG.name
+const url = 'https://wa.me/549...'       // ❌ Usar WHATSAPP.getUrl()
+const img = '/images/productos/...'      // ❌ Usar STORAGE.productsPath
+```
+
+**Constantes disponibles:**
+
+- `SITE_CONFIG`: name, tagline, description, url, locale, keywords
+- `WHATSAPP`: number, getUrl(message)
+- `STORAGE`: productsPath, placeholdersPath, productPlaceholder
+- `SUPABASE_STORAGE`: bucketName, getPublicUrl(path)
+- `PAGINATION`: productsPerPage, maxProductsPerCategory
+- `ERROR_MESSAGES`: productNotFound, noProducts, loadingError, connectionError
+- `SUCCESS_MESSAGES`: consultaSent, productAdded
+- `NAV_LINKS`: array de links de navegación
+- `SOCIAL_LINKS`: instagram, email
 
 ---
 
@@ -90,89 +205,212 @@ export function ProductCard() {
 
 ```
 app/
-├── page.tsx              # Home
+├── layout.tsx                  # Root layout con Header/Footer
+├── page.tsx                    # Home page
 ├── productos/
-│   ├── page.tsx         # Listado
-│   └── [slug]/page.tsx  # Detalle
-└── api/                 # API Routes
+│   ├── page.tsx               # Listado de productos
+│   ├── loading.tsx            # Loading state
+│   ├── error.tsx              # Error boundary
+│   └── [slug]/
+│       └── page.tsx           # Detalle de producto
+├── contacto/
+│   └── page.tsx               # Formulario de contacto
+├── sobre-nosotros/
+│   └── page.tsx               # Sobre nosotros
+└── api/
+    ├── productos/route.ts     # API de productos (futuro)
+    └── consultas/route.ts     # API de consultas
 
 components/
-├── layout/              # Header, Footer
-├── productos/           # Product*, Variation*
-└── ui/                  # Button, Card, Input
+├── layout/
+│   ├── Header.tsx             # Header (Server Component)
+│   ├── Footer.tsx             # Footer (Server Component)
+│   └── MobileNav.tsx          # Mobile nav (Client Component)
+├── productos/
+│   ├── ProductCard.tsx        # Card de producto
+│   ├── ProductGrid.tsx        # Grid de productos
+│   ├── ProductGallery.tsx     # Galería de imágenes
+│   ├── VariationSelector.tsx # Selector variaciones (futuro)
+│   └── ProductSkeleton.tsx    # Loading skeleton
+└── ui/
+    ├── Button.tsx             # Botón reutilizable
+    ├── Card.tsx               # Card base
+    └── Input.tsx              # Input base
 
 lib/
 ├── supabase/
-│   ├── client.ts        # Cliente Supabase
-│   └── queries.ts       # Queries reutilizables
-├── types.ts             # Types compartidos
-└── utils.ts             # Utilidades
+│   ├── client.ts              # Cliente para Client Components
+│   ├── server.ts              # Cliente para Server Components
+│   └── queries.ts             # Queries reutilizables
+├── constants/
+│   ├── index.ts               # Constantes globales
+│   └── navigation.ts          # Links de navegación
+├── types.ts                   # TypeScript types del proyecto
+├── utils.ts                   # Funciones utilitarias
+└── validations.ts             # Schemas de Zod (futuro)
+
+public/
+└── images/
+    ├── productos/             # Imágenes de productos
+    │   ├── manteles/
+    │   ├── servilletas/
+    │   └── caminos/
+    └── placeholders/          # Placeholders
 ```
 
 ---
 
-## Patrones del Proyecto
+## Patrones Específicos del Proyecto
 
-### Queries Supabase
+### Queries a Supabase
 
 ```typescript
-// Siempre tipar y manejar errores
-const { data, error } = await supabase
-  .from("productos")
-  .select("*, variaciones(*), imagenes_producto(*)")
-  .eq("activo", true);
+// ✅ Siempre en lib/supabase/queries.ts
+import { createClient } from "@/lib/supabase/server";
+import type { ProductoCompleto } from "@/lib/types";
 
-if (error) throw error;
-return data ?? []; // Manejar null
+export async function getProductos(): Promise<ProductoCompleto[]> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("productos")
+    .select(
+      `
+      *,
+      categoria:categorias(*),
+      variaciones(*),
+      imagenes:imagenes_producto(*)
+    `
+    )
+    .eq("activo", true)
+    .order("destacado", { ascending: false });
+
+  if (error) throw error;
+  return data ?? [];
+}
+
+// ✅ Usar en Server Components
+import { getProductos } from "@/lib/supabase/queries";
+
+export default async function ProductosPage() {
+  const productos = await getProductos();
+  return <ProductGrid productos={productos} />;
+}
 ```
 
-### Imágenes
+### Imágenes con Next.js Image
 
 ```typescript
-// Siempre Next.js Image
-import Image from "next/image";
+import Image from 'next/image'
+import { STORAGE } from '@/lib/constants'
 
+// ✅ Siempre usar Next.js Image
 <Image
-  src={imageUrl}
-  alt={`${producto.nombre}`}
+  src={`${STORAGE.productsPath}/manteles/foto.jpg`}
+  alt={producto.nombre}
   width={800}
   height={600}
   quality={85}
-  className="..."
-/>;
+  priority={isPrincipal}
+  className="rounded-lg"
+/>
+
+// ✅ Para imágenes de Supabase (futuro)
+import { SUPABASE_STORAGE } from '@/lib/constants'
+const imageUrl = SUPABASE_STORAGE.getPublicUrl(imagen.url)
+
+<Image
+  src={imageUrl}
+  alt={imagen.alt_text || producto.nombre}
+  width={800}
+  height={600}
+/>
 ```
 
-### Formularios
+### Integración WhatsApp
 
 ```typescript
-// React Hook Form + Zod
-const schema = z.object({
-  nombre: z.string().min(2),
-  email: z.string().email(),
-});
+import { WHATSAPP, SITE_CONFIG } from "@/lib/constants";
 
-const form = useForm({
-  resolver: zodResolver(schema),
-});
+// ✅ Mensaje pre-formateado
+function ConsultarButton({ producto, variacion }: Props) {
+  const mensaje = `
+    Hola! Me interesa este producto de ${SITE_CONFIG.name}:
+    
+    📦 ${producto.nombre}
+    📏 Tamaño: ${variacion.tamanio}
+    🎨 Color: ${variacion.color}
+    💰 Precio: $${variacion.precio.toLocaleString("es-AR")}
+    
+    ¿Podrías darme más información?
+  `.trim();
+
+  const whatsappUrl = WHATSAPP.getUrl(mensaje);
+
+  return (
+    <a
+      href={whatsappUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="..."
+    >
+      Consultar por WhatsApp
+    </a>
+  );
+}
 ```
 
-### WhatsApp
+### Manejo de Estados
 
 ```typescript
-const msg = `Hola! Me interesa: ${producto.nombre}`;
-const url = `https://wa.me/549${PHONE}?text=${encodeURIComponent(msg)}`;
+// ✅ Loading state
+export default async function ProductosPage() {
+  const productos = await getProductos();
+
+  if (productos.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-accent">{ERROR_MESSAGES.noProducts}</p>
+      </div>
+    );
+  }
+
+  return <ProductGrid productos={productos} />;
+}
+
+// ✅ Error boundary (app/productos/error.tsx)
+("use client");
+import { ERROR_MESSAGES } from "@/lib/constants";
+
+export default function Error({ reset }: { reset: () => void }) {
+  return (
+    <div className="text-center py-12">
+      <p className="text-red-600">{ERROR_MESSAGES.loadingError}</p>
+      <button onClick={reset}>Reintentar</button>
+    </div>
+  );
+}
+
+// ✅ Loading (app/productos/loading.tsx)
+export default function Loading() {
+  return <ProductSkeleton count={12} />;
+}
 ```
 
 ---
 
-## Checklist antes de Commit
+## Checklist Pre-Commit
 
 ```bash
-- [ ] Sin errores de TypeScript
-- [ ] Sin console.logs
-- [ ] Maneja loading/error/empty states
-- [ ] Responsive mobile/desktop
-- [ ] npm run build exitoso
+□ Sin errores de TypeScript (npm run build)
+□ Sin console.logs en código final
+□ Maneja loading/error/empty states
+□ Responsive en mobile/tablet/desktop
+□ Usa constantes de lib/constants/
+□ Imágenes con Next.js Image
+□ Server/Client components correctos
+□ UTF-8 encoding correcto
+□ Commits convencionales (feat:/fix:/refactor:)
 ```
 
 ---
@@ -180,31 +418,146 @@ const url = `https://wa.me/549${PHONE}?text=${encodeURIComponent(msg)}`;
 ## Comandos Útiles
 
 ```bash
-npm run dev          # Dev server
-npm run build        # Build producción
-npm run lint         # Linter
-vercel               # Deploy preview
-vercel --prod        # Deploy producción
+# Desarrollo
+npm run dev              # Dev server (localhost:3000)
+npm run build           # Build de producción
+npm run start           # Preview producción local
+npm run lint            # Linter
+
+# Deploy
+vercel                  # Deploy preview
+vercel --prod          # Deploy a producción
+vercel env pull        # Traer env vars de Vercel
+
+# Git (conventional commits)
+git commit -m "feat: agregar filtro de categorías"
+git commit -m "fix: corregir precio en ProductCard"
+git commit -m "refactor: mover queries a archivo separado"
+git commit -m "style: mejorar responsive de header"
 ```
 
 ---
 
 ## Base de Datos (Supabase)
 
-### Tablas principales
+### Esquema Principal
 
-- `categorias` (id, nombre, slug)
-- `productos` (id, nombre, slug, descripcion, categoria_id, precio_desde, activo)
-- `variaciones` (id, producto_id, tamanio, color, precio, stock)
-- `imagenes_producto` (id, producto_id, url, es_principal)
-- `consultas` (id, nombre, email, telefono, producto_id, mensaje)
+**Tablas:**
+
+- `categorias` (id, nombre, slug, descripcion, orden)
+- `productos` (id, nombre, slug, descripcion, categoria_id, precio_desde, destacado, activo, material, cuidados, tiempo_fabricacion)
+- `variaciones` (id, producto_id, tamanio, color, precio, stock, sku, activo)
+- `imagenes_producto` (id, producto_id, url, alt_text, orden, es_principal)
+- `consultas` (id, nombre, email, telefono, producto_id, variacion_id, mensaje, estado)
+
+**Relaciones:**
+
+- Producto → Categoría (muchos a uno)
+- Producto → Variaciones (uno a muchos)
+- Producto → Imágenes (uno a muchos)
+- Consulta → Producto (muchos a uno)
+
+**Queries disponibles:**
+
+- `getCategorias()` - Lista todas las categorías
+- `getProductos(categoriaSlug?)` - Lista productos (con filtro opcional)
+- `getProductoBySlug(slug)` - Detalle de un producto
 
 ---
 
-## Notas
+## Configuración del Proyecto
 
-- **Idioma:** UI en español, código en inglés
-- **Formato moneda:** ARS → `$1.234,56`
-- **Commits:** Conventional Commits (`feat:`, `fix:`, `style:`, etc.)
+### Variables de Entorno (.env.local)
+
+```bash
+# Supabase (requerido)
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+
+# WhatsApp (opcional - tiene default)
+NEXT_PUBLIC_WHATSAPP_NUMBER=5492999XXXXXX
+
+# Contacto (opcional - tiene default)
+NEXT_PUBLIC_CONTACT_EMAIL=contacto@mumaestudio.com
+NEXT_PUBLIC_INSTAGRAM_URL=https://instagram.com/mumaestudio
+```
+
+### Paleta de Colores (globals.css)
+
+```css
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --muted: #f5f5f5;
+  --border: #e5e5e5;
+  --accent: #737373;
+}
+```
+
+---
+
+## Notas Importantes
+
+- **Idioma:** UI en español, código en inglés, comentarios en español para lógica de negocio
+- **Encoding:** UTF-8 siempre (.vscode/settings.json configurado)
+- **Formato moneda:** ARS con formato `$1.234,56` (usar `toLocaleString('es-AR')`)
+- **Commits:** Conventional Commits (feat/fix/refactor/style/docs/test/chore)
+- **Light mode only:** Dark mode planificado para V2
+
+---
+
+## Ejemplos de Uso
+
+### Crear un nuevo componente de producto
+
+```typescript
+// components/productos/ProductCard.tsx
+import Image from "next/image";
+import Link from "next/link";
+import { STORAGE } from "@/lib/constants";
+import type { Producto } from "@/lib/types";
+
+interface ProductCardProps {
+  producto: Producto;
+  imagenPrincipal?: string;
+}
+
+export function ProductCard({ producto, imagenPrincipal }: ProductCardProps) {
+  return (
+    <Link href={`/productos/${producto.slug}`} className="group block">
+      <div
+        className="
+        relative overflow-hidden rounded-lg
+        border border-border
+        hover:shadow-lg transition-shadow
+      "
+      >
+        <Image
+          src={imagenPrincipal || STORAGE.productPlaceholder}
+          alt={producto.nombre}
+          width={400}
+          height={400}
+          className="w-full aspect-square object-cover group-hover:scale-105 transition-transform"
+        />
+
+        {producto.destacado && (
+          <span className="absolute top-2 right-2 bg-accent text-background text-xs px-2 py-1 rounded">
+            Destacado
+          </span>
+        )}
+      </div>
+
+      <div className="mt-3">
+        <h3 className="font-medium text-foreground">{producto.nombre}</h3>
+        {producto.precio_desde && (
+          <p className="text-sm text-accent mt-1">
+            Desde ${producto.precio_desde.toLocaleString("es-AR")}
+          </p>
+        )}
+      </div>
+    </Link>
+  );
+}
+```
 
 ---

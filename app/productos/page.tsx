@@ -1,0 +1,40 @@
+import { Metadata } from "next";
+import { getProductos } from "@/lib/supabase/queries";
+import { ProductGrid } from "@/components/productos/ProductGrid";
+import { SITE_CONFIG } from "@/lib/constants";
+
+export const metadata: Metadata = {
+  title: "Productos",
+  description: SITE_CONFIG.description,
+};
+
+export default async function ProductosPage() {
+  const productos = await getProductos();
+
+  return (
+    <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+      {/* Encabezado de la página */}
+      <div className="mb-10 text-center">
+        <h1
+          className="
+            mb-4
+            text-4xl
+            font-bold
+            tracking-tight
+            text-foreground
+            sm:text-5xl
+          "
+        >
+          Nuestros Productos
+        </h1>
+        <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
+          Textiles artesanales hechos a mano con dedicación y cuidado. Cada
+          pieza es única y especial.
+        </p>
+      </div>
+
+      {/* Grid de productos */}
+      <ProductGrid productos={productos} />
+    </div>
+  );
+}
