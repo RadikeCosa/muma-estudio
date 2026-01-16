@@ -1,66 +1,74 @@
 ---
-title: "Skills de Copilot para Muma Estudio"
-description: "Habilidades y conocimientos específicos que GitHub Copilot debe tener para trabajar en el proyecto e-commerce de textiles artesanales"
-version: "1.0"
-lastUpdated: "2026-01-15"
-author: "Muma Estudio"
+title: "Skills de GitHub Copilot para Muma Estudio"
+description: "Conocimientos técnicos específicos para el desarrollo del e-commerce de textiles"
+version: "2.0"
+lastUpdated: "2026-01-16"
+category: "Technical Knowledge Base"
 tags:
   - copilot
   - skills
-  - documentation
-  - e-commerce
   - nextjs
   - supabase
+  - typescript
+  - e-commerce
 ---
 
-## Skills de Copilot para Muma Estudio
+# Skills de GitHub Copilot - Muma Estudio
 
-Este archivo define las habilidades y conocimientos específicos que GitHub Copilot debe tener al trabajar en este proyecto de e-commerce de textiles artesanales.
+Esta guía contiene conocimientos técnicos específicos que Copilot debe aplicar al trabajar en este proyecto.
 
 ---
 
 ## 🎯 Dominio del Negocio
 
-### Entender el modelo de producto textil
+### Modelo de Producto Textil
 
-Copilot debe comprender que:
+**Conceptos clave:**
 
-- Cada **producto base** (ej: "Mantel Floral") tiene múltiples **variaciones**
-- Las variaciones se definen por: **tamaño**, **color**, **precio** y **stock**
-- Los precios NO son únicos por producto, sino por variación
-- Las imágenes pueden ser compartidas entre variaciones o específicas
+- **Producto base:** Representación general (ej: "Mantel Floral")
+- **Variación:** Combinación específica de tamaño + color con precio y stock propios
+- **Los precios NO son únicos por producto**, cada variación tiene su precio
+- **Imágenes:** Pueden ser compartidas entre variaciones o específicas
 
 **Ejemplo de estructura:**
 
 ```typescript
-Producto: "Mantel Floral"
-├── Variación 1: 150x200cm - Rojo - $15,000
-├── Variación 2: 150x200cm - Azul - $15,000
-├── Variación 3: 180x250cm - Rojo - $18,500
-└── Variación 4: 180x250cm - Azul - $18,500
+Producto:  "Mantel Floral"
+├── Variación 1: 150x200cm - Rojo - $15,000 - Stock: 5
+├── Variación 2: 150x200cm - Azul - $15,000 - Stock: 3
+├── Variación 3: 180x250cm - Rojo - $18,500 - Stock: 2
+└── Variación 4: 180x250cm - Azul - $18,500 - Stock: 0 (inactivo)
 ```
 
-### Flujo de compra actual (V1)
+### Flujo de Usuario (V1)
 
-1. Usuario navega el catálogo de productos
-2. Selecciona un producto para ver detalles
-3. Elige una variación específica (tamaño + color)
-4. Hace clic en "Consultar por WhatsApp"
-5. Se abre WhatsApp con mensaje pre-formateado
-6. La venta se cierra por fuera de la plataforma
+```
+Navegación de Catálogo
+     ↓
+Selección de Producto
+     ↓
+Vista de Detalle con Variaciones
+     ↓
+Selección de Tamaño y Color
+     ↓
+Click en "Consultar por WhatsApp"
+     ↓
+WhatsApp con mensaje pre-formateado
+     ↓
+Venta offline (fuera de la plataforma)
+```
 
-**NO hay carrito de compras ni pagos online en V1**
+**NO hay en V1:** Carrito, pagos online, checkout, gestión de pedidos.
 
 ---
 
 ## 🛠️ Skills Técnicas
 
-### 1. Manejo de Relaciones en Supabase
+### 1. Queries de Supabase con Relaciones
 
-Copilot debe saber construir queries con relaciones complejas:
+#### Patrón: Producto con todas sus relaciones
 
 ```typescript
-// Producto con todas sus relaciones
 const { data, error } = await supabase
   .from("productos")
   .select(
@@ -75,39 +83,47 @@ const { data, error } = await supabase
   .eq("activo", true)
   .single();
 
-if (error) throw error;
+if (error) {
+  if (error.code === "PGRST116") return null; // No encontrado
+  throw error;
+}
 
-// IMPORTANTE: Ordenar relaciones en JavaScript
-// Supabase NO permite .order() directo en joins
+// ⚠️ CRÍTICO: Ordenar relaciones en JavaScript
 if (data) {
-  // Ordenar variaciones por precio
   data.variaciones.sort((a, b) => a.precio - b.precio);
-
-  // Ordenar imágenes por orden
   data.imagenes.sort((a, b) => a.orden - b.orden);
 }
 
-return data;
+return data as ProductoCompleto;
 ```
 
-**Relaciones clave:**
+**Relaciones en el esquema:**
 
 - `productos` → `categorias` (many-to-one)
 - `productos` → `variaciones` (one-to-many)
 - `productos` → `imagenes_producto` (one-to-many)
 
-**⚠️ IMPORTANTE sobre ordenamiento:**
+#### ⚠️ IMPORTANTE: Limitaciones de Supabase
 
-- NO se puede usar `.order('variaciones(precio)')` en Supabase
-- Siempre ordenar las relaciones en JavaScript después del fetch
-- Usar `.sort()` en los arrays de variaciones e imágenes
+```typescript
+// ❌ NO FUNCIONA en Supabase
+. order('variaciones(precio)', { ascending: true })
+.order('imagenes(orden)', { ascending: true })
+
+// ✅ SOLUCIÓN: Ordenar en JavaScript después del fetch
+data.forEach(producto => {
+  producto. variaciones.sort((a, b) => a.precio - b.precio);
+  producto.imagenes.sort((a, b) => a.orden - b.orden);
+});
+```
 
 ---
 
-### 2. Tipado de Datos de Supabase
+### 2. Tipado de Datos
+
+#### Tipos definidos manualmente (lib/types.ts)
 
 ```typescript
-// Tipos definidos manualmente en lib/types.ts
 import type {
   Producto,
   Variacion,
@@ -116,64 +132,44 @@ import type {
   ProductoCompleto,
 } from "@/lib/types";
 
-// Tipos compuestos para queries con joins
+// Tipo compuesto para queries con joins
 type ProductoCompleto = Producto & {
   categoria: Categoria | null;
   variaciones: Variacion[];
   imagenes: ImagenProducto[];
 };
 
-// ✅ Usar estos tipos en queries
+// Uso en funciones
 export async function getProductoBySlug(
   slug: string
 ): Promise<ProductoCompleto | null> {
   const supabase = await createClient();
-
-  const { data, error } = await supabase
-    .from("productos")
-    .select(
-      `
-      *,
-      categoria:categorias(*),
-      variaciones(*),
-      imagenes:imagenes_producto(*)
-    `
-    )
-    .eq("slug", slug)
-    .single();
-
-  if (error || !data) return null;
+  // Query...
   return data as ProductoCompleto;
 }
 ```
 
-**Nota sobre tipos generados:**
-
-```typescript
-// FUTURO: Generar tipos automáticamente con Supabase CLI
-// npx supabase gen types typescript --project-id "xxx" > lib/database.types.ts
-// import type { Database } from '@/lib/database.types';
-
-// Por ahora usar tipos manuales de lib/types.ts
-```
+**Nota:** Los tipos están definidos manualmente por ahora. En el futuro se generarán automáticamente con Supabase CLI.
 
 ---
 
 ### 3. Composición de URLs de WhatsApp
 
 ```typescript
-// Formato estándar de mensaje
+import { WHATSAPP } from "@/lib/constants";
+import type { Producto, Variacion } from "@/lib/types";
+
 function generarMensajeWhatsApp(
   producto: Producto,
   variacion: Variacion
 ): string {
   const mensaje = [
-    "¡Hola! Me interesa este producto:",
+    "¡Hola! Me interesa este producto: ",
     "",
     `📦 Producto: ${producto.nombre}`,
     `📏 Tamaño: ${variacion.tamanio}`,
     `🎨 Color: ${variacion.color}`,
-    `💰 Precio: ${formatPrice(variacion.precio)}`,
+    `💰 Precio: $${variacion.precio.toLocaleString("es-AR")}`,
     "",
     "¿Está disponible?",
   ].join("\n");
@@ -181,37 +177,57 @@ function generarMensajeWhatsApp(
   return mensaje;
 }
 
-// URL encoding
-const whatsappUrl = `https://wa.me/${WHATSAPP.number}?text=${encodeURIComponent(
-  mensaje
-)}`;
+// Uso en componente
+const whatsappUrl = WHATSAPP.getUrl(
+  generarMensajeWhatsApp(producto, variacion)
+);
+
+// Resultado: https://wa.me/5492999XXXXXX? text=... mensaje-encoded
 ```
 
 ---
 
-### 4. Optimización de Imágenes
+### 4. Optimización de Imágenes con Next.js
 
-```typescript
-// Next.js Image component con Supabase Storage
-import Image from "next/image";
+```tsx
+import Image from 'next/image';
 
+// Imagen principal (LCP - Largest Contentful Paint)
 <Image
-  src={imagen.url}
-  alt={imagen.alt_text || producto.nombre}
+  src={imagen. url}
+  alt={imagen. alt_text || producto.nombre}
   width={800}
   height={600}
   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
   className="object-cover rounded-lg"
-  priority={imagen.es_principal} // LCP optimization
-/>;
+  priority={imagen.es_principal}  // ← Solo para imagen principal
+/>
+
+// Imágenes secundarias (lazy loading)
+<Image
+  src={imagen.url}
+  alt={imagen.alt_text}
+  width={200}
+  height={200}
+  loading="lazy"  // ← Cargar bajo demanda
+  className="object-cover"
+/>
 ```
+
+**Reglas:**
+
+- Usar `priority={true}` **solo** para la imagen principal (LCP)
+- Imágenes secundarias con `loading="lazy"`
+- Siempre especificar `width` y `height` para evitar CLS (Cumulative Layout Shift)
+- `sizes` para responsive images
 
 ---
 
 ### 5. Manejo de Estados de Carga
 
-```typescript
-// Pattern: Loading states con Suspense
+#### Patrón con Suspense
+
+```tsx
 import { Suspense } from "react";
 
 export default function ProductosPage() {
@@ -222,10 +238,24 @@ export default function ProductosPage() {
   );
 }
 
-// O con loading.tsx en App Router
+async function ProductosContent() {
+  const productos = await getProductos();
+  return <ProductGrid productos={productos} />;
+}
+```
+
+#### Patrón con loading.tsx (App Router)
+
+```tsx
 // app/productos/loading.tsx
 export default function Loading() {
-  return <ProductosSkeleton />;
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {Array.from({ length: 6 }).map((_, i) => (
+        <ProductCardSkeleton key={i} />
+      ))}
+    </div>
+  );
 }
 ```
 
@@ -236,43 +266,69 @@ export default function Loading() {
 ### 1. Responsive Design Mobile-First
 
 ```tsx
-// Pattern: Desktop tiene más columnas
+// Pattern: Escalado progresivo de columnas
 <div className="
-  grid grid-cols-1           // Mobile: 1 columna
-  sm:grid-cols-2             // Tablet: 2 columnas
-  lg:grid-cols-3             // Desktop: 3 columnas
-  xl:grid-cols-4             // Large: 4 columnas
-  gap-4 sm:gap-6
+  grid
+  grid-cols-1          // Mobile:  1 columna
+  sm:grid-cols-2       // Tablet: 2 columnas
+  lg:grid-cols-3       // Desktop: 3 columnas
+  xl:grid-cols-4       // Large:  4 columnas
+  gap-4 sm:gap-6 lg:gap-8
 ">
 ```
+
+**Breakpoints de Tailwind:**
+
+- `sm`: 640px
+- `md`: 768px
+- `lg`: 1024px
+- `xl`: 1280px
+- `2xl`: 1536px
 
 ---
 
 ### 2. Diseño de Product Cards
 
 ```tsx
-// Estructura estándar de tarjeta
 <article className="group relative">
   {/* Imagen con hover effect */}
-  <div className="aspect-square overflow-hidden rounded-lg bg-gray-100">
+  <div
+    className="
+    aspect-square
+    overflow-hidden
+    rounded-lg
+    bg-gray-100
+  "
+  >
     <Image
-      src={imagen.url}
-      className="object-cover transition-transform group-hover:scale-105"
+      src={imagenPrincipal.url}
+      alt={producto.nombre}
+      className="
+        h-full w-full
+        object-cover
+        transition-transform
+        duration-300
+        group-hover: scale-105
+      "
     />
   </div>
 
-  {/* Info del producto */}
+  {/* Información del producto */}
   <div className="mt-4 space-y-2">
-    <h3 className="font-medium">{producto.nombre}</h3>
-    <p className="text-sm text-accent">{categoria.nombre}</p>
+    <h3 className="font-medium text-foreground">{producto.nombre}</h3>
 
-    {/* Rango de precios si hay múltiples variaciones */}
+    <p className="text-sm text-accent">{producto.categoria?.nombre}</p>
+
+    {/* Precio o rango de precios */}
     {variaciones.length > 1 ? (
-      <p className="text-sm">
-        Desde ${Math.min(...variaciones.map((v) => v.precio))}
+      <p className="text-sm font-semibold">
+        Desde $
+        {Math.min(...variaciones.map((v) => v.precio)).toLocaleString("es-AR")}
       </p>
     ) : (
-      <p className="font-semibold">${variaciones[0].precio}</p>
+      <p className="font-semibold">
+        ${variaciones[0].precio.toLocaleString("es-AR")}
+      </p>
     )}
   </div>
 </article>
@@ -280,39 +336,64 @@ export default function Loading() {
 
 ---
 
-### 3. Galería de Imágenes
+### 3. Galería de Imágenes con Thumbnails
 
 ```tsx
-// Pattern: Thumbnails + imagen principal
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
+import Image from "next/image";
+import clsx from "clsx";
 
 export function ProductGallery({ imagenes }: { imagenes: ImagenProducto[] }) {
-  const [imagenActual, setImagenActual] = useState(0);
+  const [imagenActualIndex, setImagenActualIndex] = useState(0);
 
   return (
     <div className="space-y-4">
       {/* Imagen principal */}
-      <div className="aspect-square overflow-hidden rounded-lg">
-        <Image src={imagenes[imagenActual].url} ... />
+      <div
+        className="
+        aspect-square
+        overflow-hidden
+        rounded-lg
+        border border-border
+      "
+      >
+        <Image
+          src={imagenes[imagenActualIndex].url}
+          alt={imagenes[imagenActualIndex].alt_text}
+          width={800}
+          height={800}
+          priority
+          className="h-full w-full object-cover"
+        />
       </div>
 
       {/* Thumbnails */}
-      <div className="grid grid-cols-4 gap-2">
-        {imagenes.map((img, idx) => (
-          <button
-            key={img.id}
-            onClick={() => setImagenActual(idx)}
-            className={clsx(
-              'aspect-square rounded border-2',
-              idx === imagenActual ? 'border-accent' : 'border-transparent'
-            )}
-          >
-            <Image src={img.url} ... />
-          </button>
-        ))}
-      </div>
+      {imagenes.length > 1 && (
+        <div className="grid grid-cols-4 gap-2">
+          {imagenes.map((imagen, index) => (
+            <button
+              key={imagen.id}
+              onClick={() => setImagenActualIndex(index)}
+              className={clsx(
+                "aspect-square overflow-hidden rounded border-2 transition-all",
+                index === imagenActualIndex
+                  ? "border-accent ring-2 ring-accent ring-offset-2"
+                  : "border-transparent hover:border-gray-300"
+              )}
+            >
+              <Image
+                src={imagen.url}
+                alt={imagen.alt_text}
+                width={200}
+                height={200}
+                className="h-full w-full object-cover"
+              />
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -320,150 +401,52 @@ export function ProductGallery({ imagenes }: { imagenes: ImagenProducto[] }) {
 
 ---
 
-## 🧪 Skills de Testing (Futuro)
-
-Cuando agreguemos tests, Copilot debe saber:
-
-```typescript
-// Unit test de utilidad
-import { formatPrice } from "@/lib/utils/format";
-
-describe("formatPrice", () => {
-  it("formatea precios argentinos correctamente", () => {
-    expect(formatPrice(15000)).toBe("$15.000");
-    expect(formatPrice(1500.5)).toBe("$1.500,50");
-  });
-});
-
-// Integration test de query
-import { getProductos } from "@/lib/supabase/queries";
-
-describe("getProductos", () => {
-  it("retorna productos con sus relaciones", async () => {
-    const productos = await getProductos();
-    expect(productos[0]).toHaveProperty("categoria");
-    expect(productos[0]).toHaveProperty("variaciones");
-  });
-});
-```
-
----
-
-## 🔮 Skills para V2 (Próximas Features)
-
-### Carrito de Compras
-
-```typescript
-// Context de carrito
-"use client";
-
-import { createContext, useContext, useState } from "react";
-
-interface CarritoItem {
-  producto_id: string;
-  variacion_id: string;
-  cantidad: number;
-  precio_unitario: number;
-}
-
-interface CarritoContextType {
-  items: CarritoItem[];
-  agregarItem: (item: CarritoItem) => void;
-  removerItem: (variacion_id: string) => void;
-  vaciarCarrito: () => void;
-  total: number;
-}
-
-const CarritoContext = createContext<CarritoContextType | null>(null);
-
-export function useCarrito() {
-  const context = useContext(CarritoContext);
-  if (!context)
-    throw new Error("useCarrito must be used within CarritoProvider");
-  return context;
-}
-```
-
----
-
-### Integración con Mercado Pago
-
-```typescript
-// Server action para crear preferencia
-"use server";
-
-import mercadopago from "mercadopago";
-
-export async function crearPreferencia(items: CarritoItem[]) {
-  const preference = {
-    items: items.map((item) => ({
-      title: item.producto_nombre,
-      unit_price: item.precio_unitario,
-      quantity: item.cantidad,
-    })),
-    back_urls: {
-      success: `${SITE_CONFIG.url}/checkout/success`,
-      failure: `${SITE_CONFIG.url}/checkout/failure`,
-      pending: `${SITE_CONFIG.url}/checkout/pending`,
-    },
-    auto_return: "approved",
-  };
-
-  const response = await mercadopago.preferences.create(preference);
-  return response.body.init_point; // URL de checkout
-}
-```
-
----
-
 ## 📊 Skills de Rendimiento
 
-### 1. Caché de Queries
+### 1. Caché de Queries con revalidation
 
 ```typescript
-// Next.js App Router - revalidación automática
+// En Server Components - revalidación automática
 export const revalidate = 3600; // 1 hora
 
-export async function getProductos() {
-  const supabase = await createClient();
-  // Query se cachea automáticamente
-  const { data } = await supabase.from("productos").select("*");
-  return data;
+export default async function ProductosPage() {
+  // Esta query se cachea automáticamente
+  const productos = await getProductos();
+  return <ProductGrid productos={productos} />;
 }
 ```
 
----
-
-### 2. Lazy Loading de Imágenes
-
-```tsx
-// Cargar imágenes bajo el fold lazy
-<Image
-  src={producto.imagen}
-  loading="lazy" // Solo imágenes fuera del viewport inicial
-  placeholder="blur"
-  blurDataURL={producto.blur_hash}
-/>
-```
-
----
-
-### 3. Prefetching de Links
+### 2. Prefetching de Links
 
 ```tsx
 import Link from "next/link";
 
-// Next.js prefetchea automáticamente en viewport
-<Link href={`/productos/${producto.slug}`} prefetch={true}>
-  Ver Producto
+// Next.js prefetchea automáticamente links en el viewport
+<Link
+  href={`/productos/${producto.slug}`}
+  prefetch={true} // Prefetch más agresivo
+>
+  {producto.nombre}
 </Link>;
+```
+
+### 3. Lazy Loading de Componentes
+
+```tsx
+import dynamic from "next/dynamic";
+
+// Cargar componente pesado solo cuando sea necesario
+const ProductGallery = dynamic(
+  () => import("@/components/productos/ProductGallery"),
+  { loading: () => <GallerySkeleton /> }
+);
 ```
 
 ---
 
 ## 🔐 Skills de Seguridad
 
-### 1. Validación de Inputs
+### 1. Validación de Inputs con Zod
 
 ```typescript
 import { z } from "zod";
@@ -474,7 +457,7 @@ const consultaSchema = z.object({
   mensaje: z.string().min(10, "Mensaje muy corto").max(1000),
 });
 
-// Uso en server action
+// Uso en Server Action
 ("use server");
 
 export async function enviarConsulta(formData: FormData) {
@@ -489,23 +472,28 @@ export async function enviarConsulta(formData: FormData) {
   }
 
   // Guardar en Supabase...
+  const supabase = await createClient();
+  const { error } = await supabase.from("consultas").insert(parsed.data);
+
+  if (error) throw error;
+  return { success: true };
 }
 ```
 
----
-
-### 2. Sanitización de URLs
+### 2. Sanitización de Slugs
 
 ```typescript
-// NUNCA confiar en URLs de usuario sin validar
-function isValidProductSlug(slug: string): boolean {
-  return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug);
+function isValidSlug(slug: string): boolean {
+  // Solo letras minúsculas, números y guiones
+  return /^[a-z0-9]+(? :-[a-z0-9]+)*$/.test(slug);
 }
 
 export async function getProductoBySlug(slug: string) {
-  if (!isValidProductSlug(slug)) {
+  if (!isValidSlug(slug)) {
     throw new Error("Slug inválido");
   }
+
+  const supabase = await createClient();
   // Query...
 }
 ```
@@ -517,21 +505,29 @@ export async function getProductoBySlug(slug: string) {
 ```tsx
 // Semantic HTML
 <article aria-labelledby={`producto-${producto.id}`}>
-  <h2 id={`producto-${producto.id}`}>{producto.nombre}</h2>
+  <h2 id={`producto-${producto.id}`} className="text-xl font-semibold">
+    {producto.nombre}
+  </h2>
 </article>
 
 // Alt text descriptivo
 <Image
   src={imagen.url}
   alt={`${producto.nombre} - ${variacion.color}, tamaño ${variacion.tamanio}`}
+  width={800}
+  height={600}
 />
 
 // Estados de loading accesibles
-<button disabled={isLoading} aria-busy={isLoading}>
+<button
+  disabled={isLoading}
+  aria-busy={isLoading}
+  className="focus:ring-2 focus:ring-accent focus:ring-offset-2"
+>
   {isLoading ? (
     <>
       <span className="sr-only">Cargando...</span>
-      <Spinner />
+      <Spinner aria-hidden="true" />
     </>
   ) : (
     'Consultar por WhatsApp'
@@ -539,32 +535,36 @@ export async function getProductoBySlug(slug: string) {
 </button>
 
 // Focus management
-<button className="focus:ring-2 focus:ring-accent focus:ring-offset-2">
+<button className="
+  rounded-lg
+  focus:outline-none
+  focus: ring-2
+  focus:ring-accent
+  focus:ring-offset-2
+">
 ```
 
 ---
 
-## 🗂️ Skills de Organización de Código
+## 🗂️ Patterns de Organización
 
 ### Separación de Concerns
 
 ```
 components/
-├── layout/          → Header, Footer, Navigation (estructura general)
-├── productos/       → ProductCard, ProductGallery, VariationSelector, etc.
-├── ui/              → Button, Input, Card (primitivos reutilizables) - futuro
-└── forms/           → ContactForm, NewsletterForm (futuro)
+├── layout/          → Estructura general (Header, Footer, MobileNav)
+├── productos/       → Dominio de productos (Card, Gallery, Selector)
+├── ui/              → Primitivos reutilizables (Button, Input) - futuro
+└── forms/           → Formularios (Contact, Newsletter) - futuro
 
 lib/
-├── constants/       → Configuración global (SITE_CONFIG, WHATSAPP, etc.)
+├── constants/       → Configuración global centralizada
 ├── supabase/        → Cliente y queries específicas
-├── utils/           → Funciones utilitarias (formatPrice, slugify, etc.)
-└── types.ts         → Tipos compartidos en todo el proyecto
+├── utils/           → Funciones utilitarias
+└── types. ts         → Tipos compartidos
 ```
 
----
-
-### Naming Patterns
+### Naming Conventions
 
 ```typescript
 // Queries → get[Resource](s)
@@ -590,79 +590,145 @@ WhatsAppButton;
 
 ---
 
-## 📈 Métricas de Éxito
+## 🔑 Patrones Clave (Resumen)
 
-Copilot debe optimizar para:
-
-- **Performance:** Core Web Vitals (LCP < 2.5s, CLS < 0.1, FID < 100ms)
-- **SEO:** Metadata correcta, structured data
-- **Accesibilidad:** WCAG 2.1 AA compliance
-- **Type Safety:** 0 errores de TypeScript, 0 usos de `any`
-- **Bundle Size:** Mantener bajo con Server Components
-
----
-
-## 🔑 Patrones Clave del Proyecto (Resumen)
-
-### 1. Queries siempre con ordenamiento en JavaScript
+### 1. ✅ Queries: Ordenar en JavaScript, no en Supabase
 
 ```typescript
 // ✅ CORRECTO
 const { data } = await supabase
-  .from('productos')
-  .select('*, variaciones(*)')
-  .eq('activo', true);
+  . from('productos')
+  .select('*, variaciones(*)');
 
-// Ordenar después
 data.forEach(p => {
   p.variaciones.sort((a, b) => a.precio - b.precio);
 });
 
-// ❌ INCORRECTO (no funciona en Supabase)
-.order('variaciones(precio)')  // NO HACER
+// ❌ INCORRECTO
+. order('variaciones(precio)')  // NO funciona
 ```
 
----
-
-### 2. Usar columna "activo" no "disponible"
+### 2. ✅ Usar columna "activo", no "disponible"
 
 ```typescript
-// ✅ CORRECTO
-.eq('activo', true)
-variaciones(*, activo)
-
-// ❌ INCORRECTO (columna no existe)
-.eq('disponible', true)
-variaciones(*, disponible)
+. eq('activo', true)  // ✅
+.eq('disponible', true)  // ❌ No existe
 ```
 
----
-
-### 3. Tipos manuales por ahora, generados en futuro
+### 3. ✅ Tipos manuales por ahora
 
 ```typescript
-// ✅ Por ahora
-import { Producto, Variacion } from "@/lib/types";
+import { Producto, Variacion } from "@/lib/types"; // ✅ Ahora
 
-// 🔮 Futuro
+// 🔮 Futuro (con Supabase CLI)
 import { Database } from "@/lib/database.types";
 type Producto = Database["public"]["Tables"]["productos"]["Row"];
 ```
 
+### 4. ✅ Server Component por defecto
+
+```typescript
+// ✅ Server Component (defecto) - Sin estado ni eventos
+export default async function Page() {
+  const data = await getData();
+  return <Component data={data} />;
+}
+
+// ✅ Client Component - Solo cuando necesites hooks/eventos
+'use client';
+export function InteractiveComponent() {
+  const [state, setState] = useState(null);
+  return <button onClick={() => setState(...)}>... </button>;
+}
+```
+
 ---
 
-### 4. Componentes del proyecto actual
+## 📈 Métricas de Éxito
 
-**Existentes:**
+Copilot debe optimizar para:
 
-- ✅ ProductCard, ProductGrid, ProductGallery
-- ✅ ProductInfo, ProductActions
+- **Performance:** Core Web Vitals
+
+  - LCP (Largest Contentful Paint) < 2.5s
+  - CLS (Cumulative Layout Shift) < 0.1
+  - FID (First Input Delay) < 100ms
+
+- **SEO:** Metadata correcta, structured data
+
+- **Accesibilidad:** WCAG 2.1 AA compliance
+
+- **Type Safety:** 0 errores de TypeScript, 0 usos de `any`
+
+- **Bundle Size:** Mantener bajo con Server Components
+
+---
+
+## 🔮 V2 - Features Futuras (NO Implementar Aún)
+
+Cuando se trabaje en V2, se agregará:
+
+```typescript
+// Carrito de compras con Context API
+"use client";
+import { createContext, useContext, useState } from "react";
+
+interface CarritoItem {
+  producto_id: string;
+  variacion_id: string;
+  cantidad: number;
+  precio_unitario: number;
+}
+
+const CarritoContext = createContext<CarritoItem[]>([]);
+
+// Integración con Mercado Pago
+("use server");
+import mercadopago from "mercadopago";
+
+export async function crearPreferencia(items: CarritoItem[]) {
+  const preference = {
+    items: items.map((item) => ({
+      title: item.producto_nombre,
+      unit_price: item.precio_unitario,
+      quantity: item.cantidad,
+    })),
+    back_urls: {
+      success: `${SITE_CONFIG.url}/checkout/success`,
+      failure: `${SITE_CONFIG.url}/checkout/failure`,
+    },
+  };
+
+  const response = await mercadopago.preferences.create(preference);
+  return response.body.init_point;
+}
+```
+
+**🚨 NO generar este código a menos que se solicite explícitamente.**
+
+---
+
+## ✅ Componentes Actuales del Proyecto
+
+**Implementados (V1):**
+
+- ✅ ProductCard, ProductGrid
+- ✅ ProductGallery, ProductInfo, ProductActions
 - ✅ VariationSelector, WhatsAppButton
 - ✅ Header, Footer, MobileNav
 
-**Pendientes (futuro):**
+**Pendientes (Futuro):**
 
 - ⏳ Button, Card, Input (components/ui/)
-- ⏳ ContactForm, SearchBar
+- ⏳ ContactForm con validación
+- ⏳ SearchBar
 
 ---
+
+## 📚 Referencias
+
+- **Documentación:** `README.md`
+- **Instrucciones concisas:** `.github/copilot-instructions.md`
+- **Tipos:** `lib/types.ts`
+- **Constantes:** `lib/constants/index.ts`
+- **Queries:** `lib/supabase/queries.ts`
