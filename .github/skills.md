@@ -1,4 +1,19 @@
-# Skills de Copilot para Muma Estudio
+---
+title: "Skills de Copilot para Muma Estudio"
+description: "Habilidades y conocimientos específicos que GitHub Copilot debe tener para trabajar en el proyecto e-commerce de textiles artesanales"
+version: "1.0"
+lastUpdated: "2026-01-15"
+author: "Muma Estudio"
+tags:
+  - copilot
+  - skills
+  - documentation
+  - e-commerce
+  - nextjs
+  - supabase
+---
+
+## Skills de Copilot para Muma Estudio
 
 Este archivo define las habilidades y conocimientos específicos que GitHub Copilot debe tener al trabajar en este proyecto de e-commerce de textiles artesanales.
 
@@ -9,6 +24,7 @@ Este archivo define las habilidades y conocimientos específicos que GitHub Copi
 ### Entender el modelo de producto textil
 
 Copilot debe comprender que:
+
 - Cada **producto base** (ej: "Mantel Floral") tiene múltiples **variaciones**
 - Las variaciones se definen por: **tamaño**, **color**, **precio** y **stock**
 - Los precios NO son únicos por producto, sino por variación
@@ -45,32 +61,60 @@ Copilot debe saber construir queries con relaciones complejas:
 
 ```typescript
 // Producto con todas sus relaciones
-const { data } = await supabase
-  .from('productos')
-  .select(`
+const { data, error } = await supabase
+  .from("productos")
+  .select(
+    `
     *,
     categoria:categorias(id, nombre, slug),
-    variaciones(id, tamaño, color, precio, stock, disponible),
+    variaciones!inner(id, tamanio, color, precio, stock, activo),
     imagenes:imagenes_producto(id, url, alt_text, orden, es_principal)
-  `)
-  .eq('slug', slug)
-  .order('variaciones(precio)', { ascending: true })
-  .order('imagenes(orden)', { ascending: true });
+  `
+  )
+  .eq("slug", slug)
+  .eq("activo", true)
+  .single();
+
+if (error) throw error;
+
+// IMPORTANTE: Ordenar relaciones en JavaScript
+// Supabase NO permite .order() directo en joins
+if (data) {
+  // Ordenar variaciones por precio
+  data.variaciones.sort((a, b) => a.precio - b.precio);
+
+  // Ordenar imágenes por orden
+  data.imagenes.sort((a, b) => a.orden - b.orden);
+}
+
+return data;
 ```
 
 **Relaciones clave:**
+
 - `productos` → `categorias` (many-to-one)
 - `productos` → `variaciones` (one-to-many)
 - `productos` → `imagenes_producto` (one-to-many)
 
+**⚠️ IMPORTANTE sobre ordenamiento:**
+
+- NO se puede usar `.order('variaciones(precio)')` en Supabase
+- Siempre ordenar las relaciones en JavaScript después del fetch
+- Usar `.sort()` en los arrays de variaciones e imágenes
+
+---
+
 ### 2. Tipado de Datos de Supabase
 
 ```typescript
-// Mapeo tabla → tipo TypeScript
-import type { Database } from '@/lib/database.types';  // Generado con supabase gen types
-
-type Producto = Database['public']['Tables']['productos']['Row'];
-type Variacion = Database['public']['Tables']['variaciones']['Row'];
+// Tipos definidos manualmente en lib/types.ts
+import type {
+  Producto,
+  Variacion,
+  ImagenProducto,
+  Categoria,
+  ProductoCompleto,
+} from "@/lib/types";
 
 // Tipos compuestos para queries con joins
 type ProductoCompleto = Producto & {
@@ -78,7 +122,42 @@ type ProductoCompleto = Producto & {
   variaciones: Variacion[];
   imagenes: ImagenProducto[];
 };
+
+// ✅ Usar estos tipos en queries
+export async function getProductoBySlug(
+  slug: string
+): Promise<ProductoCompleto | null> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("productos")
+    .select(
+      `
+      *,
+      categoria:categorias(*),
+      variaciones(*),
+      imagenes:imagenes_producto(*)
+    `
+    )
+    .eq("slug", slug)
+    .single();
+
+  if (error || !data) return null;
+  return data as ProductoCompleto;
+}
 ```
+
+**Nota sobre tipos generados:**
+
+```typescript
+// FUTURO: Generar tipos automáticamente con Supabase CLI
+// npx supabase gen types typescript --project-id "xxx" > lib/database.types.ts
+// import type { Database } from '@/lib/database.types';
+
+// Por ahora usar tipos manuales de lib/types.ts
+```
+
+---
 
 ### 3. Composición de URLs de WhatsApp
 
@@ -89,28 +168,32 @@ function generarMensajeWhatsApp(
   variacion: Variacion
 ): string {
   const mensaje = [
-    '¡Hola! Me interesa este producto:',
-    '',
+    "¡Hola! Me interesa este producto:",
+    "",
     `📦 Producto: ${producto.nombre}`,
-    `📏 Tamaño: ${variacion.tamaño}`,
+    `📏 Tamaño: ${variacion.tamanio}`,
     `🎨 Color: ${variacion.color}`,
     `💰 Precio: ${formatPrice(variacion.precio)}`,
-    '',
-    '¿Está disponible?'
-  ].join('\n');
-  
+    "",
+    "¿Está disponible?",
+  ].join("\n");
+
   return mensaje;
 }
 
 // URL encoding
-const whatsappUrl = `https://wa.me/${WHATSAPP.number}?text=${encodeURIComponent(mensaje)}`;
+const whatsappUrl = `https://wa.me/${WHATSAPP.number}?text=${encodeURIComponent(
+  mensaje
+)}`;
 ```
+
+---
 
 ### 4. Optimización de Imágenes
 
 ```typescript
 // Next.js Image component con Supabase Storage
-import Image from 'next/image';
+import Image from "next/image";
 
 <Image
   src={imagen.url}
@@ -119,15 +202,17 @@ import Image from 'next/image';
   height={600}
   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
   className="object-cover rounded-lg"
-  priority={imagen.es_principal}  // LCP optimization
-/>
+  priority={imagen.es_principal} // LCP optimization
+/>;
 ```
+
+---
 
 ### 5. Manejo de Estados de Carga
 
 ```typescript
 // Pattern: Loading states con Suspense
-import { Suspense } from 'react';
+import { Suspense } from "react";
 
 export default function ProductosPage() {
   return (
@@ -161,6 +246,8 @@ export default function Loading() {
 ">
 ```
 
+---
+
 ### 2. Diseño de Product Cards
 
 ```tsx
@@ -168,21 +255,21 @@ export default function Loading() {
 <article className="group relative">
   {/* Imagen con hover effect */}
   <div className="aspect-square overflow-hidden rounded-lg bg-gray-100">
-    <Image 
+    <Image
       src={imagen.url}
       className="object-cover transition-transform group-hover:scale-105"
     />
   </div>
-  
+
   {/* Info del producto */}
   <div className="mt-4 space-y-2">
     <h3 className="font-medium">{producto.nombre}</h3>
-    <p className="text-sm text-muted-foreground">{categoria.nombre}</p>
-    
+    <p className="text-sm text-accent">{categoria.nombre}</p>
+
     {/* Rango de precios si hay múltiples variaciones */}
     {variaciones.length > 1 ? (
       <p className="text-sm">
-        Desde ${Math.min(...variaciones.map(v => v.precio))}
+        Desde ${Math.min(...variaciones.map((v) => v.precio))}
       </p>
     ) : (
       <p className="font-semibold">${variaciones[0].precio}</p>
@@ -190,6 +277,8 @@ export default function Loading() {
   </div>
 </article>
 ```
+
+---
 
 ### 3. Galería de Imágenes
 
@@ -201,14 +290,14 @@ import { useState } from 'react';
 
 export function ProductGallery({ imagenes }: { imagenes: ImagenProducto[] }) {
   const [imagenActual, setImagenActual] = useState(0);
-  
+
   return (
     <div className="space-y-4">
       {/* Imagen principal */}
       <div className="aspect-square overflow-hidden rounded-lg">
         <Image src={imagenes[imagenActual].url} ... />
       </div>
-      
+
       {/* Thumbnails */}
       <div className="grid grid-cols-4 gap-2">
         {imagenes.map((img, idx) => (
@@ -217,7 +306,7 @@ export function ProductGallery({ imagenes }: { imagenes: ImagenProducto[] }) {
             onClick={() => setImagenActual(idx)}
             className={clsx(
               'aspect-square rounded border-2',
-              idx === imagenActual ? 'border-primary' : 'border-transparent'
+              idx === imagenActual ? 'border-accent' : 'border-transparent'
             )}
           >
             <Image src={img.url} ... />
@@ -237,23 +326,23 @@ Cuando agreguemos tests, Copilot debe saber:
 
 ```typescript
 // Unit test de utilidad
-import { formatPrice } from '@/lib/utils/format';
+import { formatPrice } from "@/lib/utils/format";
 
-describe('formatPrice', () => {
-  it('formatea precios argentinos correctamente', () => {
-    expect(formatPrice(15000)).toBe('$15.000');
-    expect(formatPrice(1500.50)).toBe('$1.500,50');
+describe("formatPrice", () => {
+  it("formatea precios argentinos correctamente", () => {
+    expect(formatPrice(15000)).toBe("$15.000");
+    expect(formatPrice(1500.5)).toBe("$1.500,50");
   });
 });
 
 // Integration test de query
-import { getProductos } from '@/lib/supabase/queries';
+import { getProductos } from "@/lib/supabase/queries";
 
-describe('getProductos', () => {
-  it('retorna productos con sus relaciones', async () => {
+describe("getProductos", () => {
+  it("retorna productos con sus relaciones", async () => {
     const productos = await getProductos();
-    expect(productos[0]).toHaveProperty('categoria');
-    expect(productos[0]).toHaveProperty('variaciones');
+    expect(productos[0]).toHaveProperty("categoria");
+    expect(productos[0]).toHaveProperty("variaciones");
   });
 });
 ```
@@ -266,9 +355,9 @@ describe('getProductos', () => {
 
 ```typescript
 // Context de carrito
-'use client';
+"use client";
 
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState } from "react";
 
 interface CarritoItem {
   producto_id: string;
@@ -289,22 +378,25 @@ const CarritoContext = createContext<CarritoContextType | null>(null);
 
 export function useCarrito() {
   const context = useContext(CarritoContext);
-  if (!context) throw new Error('useCarrito must be used within CarritoProvider');
+  if (!context)
+    throw new Error("useCarrito must be used within CarritoProvider");
   return context;
 }
 ```
+
+---
 
 ### Integración con Mercado Pago
 
 ```typescript
 // Server action para crear preferencia
-'use server';
+"use server";
 
-import mercadopago from 'mercadopago';
+import mercadopago from "mercadopago";
 
 export async function crearPreferencia(items: CarritoItem[]) {
   const preference = {
-    items: items.map(item => ({
+    items: items.map((item) => ({
       title: item.producto_nombre,
       unit_price: item.precio_unitario,
       quantity: item.cantidad,
@@ -314,11 +406,11 @@ export async function crearPreferencia(items: CarritoItem[]) {
       failure: `${SITE_CONFIG.url}/checkout/failure`,
       pending: `${SITE_CONFIG.url}/checkout/pending`,
     },
-    auto_return: 'approved',
+    auto_return: "approved",
   };
-  
+
   const response = await mercadopago.preferences.create(preference);
-  return response.body.init_point;  // URL de checkout
+  return response.body.init_point; // URL de checkout
 }
 ```
 
@@ -330,15 +422,17 @@ export async function crearPreferencia(items: CarritoItem[]) {
 
 ```typescript
 // Next.js App Router - revalidación automática
-export const revalidate = 3600;  // 1 hora
+export const revalidate = 3600; // 1 hora
 
 export async function getProductos() {
   const supabase = await createClient();
   // Query se cachea automáticamente
-  const { data } = await supabase.from('productos').select('*');
+  const { data } = await supabase.from("productos").select("*");
   return data;
 }
 ```
+
+---
 
 ### 2. Lazy Loading de Imágenes
 
@@ -346,21 +440,23 @@ export async function getProductos() {
 // Cargar imágenes bajo el fold lazy
 <Image
   src={producto.imagen}
-  loading="lazy"  // Solo imágenes fuera del viewport inicial
+  loading="lazy" // Solo imágenes fuera del viewport inicial
   placeholder="blur"
   blurDataURL={producto.blur_hash}
 />
 ```
 
+---
+
 ### 3. Prefetching de Links
 
 ```tsx
-import Link from 'next/link';
+import Link from "next/link";
 
 // Next.js prefetchea automáticamente en viewport
 <Link href={`/productos/${producto.slug}`} prefetch={true}>
   Ver Producto
-</Link>
+</Link>;
 ```
 
 ---
@@ -370,31 +466,33 @@ import Link from 'next/link';
 ### 1. Validación de Inputs
 
 ```typescript
-import { z } from 'zod';
+import { z } from "zod";
 
 const consultaSchema = z.object({
-  nombre: z.string().min(2, 'Nombre muy corto').max(100),
-  email: z.string().email('Email inválido'),
-  mensaje: z.string().min(10, 'Mensaje muy corto').max(1000),
+  nombre: z.string().min(2, "Nombre muy corto").max(100),
+  email: z.string().email("Email inválido"),
+  mensaje: z.string().min(10, "Mensaje muy corto").max(1000),
 });
 
 // Uso en server action
-'use server';
+("use server");
 
 export async function enviarConsulta(formData: FormData) {
   const parsed = consultaSchema.safeParse({
-    nombre: formData.get('nombre'),
-    email: formData.get('email'),
-    mensaje: formData.get('mensaje'),
+    nombre: formData.get("nombre"),
+    email: formData.get("email"),
+    mensaje: formData.get("mensaje"),
   });
-  
+
   if (!parsed.success) {
     return { error: parsed.error.flatten() };
   }
-  
+
   // Guardar en Supabase...
 }
 ```
+
+---
 
 ### 2. Sanitización de URLs
 
@@ -406,7 +504,7 @@ function isValidProductSlug(slug: string): boolean {
 
 export async function getProductoBySlug(slug: string) {
   if (!isValidProductSlug(slug)) {
-    throw new Error('Slug inválido');
+    throw new Error("Slug inválido");
   }
   // Query...
 }
@@ -425,7 +523,7 @@ export async function getProductoBySlug(slug: string) {
 // Alt text descriptivo
 <Image
   src={imagen.url}
-  alt={`${producto.nombre} - ${variacion.color}, tamaño ${variacion.tamaño}`}
+  alt={`${producto.nombre} - ${variacion.color}, tamaño ${variacion.tamanio}`}
 />
 
 // Estados de loading accesibles
@@ -441,7 +539,7 @@ export async function getProductoBySlug(slug: string) {
 </button>
 
 // Focus management
-<button className="focus:ring-2 focus:ring-primary focus:ring-offset-2">
+<button className="focus:ring-2 focus:ring-accent focus:ring-offset-2">
 ```
 
 ---
@@ -453,8 +551,8 @@ export async function getProductoBySlug(slug: string) {
 ```
 components/
 ├── layout/          → Header, Footer, Navigation (estructura general)
-├── productos/       → ProductCard, ProductGallery, VariationSelector
-├── ui/              → Button, Input, Card (primitivos reutilizables)
+├── productos/       → ProductCard, ProductGallery, VariationSelector, etc.
+├── ui/              → Button, Input, Card (primitivos reutilizables) - futuro
 └── forms/           → ContactForm, NewsletterForm (futuro)
 
 lib/
@@ -464,28 +562,30 @@ lib/
 └── types.ts         → Tipos compartidos en todo el proyecto
 ```
 
+---
+
 ### Naming Patterns
 
 ```typescript
 // Queries → get[Resource](s)
-getProductos()
-getProductoBySlug()
-getCategorias()
+getProductos();
+getProductoBySlug();
+getCategorias();
 
 // Mutations → create/update/delete[Resource]
-createConsulta()
-updateProducto()
-deleteVariacion()
+createConsulta();
+updateProducto();
+deleteVariacion();
 
 // Utils → verbo descriptivo
-formatPrice()
-slugify()
-truncateText()
+formatPrice();
+slugify();
+truncateText();
 
 // Components → sustantivo descriptivo
-ProductCard
-VariationSelector
-WhatsAppButton
+ProductCard;
+VariationSelector;
+WhatsAppButton;
 ```
 
 ---
@@ -494,7 +594,7 @@ WhatsAppButton
 
 Copilot debe optimizar para:
 
-- **Performance:** Core Web Vitals (LCP &lt; 2.5s, CLS &lt; 0.1, FID &lt; 100ms)
+- **Performance:** Core Web Vitals (LCP < 2.5s, CLS < 0.1, FID < 100ms)
 - **SEO:** Metadata correcta, structured data
 - **Accesibilidad:** WCAG 2.1 AA compliance
 - **Type Safety:** 0 errores de TypeScript, 0 usos de `any`
@@ -502,5 +602,67 @@ Copilot debe optimizar para:
 
 ---
 
-**Última actualización:** 2026-01-15  
-**Versión:** 1.0
+## 🔑 Patrones Clave del Proyecto (Resumen)
+
+### 1. Queries siempre con ordenamiento en JavaScript
+
+```typescript
+// ✅ CORRECTO
+const { data } = await supabase
+  .from('productos')
+  .select('*, variaciones(*)')
+  .eq('activo', true);
+
+// Ordenar después
+data.forEach(p => {
+  p.variaciones.sort((a, b) => a.precio - b.precio);
+});
+
+// ❌ INCORRECTO (no funciona en Supabase)
+.order('variaciones(precio)')  // NO HACER
+```
+
+---
+
+### 2. Usar columna "activo" no "disponible"
+
+```typescript
+// ✅ CORRECTO
+.eq('activo', true)
+variaciones(*, activo)
+
+// ❌ INCORRECTO (columna no existe)
+.eq('disponible', true)
+variaciones(*, disponible)
+```
+
+---
+
+### 3. Tipos manuales por ahora, generados en futuro
+
+```typescript
+// ✅ Por ahora
+import { Producto, Variacion } from "@/lib/types";
+
+// 🔮 Futuro
+import { Database } from "@/lib/database.types";
+type Producto = Database["public"]["Tables"]["productos"]["Row"];
+```
+
+---
+
+### 4. Componentes del proyecto actual
+
+**Existentes:**
+
+- ✅ ProductCard, ProductGrid, ProductGallery
+- ✅ ProductInfo, ProductActions
+- ✅ VariationSelector, WhatsAppButton
+- ✅ Header, Footer, MobileNav
+
+**Pendientes (futuro):**
+
+- ⏳ Button, Card, Input (components/ui/)
+- ⏳ ContactForm, SearchBar
+
+---

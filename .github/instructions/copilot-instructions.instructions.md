@@ -26,8 +26,8 @@ Productos con múltiples variaciones (tamaño/color).
 /app                 → Pages y layouts (App Router)
 /components          → Componentes React organizados por dominio
   /layout           → Header, Footer, MobileNav
-  /productos        → ProductCard, ProductGallery, VariationSelector
-  /ui               → Componentes reutilizables
+  /productos        → ProductCard, ProductGallery, VariationSelector, etc.
+  /ui               → Componentes reutilizables (futuro)
 /lib                 → Lógica de negocio y utilidades
   /constants        → Constantes centralizadas (SITE_CONFIG, WHATSAPP, etc.)
   /supabase         → Clientes y queries de Supabase
@@ -40,7 +40,7 @@ Productos con múltiples variaciones (tamaño/color).
 -- Tablas principales
 categorias           → Categorías de productos (id, nombre, slug, descripcion)
 productos            → Productos base (id, nombre, slug, descripcion, categoria_id)
-variaciones          → SKUs con precio/tamaño/color (id, producto_id, tamaño, color, precio, stock)
+variaciones          → SKUs con precio/tamaño/color (id, producto_id, tamaño, color, precio, stock, activo)
 imagenes_producto    → Galería de imágenes (id, producto_id, url, orden, es_principal)
 consultas            → Formularios de contacto (id, nombre, email, mensaje, created_at)
 ```
@@ -172,32 +172,32 @@ import clsx from 'clsx';
 
 ```typescript
 // Componentes → PascalCase
-ProductCard.tsx
-VariationSelector.tsx
+ProductCard.tsx;
+VariationSelector.tsx;
 
 // Funciones y variables → camelCase
-fetchProductos()
-isLoading
-currentUser
+fetchProductos();
+isLoading;
+currentUser;
 
 // Constantes → UPPER_SNAKE_CASE
-SITE_CONFIG
-API_ROUTES
-WHATSAPP
+SITE_CONFIG;
+API_ROUTES;
+WHATSAPP;
 
 // Booleans → prefijos is, has, should, can
-isLoading
-hasVariations
-shouldDisplay
-canPurchase
+isLoading;
+hasVariations;
+shouldDisplay;
+canPurchase;
 
 // Types e Interfaces → PascalCase
-interface Producto { }
-type ProductoCompleto = Producto & { variaciones: Variacion[] }
+interface Producto {}
+type ProductoCompleto = Producto & { variaciones: Variacion[] };
 
 // Archivos → kebab-case para non-component files
-product-utils.ts
-format-price.ts
+product - utils.ts;
+format - price.ts;
 ```
 
 ---
@@ -207,31 +207,44 @@ format-price.ts
 ```typescript
 // ✅ Siempre incluir relaciones necesarias con select()
 const { data } = await supabase
-  .from('productos')
-  .select(`
+  .from("productos")
+  .select(
+    `
     *,
     categoria:categorias(*),
     variaciones(*),
     imagenes:imagenes_producto(*)
-  `)
-  .order('created_at', { ascending: false });
+  `
+  )
+  .order("created_at", { ascending: false });
 
 // ✅ Filtros con .eq(), .in(), .gt(), etc.
 const { data } = await supabase
-  .from('productos')
-  .select('*')
-  .eq('categoria_id', categoriaId)
-  .eq('disponible', true);
+  .from("productos")
+  .select("*")
+  .eq("categoria_id", categoriaId)
+  .eq("activo", true);
 
 // ✅ Manejo de errores
-const { data, error } = await supabase.from('productos').select('*');
+const { data, error } = await supabase.from("productos").select("*");
 
 if (error) {
-  console.error('Error fetching productos:', error);
+  console.error("Error fetching productos:", error);
   throw new Error(ERROR_MESSAGES.loadingError);
 }
 
 return data ?? [];
+
+// ⚠️ IMPORTANTE: Ordenar relaciones en JavaScript
+// Supabase no permite .order() en joins directamente
+const { data } = await supabase.from("productos").select("*, variaciones(*)");
+
+// Ordenar después:
+if (data) {
+  data.forEach((producto) => {
+    producto.variaciones.sort((a, b) => a.precio - b.precio);
+  });
+}
 ```
 
 ---
@@ -240,7 +253,7 @@ return data ?? [];
 
 ```typescript
 // ✅ Formato de mensaje estándar
-import { WHATSAPP } from '@/lib/constants';
+import { WHATSAPP } from "@/lib/constants";
 
 function generarMensajeProducto(
   producto: Producto,
@@ -248,19 +261,21 @@ function generarMensajeProducto(
 ): string {
   let mensaje = `Hola! Me interesa el producto:\n`;
   mensaje += `📦 ${producto.nombre}\n`;
-  
+
   if (variacion) {
     mensaje += `📏 Tamaño: ${variacion.tamaño}\n`;
     mensaje += `🎨 Color: ${variacion.color}\n`;
     mensaje += `💰 Precio: $${variacion.precio}\n`;
   }
-  
+
   mensaje += `\n¿Está disponible?`;
   return mensaje;
 }
 
 // Uso en componente
-const whatsappUrl = WHATSAPP.getUrl(generarMensajeProducto(producto, variacion));
+const whatsappUrl = WHATSAPP.getUrl(
+  generarMensajeProducto(producto, variacion)
+);
 ```
 
 ---
@@ -298,7 +313,7 @@ docs(readme): actualizar instrucciones de instalación
 
 ```typescript
 // ✅ Usar constantes
-import { SITE_CONFIG, WHATSAPP, ERROR_MESSAGES } from '@/lib/constants';
+import { SITE_CONFIG, WHATSAPP, ERROR_MESSAGES } from "@/lib/constants";
 
 export const metadata = {
   title: SITE_CONFIG.name,
@@ -313,8 +328,8 @@ const url = WHATSAPP.getUrl(mensaje);
 throw new Error(ERROR_MESSAGES.productNotFound);
 
 // ❌ Evitar hardcodear valores
-const siteName = "Muma Estudio";  // ❌ Usar SITE_CONFIG.name
-const phone = "5492999123456";     // ❌ Usar WHATSAPP.number
+const siteName = "Muma Estudio"; // ❌ Usar SITE_CONFIG.name
+const phone = "5492999123456"; // ❌ Usar WHATSAPP.number
 ```
 
 **Constantes disponibles:**
@@ -342,14 +357,15 @@ app/
 │   ├── loading.tsx            # Loading state
 │   ├── error.tsx              # Error boundary
 │   └── [slug]/
-│       └── page.tsx           # Detalle de producto
+│       ├── page.tsx           # Detalle de producto
+│       ├── loading.tsx        # Loading state
+│       └── not-found.tsx      # 404 producto no encontrado
 ├── contacto/
-│   └── page.tsx               # Formulario de contacto
+│   └── page.tsx               # Formulario de contacto (futuro)
 ├── sobre-nosotros/
-│   └── page.tsx               # Sobre nosotros
+│   └── page.tsx               # Sobre nosotros (futuro)
 └── api/
-    ├── productos/route.ts     # API de productos (futuro)
-    └── consultas/route.ts     # API de consultas
+    └── consultas/route.ts     # API de consultas (futuro)
 
 components/
 ├── layout/
@@ -357,15 +373,17 @@ components/
 │   ├── Footer.tsx             # Footer (Server Component)
 │   └── MobileNav.tsx          # Mobile nav (Client Component)
 ├── productos/
-│   ├── ProductCard.tsx        # Card de producto
-│   ├── ProductGrid.tsx        # Grid de productos
-│   ├── ProductGallery.tsx     # Galería de imágenes
-│   ├── VariationSelector.tsx # Selector variaciones (futuro)
-│   └── ProductSkeleton.tsx    # Loading skeleton
-└── ui/
-    ├── Button.tsx             # Botón reutilizable
-    ├── Card.tsx               # Card base
-    └── Input.tsx              # Input base
+│   ├── ProductCard.tsx        # Card de producto (Server)
+│   ├── ProductGrid.tsx        # Grid de productos (Server)
+│   ├── ProductGallery.tsx     # Galería simple V1 (Server)
+│   ├── ProductInfo.tsx        # Información del producto (Server)
+│   ├── ProductActions.tsx     # Wrapper Client (selector + WhatsApp)
+│   ├── VariationSelector.tsx  # Selector de variaciones (Client)
+│   └── WhatsAppButton.tsx     # Botón de WhatsApp (Server)
+└── ui/                        # Componentes base reutilizables (futuro)
+    ├── Button.tsx             # TODO: Crear
+    ├── Card.tsx               # TODO: Crear
+    └── Input.tsx              # TODO: Crear
 
 lib/
 ├── supabase/
@@ -376,16 +394,16 @@ lib/
 │   ├── index.ts               # Constantes globales
 │   └── navigation.ts          # Links de navegación
 ├── types.ts                   # TypeScript types del proyecto
-├── utils.ts                   # Funciones utilitarias
-└── validations.ts             # Schemas de Zod (futuro)
+└── utils.ts                   # Funciones utilitarias (futuro)
 
 public/
 └── images/
-    ├── productos/             # Imágenes de productos
+    ├── productos/             # Imágenes de productos (V1)
     │   ├── manteles/
     │   ├── servilletas/
     │   └── caminos/
     └── placeholders/          # Placeholders
+        └── producto-sin-imagen.jpg
 ```
 
 ---
@@ -416,7 +434,19 @@ export async function getProductos(): Promise<ProductoCompleto[]> {
     .order("destacado", { ascending: false });
 
   if (error) throw error;
-  return data ?? [];
+
+  // Ordenar variaciones por precio (JavaScript)
+  const productos = data ?? [];
+  productos.forEach((p) => {
+    if (p.variaciones) {
+      p.variaciones.sort((a, b) => a.precio - b.precio);
+    }
+    if (p.imagenes) {
+      p.imagenes.sort((a, b) => a.orden - b.orden);
+    }
+  });
+
+  return productos;
 }
 
 // ✅ Usar en Server Components
@@ -534,26 +564,38 @@ export default function Loading() {
 ### Cargar un producto completo
 
 ```typescript
-import { createClient } from '@/lib/supabase/server';
-import { ProductoCompleto } from '@/lib/types';
+import { createClient } from "@/lib/supabase/server";
+import { ProductoCompleto } from "@/lib/types";
 
 export async function getProductoBySlug(
   slug: string
 ): Promise<ProductoCompleto | null> {
   const supabase = await createClient();
-  
+
   const { data, error } = await supabase
-    .from('productos')
-    .select(`
+    .from("productos")
+    .select(
+      `
       *,
       categoria:categorias(*),
       variaciones(*),
       imagenes:imagenes_producto(*)
-    `)
-    .eq('slug', slug)
+    `
+    )
+    .eq("slug", slug)
+    .eq("activo", true)
     .single();
-  
+
   if (error || !data) return null;
+
+  // Ordenar variaciones e imágenes
+  if (data.variaciones) {
+    data.variaciones.sort((a, b) => a.precio - b.precio);
+  }
+  if (data.imagenes) {
+    data.imagenes.sort((a, b) => a.orden - b.orden);
+  }
+
   return data as ProductoCompleto;
 }
 ```
@@ -561,25 +603,25 @@ export async function getProductoBySlug(
 ### Selector de variaciones (Client Component)
 
 ```typescript
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Variacion } from '@/lib/types';
+import { useState } from "react";
+import { Variacion } from "@/lib/types";
 
-export function VariationSelector({ 
+export function VariationSelector({
   variaciones,
-  onSelect 
-}: { 
+  onSelect,
+}: {
   variaciones: Variacion[];
   onSelect: (v: Variacion) => void;
 }) {
   const [selected, setSelected] = useState<Variacion | null>(null);
-  
+
   const handleSelect = (variacion: Variacion) => {
     setSelected(variacion);
     onSelect(variacion);
   };
-  
+
   return (
     <div className="space-y-4">
       {variaciones.map((v) => (
@@ -587,8 +629,8 @@ export function VariationSelector({
           key={v.id}
           onClick={() => handleSelect(v)}
           className={clsx(
-            'px-4 py-2 rounded border',
-            selected?.id === v.id && 'border-primary bg-primary/10'
+            "px-4 py-2 rounded border",
+            selected?.id === v.id && "border-accent bg-accent/10"
           )}
         >
           {v.tamaño} - {v.color}
@@ -613,6 +655,7 @@ Antes de hacer commit, verificar:
 - [ ] ¿El commit sigue Conventional Commits?
 - [ ] ¿Manejaste los errores de Supabase correctamente?
 - [ ] ¿Los nombres de props están en español (datos) e inglés (lógica)?
+- [ ] ¿Ordenaste las relaciones en JavaScript si es necesario?
 
 ---
 
@@ -797,10 +840,15 @@ interface Pedido {
   usuario_id: string;
   items: CarritoItem[];
   total: number;
-  estado: 'pendiente' | 'pagado' | 'enviado' | 'cancelado';
+  estado: "pendiente" | "pagado" | "enviado" | "cancelado";
   mercadopago_payment_id?: string;
   created_at: string;
 }
 ```
 
 Mantener el código actual flexible para esta migración.
+
+---
+
+_Última actualización: Enero 2026 - V1.2_
+_Estado: MVP V1 completado - Catálogo + WhatsApp funcionando_
