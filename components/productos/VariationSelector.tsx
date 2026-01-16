@@ -193,7 +193,7 @@ export function VariationSelector({
         "
         >
           <div className="space-y-3">
-            <p className="text-4xl font-bold text-foreground tracking-tight">
+            <p className="text-3xl font-bold text-foreground tracking-tight">
               {formatearPrecio(variacionActual.precio)}
             </p>
             <div

@@ -63,7 +63,7 @@ export function WhatsAppButton({ producto, variacion }: WhatsAppButtonProps) {
         focus:ring-offset-2
       "
     >
-      <MessageCircle className="w-5 h-5 transition-transform group-hover:rotate-12" />
+      <MessageCircle className="w-5 h-5 motion-safe:transition-transform motion-safe:group-hover:rotate-12" />
       <span>Consultar por WhatsApp</span>
     </a>
   );
