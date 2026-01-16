@@ -10,9 +10,18 @@ export const metadata: Metadata = {
 
 export default function SobreNosotrosPage() {
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
+    <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
       {/* Encabezado */}
-      <div className="mb-16 text-center">
+      <div className="mb-20 text-center">
+        <div className="mb-4 inline-block">
+          <div
+            className="
+              inline-flex h-1 w-16
+              rounded-full
+              bg-gradient-to-r from-foreground/20 via-foreground to-foreground/20
+            "
+          />
+        </div>
         <h1
           className="
             mb-6
@@ -29,8 +38,9 @@ export default function SobreNosotrosPage() {
         <p
           className="
             mx-auto max-w-2xl
-            text-lg
-            text-accent
+            text-base
+            leading-relaxed
+            text-muted-foreground
             sm:text-xl
           "
         >
@@ -41,11 +51,14 @@ export default function SobreNosotrosPage() {
       {/* Imagen del taller */}
       <div
         className="
-          mb-20
+          mb-24
           overflow-hidden
-          rounded-xl
-          border border-border
-          shadow-lg
+          rounded-3xl
+          border-2 border-border/50
+          shadow-2xl
+          transition-all
+          duration-300
+          hover:shadow-3xl
         "
       >
         <Image
@@ -56,26 +69,33 @@ export default function SobreNosotrosPage() {
           className="
             h-auto w-full
             object-cover
+            transition-transform
+            duration-700
+            hover:scale-105
           "
           priority
         />
       </div>
 
       {/* Contenido principal */}
-      <div className="space-y-20">
+      <div className="space-y-24">
         {/* Sección 1: Nuestra Historia */}
         <section>
-          <div className="mb-8 flex items-center gap-3">
+          <div className="mb-10 flex items-center gap-4">
             <div
               className="
-                flex h-12 w-12
+                flex h-14 w-14
                 items-center justify-center
-                rounded-full
-                bg-muted
+                rounded-2xl
+                bg-gradient-to-br from-muted/50 to-muted
                 text-foreground
+                shadow-md
+                transition-all
+                duration-300
+                hover:scale-110
               "
             >
-              <Heart className="h-6 w-6" />
+              <Heart className="h-7 w-7" />
             </div>
             <h2
               className="
@@ -93,7 +113,7 @@ export default function SobreNosotrosPage() {
               space-y-6
               text-base
               leading-relaxed
-              text-accent
+              text-muted-foreground
               sm:text-lg
             "
           >
@@ -121,17 +141,21 @@ export default function SobreNosotrosPage() {
 
         {/* Sección 2: Proceso Artesanal */}
         <section>
-          <div className="mb-8 flex items-center gap-3">
+          <div className="mb-10 flex items-center gap-4">
             <div
               className="
-                flex h-12 w-12
+                flex h-14 w-14
                 items-center justify-center
-                rounded-full
-                bg-muted
+                rounded-2xl
+                bg-gradient-to-br from-muted/50 to-muted
                 text-foreground
+                shadow-md
+                transition-all
+                duration-300
+                hover:scale-110
               "
             >
-              <Sparkles className="h-6 w-6" />
+              <Sparkles className="h-7 w-7" />
             </div>
             <h2
               className="
@@ -149,7 +173,7 @@ export default function SobreNosotrosPage() {
               space-y-6
               text-base
               leading-relaxed
-              text-accent
+              text-muted-foreground
               sm:text-lg
             "
           >
@@ -177,10 +201,19 @@ export default function SobreNosotrosPage() {
 
         {/* Sección 3: Nuestros Valores */}
         <section>
-          <div className="mb-12 text-center">
+          <div className="mb-16 text-center">
+            <div className="mb-4 inline-block">
+              <div
+                className="
+                  inline-flex h-1 w-16
+                  rounded-full
+                  bg-gradient-to-r from-foreground/20 via-foreground to-foreground/20
+                "
+              />
+            </div>
             <h2
               className="
-                mb-4
+                mb-6
                 text-3xl
                 font-bold
                 text-foreground
@@ -193,7 +226,8 @@ export default function SobreNosotrosPage() {
               className="
                 mx-auto max-w-2xl
                 text-base
-                text-accent
+                leading-relaxed
+                text-muted-foreground
                 sm:text-lg
               "
             >
@@ -204,46 +238,50 @@ export default function SobreNosotrosPage() {
           <div
             className="
               grid grid-cols-1
-              gap-6
+              gap-8
               sm:grid-cols-2
-              lg:gap-8
+              lg:gap-10
             "
           >
             {/* Valor 1 */}
             <div
               className="
                 group
-                rounded-xl
-                border border-border
-                bg-muted/50
-                p-6
+                rounded-2xl
+                border-2 border-border/50
+                bg-white
+                p-8
+                shadow-lg
                 transition-all
                 duration-300
-                hover:shadow-lg
-                hover:border-accent/20
-                sm:p-8
+                hover:shadow-2xl
+                hover:border-foreground/10
+                hover:-translate-y-2
+                sm:p-10
               "
             >
               <div
                 className="
-                  mb-4
-                  flex h-12 w-12
+                  mb-6
+                  flex h-14 w-14
                   items-center justify-center
-                  rounded-full
-                  bg-background
+                  rounded-2xl
+                  bg-gradient-to-br from-muted/50 to-muted
                   text-foreground
-                  transition-transform
+                  shadow-md
+                  transition-all
                   duration-300
                   group-hover:scale-110
+                  group-hover:shadow-lg
                 "
               >
-                <Sparkles className="h-6 w-6" />
+                <Sparkles className="h-7 w-7" />
               </div>
               <h3
                 className="
-                  mb-3
+                  mb-4
                   text-xl
-                  font-semibold
+                  font-bold
                   text-foreground
                 "
               >
@@ -253,7 +291,7 @@ export default function SobreNosotrosPage() {
                 className="
                   text-base
                   leading-relaxed
-                  text-accent
+                  text-muted-foreground
                 "
               >
                 Nos comprometemos con la excelencia en cada pieza que creamos.
@@ -266,37 +304,41 @@ export default function SobreNosotrosPage() {
             <div
               className="
                 group
-                rounded-xl
-                border border-border
-                bg-muted/50
-                p-6
+                rounded-2xl
+                border-2 border-border/50
+                bg-white
+                p-8
+                shadow-lg
                 transition-all
                 duration-300
-                hover:shadow-lg
-                hover:border-accent/20
-                sm:p-8
+                hover:shadow-2xl
+                hover:border-foreground/10
+                hover:-translate-y-2
+                sm:p-10
               "
             >
               <div
                 className="
-                  mb-4
-                  flex h-12 w-12
+                  mb-6
+                  flex h-14 w-14
                   items-center justify-center
-                  rounded-full
-                  bg-background
+                  rounded-2xl
+                  bg-gradient-to-br from-muted/50 to-muted
                   text-foreground
-                  transition-transform
+                  shadow-md
+                  transition-all
                   duration-300
                   group-hover:scale-110
+                  group-hover:shadow-lg
                 "
               >
-                <Heart className="h-6 w-6" />
+                <Heart className="h-7 w-7" />
               </div>
               <h3
                 className="
-                  mb-3
+                  mb-4
                   text-xl
-                  font-semibold
+                  font-bold
                   text-foreground
                 "
               >
@@ -306,7 +348,7 @@ export default function SobreNosotrosPage() {
                 className="
                   text-base
                   leading-relaxed
-                  text-accent
+                  text-muted-foreground
                 "
               >
                 Creemos en el diseño con propósito. Cada elemento de nuestros
@@ -319,37 +361,41 @@ export default function SobreNosotrosPage() {
             <div
               className="
                 group
-                rounded-xl
-                border border-border
-                bg-muted/50
-                p-6
+                rounded-2xl
+                border-2 border-border/50
+                bg-white
+                p-8
+                shadow-lg
                 transition-all
                 duration-300
-                hover:shadow-lg
-                hover:border-accent/20
-                sm:p-8
+                hover:shadow-2xl
+                hover:border-foreground/10
+                hover:-translate-y-2
+                sm:p-10
               "
             >
               <div
                 className="
-                  mb-4
-                  flex h-12 w-12
+                  mb-6
+                  flex h-14 w-14
                   items-center justify-center
-                  rounded-full
-                  bg-background
+                  rounded-2xl
+                  bg-gradient-to-br from-muted/50 to-muted
                   text-foreground
-                  transition-transform
+                  shadow-md
+                  transition-all
                   duration-300
                   group-hover:scale-110
+                  group-hover:shadow-lg
                 "
               >
-                <Leaf className="h-6 w-6" />
+                <Leaf className="h-7 w-7" />
               </div>
               <h3
                 className="
-                  mb-3
+                  mb-4
                   text-xl
-                  font-semibold
+                  font-bold
                   text-foreground
                 "
               >
@@ -359,7 +405,7 @@ export default function SobreNosotrosPage() {
                 className="
                   text-base
                   leading-relaxed
-                  text-accent
+                  text-muted-foreground
                 "
               >
                 Trabajamos de manera consciente y responsable, optimizando
@@ -372,37 +418,41 @@ export default function SobreNosotrosPage() {
             <div
               className="
                 group
-                rounded-xl
-                border border-border
-                bg-muted/50
-                p-6
+                rounded-2xl
+                border-2 border-border/50
+                bg-white
+                p-8
+                shadow-lg
                 transition-all
                 duration-300
-                hover:shadow-lg
-                hover:border-accent/20
-                sm:p-8
+                hover:shadow-2xl
+                hover:border-foreground/10
+                hover:-translate-y-2
+                sm:p-10
               "
             >
               <div
                 className="
-                  mb-4
-                  flex h-12 w-12
+                  mb-6
+                  flex h-14 w-14
                   items-center justify-center
-                  rounded-full
-                  bg-background
+                  rounded-2xl
+                  bg-gradient-to-br from-muted/50 to-muted
                   text-foreground
-                  transition-transform
+                  shadow-md
+                  transition-all
                   duration-300
                   group-hover:scale-110
+                  group-hover:shadow-lg
                 "
               >
-                <Users className="h-6 w-6" />
+                <Users className="h-7 w-7" />
               </div>
               <h3
                 className="
-                  mb-3
+                  mb-4
                   text-xl
-                  font-semibold
+                  font-bold
                   text-foreground
                 "
               >
@@ -412,7 +462,7 @@ export default function SobreNosotrosPage() {
                 className="
                   text-base
                   leading-relaxed
-                  text-accent
+                  text-muted-foreground
                 "
               >
                 Cada cliente es importante para nosotros. Ofrecemos atención

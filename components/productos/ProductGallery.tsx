@@ -29,9 +29,14 @@ export function ProductGallery({ imagenes }: ProductGalleryProps) {
     <div
       className="
       relative w-full aspect-square
-      rounded-lg border border-border
+      rounded-2xl
+      border border-border/50
       overflow-hidden
-      bg-background
+      bg-gradient-to-br from-muted/30 to-muted
+      shadow-lg
+      transition-shadow
+      duration-300
+      hover:shadow-xl
     "
     >
       <Image
@@ -40,7 +45,12 @@ export function ProductGallery({ imagenes }: ProductGalleryProps) {
         width={800}
         height={800}
         priority
-        className="object-cover"
+        className="
+          object-cover
+          transition-transform
+          duration-500
+          hover:scale-105
+        "
       />
     </div>
   );

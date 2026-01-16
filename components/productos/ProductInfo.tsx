@@ -19,9 +19,14 @@ export function ProductInfo({ producto }: ProductInfoProps) {
         <div className="inline-block">
           <span
             className="
-            px-3 py-1 rounded-full
-            bg-accent/10 text-accent
-            text-sm font-medium
+            px-4 py-2 rounded-full
+            bg-muted/50
+            border border-border/50
+            text-foreground/80
+            text-sm font-semibold
+            transition-all
+            duration-300
+            hover:bg-muted
           "
           >
             {producto.categoria.nombre}
@@ -30,12 +35,12 @@ export function ProductInfo({ producto }: ProductInfoProps) {
       )}
 
       {/* Título */}
-      <h1 className="text-3xl md:text-4xl font-bold text-foreground">
+      <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground tracking-tight">
         {producto.nombre}
       </h1>
 
       {/* Descripción */}
-      <p className="text-lg text-accent leading-relaxed">
+      <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
         {producto.descripcion}
       </p>
 
@@ -43,36 +48,36 @@ export function ProductInfo({ producto }: ProductInfoProps) {
       <div
         className="
         pt-6 space-y-4
-        border-t border-border
+        border-t-2 border-border/50
       "
       >
         {/* Tiempo de fabricación */}
-        <div className="flex gap-3">
-          <span className="text-sm font-medium text-accent min-w-[120px]">
+        <div className="flex gap-4">
+          <span className="text-sm font-semibold text-foreground min-w-[140px]">
             Tiempo de entrega:
           </span>
-          <span className="text-sm text-foreground">
+          <span className="text-sm text-muted-foreground">
             {producto.tiempo_fabricacion}
           </span>
         </div>
 
         {/* Material (solo si existe) */}
         {producto.material && (
-          <div className="flex gap-3">
-            <span className="text-sm font-medium text-accent min-w-[120px]">
+          <div className="flex gap-4">
+            <span className="text-sm font-semibold text-foreground min-w-[140px]">
               Material:
             </span>
-            <span className="text-sm text-foreground">{producto.material}</span>
+            <span className="text-sm text-muted-foreground">{producto.material}</span>
           </div>
         )}
 
         {/* Cuidados (solo si existe) */}
         {producto.cuidados && (
-          <div className="flex gap-3">
-            <span className="text-sm font-medium text-accent min-w-[120px]">
+          <div className="flex gap-4">
+            <span className="text-sm font-semibold text-foreground min-w-[140px]">
               Cuidados:
             </span>
-            <span className="text-sm text-foreground">{producto.cuidados}</span>
+            <span className="text-sm text-muted-foreground">{producto.cuidados}</span>
           </div>
         )}
       </div>
