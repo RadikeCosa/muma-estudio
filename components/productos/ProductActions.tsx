@@ -25,10 +25,11 @@ export function ProductActions({ producto, variaciones }: ProductActionsProps) {
   return (
     <div
       className="
-      flex flex-col gap-6
-      p-6 rounded-lg
-      border border-border
-      bg-background
+      flex flex-col gap-8
+      p-8 rounded-2xl
+      border-2 border-border/50
+      bg-white
+      shadow-lg
     "
     >
       {/* Selector de variaciones */}

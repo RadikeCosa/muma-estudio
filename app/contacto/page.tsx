@@ -9,12 +9,21 @@ export const metadata: Metadata = {
 
 export default function ContactoPage() {
   return (
-    <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
       {/* Encabezado */}
-      <div className="mb-10 text-center">
+      <div className="mb-12 text-center">
+        <div className="mb-4 inline-block">
+          <div
+            className="
+              inline-flex h-1 w-16
+              rounded-full
+              bg-gradient-to-r from-foreground/20 via-foreground to-foreground/20
+            "
+          />
+        </div>
         <h1
           className="
-            mb-4
+            mb-5
             text-4xl
             font-bold
             tracking-tight
@@ -24,26 +33,26 @@ export default function ContactoPage() {
         >
           Contacto
         </h1>
-        <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
+        <p className="mx-auto max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
           ¿Tenés alguna consulta? Envianos un mensaje y te responderemos a la
           brevedad.
         </p>
       </div>
 
       {/* Grid 2 columnas */}
-      <div className="grid gap-8 lg:grid-cols-2">
+      <div className="grid gap-10 lg:grid-cols-2 lg:gap-12">
         {/* Columna Izquierda: Formulario */}
-        <div className="rounded-lg border border-border bg-white p-6 shadow-sm sm:p-8">
-          <h2 className="mb-6 text-2xl font-semibold text-foreground">
+        <div className="rounded-2xl border-2 border-border/50 bg-white p-8 shadow-lg sm:p-10">
+          <h2 className="mb-8 text-2xl font-bold text-foreground">
             Envianos tu consulta
           </h2>
 
-          <form className="space-y-5">
+          <form className="space-y-6">
             {/* Nombre */}
             <div>
               <label
                 htmlFor="nombre"
-                className="mb-2 block text-sm font-medium text-foreground"
+                className="mb-2 block text-sm font-semibold text-foreground"
               >
                 Nombre <span className="text-red-600">*</span>
               </label>
@@ -54,19 +63,21 @@ export default function ContactoPage() {
                 required
                 className="
                   w-full
-                  rounded-md
-                  border
+                  rounded-xl
+                  border-2
                   border-border
-                  bg-background
+                  bg-white
                   px-4
-                  py-2.5
+                  py-3.5
                   text-foreground
-                  transition-colors
-                  placeholder:text-accent
+                  transition-all
+                  duration-300
+                  placeholder:text-muted-foreground
                   focus:border-foreground
                   focus:outline-none
                   focus:ring-2
                   focus:ring-foreground/10
+                  hover:border-foreground/30
                 "
                 placeholder="Tu nombre completo"
               />
@@ -76,7 +87,7 @@ export default function ContactoPage() {
             <div>
               <label
                 htmlFor="email"
-                className="mb-2 block text-sm font-medium text-foreground"
+                className="mb-2 block text-sm font-semibold text-foreground"
               >
                 Email <span className="text-red-600">*</span>
               </label>
@@ -87,19 +98,21 @@ export default function ContactoPage() {
                 required
                 className="
                   w-full
-                  rounded-md
-                  border
+                  rounded-xl
+                  border-2
                   border-border
-                  bg-background
+                  bg-white
                   px-4
-                  py-2.5
+                  py-3.5
                   text-foreground
-                  transition-colors
-                  placeholder:text-accent
+                  transition-all
+                  duration-300
+                  placeholder:text-muted-foreground
                   focus:border-foreground
                   focus:outline-none
                   focus:ring-2
                   focus:ring-foreground/10
+                  hover:border-foreground/30
                 "
                 placeholder="tu@email.com"
               />
@@ -109,10 +122,10 @@ export default function ContactoPage() {
             <div>
               <label
                 htmlFor="telefono"
-                className="mb-2 block text-sm font-medium text-foreground"
+                className="mb-2 block text-sm font-semibold text-foreground"
               >
                 Teléfono{" "}
-                <span className="text-sm font-normal text-accent">
+                <span className="text-sm font-normal text-muted-foreground">
                   (opcional)
                 </span>
               </label>
@@ -122,19 +135,21 @@ export default function ContactoPage() {
                 name="telefono"
                 className="
                   w-full
-                  rounded-md
-                  border
+                  rounded-xl
+                  border-2
                   border-border
-                  bg-background
+                  bg-white
                   px-4
-                  py-2.5
+                  py-3.5
                   text-foreground
-                  transition-colors
-                  placeholder:text-accent
+                  transition-all
+                  duration-300
+                  placeholder:text-muted-foreground
                   focus:border-foreground
                   focus:outline-none
                   focus:ring-2
                   focus:ring-foreground/10
+                  hover:border-foreground/30
                 "
                 placeholder="+54 9 11 1234-5678"
               />
@@ -144,7 +159,7 @@ export default function ContactoPage() {
             <div>
               <label
                 htmlFor="mensaje"
-                className="mb-2 block text-sm font-medium text-foreground"
+                className="mb-2 block text-sm font-semibold text-foreground"
               >
                 Mensaje <span className="text-red-600">*</span>
               </label>
@@ -155,19 +170,22 @@ export default function ContactoPage() {
                 rows={5}
                 className="
                   w-full
-                  rounded-md
-                  border
+                  rounded-xl
+                  border-2
                   border-border
-                  bg-background
+                  bg-white
                   px-4
-                  py-2.5
+                  py-3.5
                   text-foreground
-                  transition-colors
-                  placeholder:text-accent
+                  transition-all
+                  duration-300
+                  placeholder:text-muted-foreground
                   focus:border-foreground
                   focus:outline-none
                   focus:ring-2
                   focus:ring-foreground/10
+                  hover:border-foreground/30
+                  resize-none
                 "
                 placeholder="Contanos sobre tu consulta..."
               />
@@ -177,15 +195,19 @@ export default function ContactoPage() {
             <button
               type="submit"
               className="
+                group
                 w-full
-                rounded-md
+                rounded-xl
                 bg-foreground
-                px-6
-                py-3
+                px-8
+                py-4
                 font-semibold
                 text-background
+                shadow-lg
                 transition-all
-                hover:bg-foreground/90
+                duration-300
+                hover:shadow-xl
+                hover:scale-[1.02]
                 focus:outline-none
                 focus:ring-2
                 focus:ring-foreground
@@ -195,7 +217,7 @@ export default function ContactoPage() {
               Enviar Consulta por WhatsApp
             </button>
 
-            <p className="text-center text-sm text-accent">
+            <p className="text-center text-sm text-muted-foreground">
               Al enviar, abriremos WhatsApp con tu mensaje pre-cargado
             </p>
           </form>
@@ -204,28 +226,31 @@ export default function ContactoPage() {
         {/* Columna Derecha: Info de Contacto */}
         <div className="space-y-6">
           {/* Información de contacto */}
-          <div className="rounded-lg border border-border bg-white p-6 shadow-sm">
-            <h2 className="mb-6 text-2xl font-semibold text-foreground">
+          <div className="rounded-2xl border-2 border-border/50 bg-white p-8 shadow-lg">
+            <h2 className="mb-8 text-2xl font-bold text-foreground">
               Información de Contacto
             </h2>
 
-            <div className="space-y-4">
+            <div className="space-y-6">
               {/* Email */}
-              <div className="flex items-start gap-3">
+              <div className="flex items-start gap-4">
                 <div
                   className="
                     flex
-                    h-10
-                    w-10
+                    h-12
+                    w-12
                     flex-shrink-0
                     items-center
                     justify-center
-                    rounded-md
-                    bg-muted
+                    rounded-xl
+                    bg-gradient-to-br from-muted/50 to-muted
+                    transition-all
+                    duration-300
+                    hover:scale-110
                   "
                 >
                   <svg
-                    className="h-5 w-5 text-foreground"
+                    className="h-6 w-6 text-foreground"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -240,10 +265,10 @@ export default function ContactoPage() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="mb-1 font-medium text-foreground">Email</h3>
+                  <h3 className="mb-2 font-bold text-foreground">Email</h3>
                   <a
                     href={SOCIAL_LINKS.email.href}
-                    className="text-accent hover:text-foreground transition-colors"
+                    className="text-muted-foreground hover:text-foreground transition-colors duration-300"
                   >
                     {SOCIAL_LINKS.email.href.replace("mailto:", "")}
                   </a>
@@ -251,21 +276,24 @@ export default function ContactoPage() {
               </div>
 
               {/* WhatsApp */}
-              <div className="flex items-start gap-3">
+              <div className="flex items-start gap-4">
                 <div
                   className="
                     flex
-                    h-10
-                    w-10
+                    h-12
+                    w-12
                     flex-shrink-0
                     items-center
                     justify-center
-                    rounded-md
-                    bg-muted
+                    rounded-xl
+                    bg-gradient-to-br from-muted/50 to-muted
+                    transition-all
+                    duration-300
+                    hover:scale-110
                   "
                 >
                   <svg
-                    className="h-5 w-5 text-foreground"
+                    className="h-6 w-6 text-foreground"
                     fill="currentColor"
                     viewBox="0 0 24 24"
                     aria-hidden="true"
@@ -274,14 +302,14 @@ export default function ContactoPage() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="mb-1 font-medium text-foreground">WhatsApp</h3>
+                  <h3 className="mb-2 font-bold text-foreground">WhatsApp</h3>
                   <a
                     href={WHATSAPP.getUrl(
                       "Hola! Tengo una consulta sobre los productos"
                     )}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-accent hover:text-foreground transition-colors"
+                    className="text-muted-foreground hover:text-foreground transition-colors duration-300"
                   >
                     {WHATSAPP.number}
                   </a>
@@ -289,21 +317,24 @@ export default function ContactoPage() {
               </div>
 
               {/* Instagram */}
-              <div className="flex items-start gap-3">
+              <div className="flex items-start gap-4">
                 <div
                   className="
                     flex
-                    h-10
-                    w-10
+                    h-12
+                    w-12
                     flex-shrink-0
                     items-center
                     justify-center
-                    rounded-md
-                    bg-muted
+                    rounded-xl
+                    bg-gradient-to-br from-muted/50 to-muted
+                    transition-all
+                    duration-300
+                    hover:scale-110
                   "
                 >
                   <svg
-                    className="h-5 w-5 text-foreground"
+                    className="h-6 w-6 text-foreground"
                     fill="currentColor"
                     viewBox="0 0 24 24"
                     aria-hidden="true"
@@ -316,14 +347,14 @@ export default function ContactoPage() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="mb-1 font-medium text-foreground">
+                  <h3 className="mb-2 font-bold text-foreground">
                     Instagram
                   </h3>
                   <a
                     href={SOCIAL_LINKS.instagram.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-accent hover:text-foreground transition-colors"
+                    className="text-muted-foreground hover:text-foreground transition-colors duration-300"
                   >
                     @mumaestudio
                   </a>
@@ -333,14 +364,23 @@ export default function ContactoPage() {
           </div>
 
           {/* Horarios de atención */}
-          <div className="rounded-lg border border-border bg-white p-6 shadow-sm">
-            <h2 className="mb-4 text-2xl font-semibold text-foreground">
+          <div className="rounded-2xl border-2 border-border/50 bg-white p-8 shadow-lg">
+            <h2 className="mb-6 text-2xl font-bold text-foreground">
               Horarios de Atención
             </h2>
-            <div className="space-y-2 text-accent">
-              <p>Lunes a Viernes: 9:00 - 18:00 hs</p>
-              <p>Sábados: 10:00 - 14:00 hs</p>
-              <p>Domingos: Cerrado</p>
+            <div className="space-y-3 text-muted-foreground">
+              <div className="flex items-center gap-3">
+                <div className="h-2 w-2 rounded-full bg-foreground/50" />
+                <p>Lunes a Viernes: 9:00 - 18:00 hs</p>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="h-2 w-2 rounded-full bg-foreground/50" />
+                <p>Sábados: 10:00 - 14:00 hs</p>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="h-2 w-2 rounded-full bg-foreground/20" />
+                <p>Domingos: Cerrado</p>
+              </div>
             </div>
           </div>
         </div>

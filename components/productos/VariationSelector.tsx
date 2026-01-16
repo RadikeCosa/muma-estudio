@@ -101,12 +101,12 @@ export function VariationSelector({
   const hayVariaciones = variaciones.length > 0;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {/* Selector de tamaño */}
-      <div className="space-y-2">
+      <div className="space-y-3">
         <label
           htmlFor="tamanio-select"
-          className="block text-sm font-medium text-foreground"
+          className="block text-sm font-semibold text-foreground"
         >
           Tamaño
         </label>
@@ -116,11 +116,20 @@ export function VariationSelector({
           onChange={handleTamanioChange}
           disabled={!hayVariaciones}
           className="
-            w-full px-4 py-2 rounded-lg
-            border border-border
-            bg-background text-foreground
-            focus:outline-none focus:ring-2 focus:ring-accent
-            disabled:opacity-50 disabled:cursor-not-allowed
+            w-full px-4 py-3.5 rounded-xl
+            border-2 border-border
+            bg-white text-foreground
+            font-medium
+            shadow-sm
+            transition-all
+            duration-300
+            focus:outline-none
+            focus:ring-2
+            focus:ring-foreground
+            focus:border-foreground
+            disabled:opacity-50
+            disabled:cursor-not-allowed
+            hover:border-foreground/30
           "
         >
           {!hayVariaciones && (
@@ -135,10 +144,10 @@ export function VariationSelector({
       </div>
 
       {/* Selector de color */}
-      <div className="space-y-2">
+      <div className="space-y-3">
         <label
           htmlFor="color-select"
-          className="block text-sm font-medium text-foreground"
+          className="block text-sm font-semibold text-foreground"
         >
           Color
         </label>
@@ -148,11 +157,20 @@ export function VariationSelector({
           onChange={handleColorChange}
           disabled={!hayVariaciones || coloresDisponibles.length === 0}
           className="
-            w-full px-4 py-2 rounded-lg
-            border border-border
-            bg-background text-foreground
-            focus:outline-none focus:ring-2 focus:ring-accent
-            disabled:opacity-50 disabled:cursor-not-allowed
+            w-full px-4 py-3.5 rounded-xl
+            border-2 border-border
+            bg-white text-foreground
+            font-medium
+            shadow-sm
+            transition-all
+            duration-300
+            focus:outline-none
+            focus:ring-2
+            focus:ring-foreground
+            focus:border-foreground
+            disabled:opacity-50
+            disabled:cursor-not-allowed
+            hover:border-foreground/30
           "
         >
           {coloresDisponibles.length === 0 && tamanioSeleccionado && (
@@ -170,21 +188,32 @@ export function VariationSelector({
       {variacionActual && (
         <div
           className="
-          pt-4 mt-4
-          border-t border-border
+          pt-6 mt-6
+          border-t-2 border-border/50
         "
         >
-          <div className="space-y-2">
-            <p className="text-3xl font-bold text-foreground">
+          <div className="space-y-3">
+            <p className="text-3xl font-bold text-foreground tracking-tight">
               {formatearPrecio(variacionActual.precio)}
             </p>
-            <p className="text-sm text-accent">
-              {variacionActual.stock > 0
-                ? `${variacionActual.stock} ${
-                    variacionActual.stock === 1 ? "disponible" : "disponibles"
-                  }`
-                : "A pedido"}
-            </p>
+            <div
+              className="
+                inline-flex items-center gap-2
+                px-4 py-2
+                rounded-full
+                bg-muted/50
+                border border-border/50
+              "
+            >
+              <div className="h-2 w-2 rounded-full bg-green-500" />
+              <p className="text-sm font-medium text-muted-foreground">
+                {variacionActual.stock > 0
+                  ? `${variacionActual.stock} ${
+                      variacionActual.stock === 1 ? "disponible" : "disponibles"
+                    }`
+                  : "A pedido"}
+              </p>
+            </div>
           </div>
         </div>
       )}

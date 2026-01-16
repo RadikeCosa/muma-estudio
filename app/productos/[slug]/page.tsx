@@ -53,12 +53,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
   }
 
   return (
-    <main className="min-h-screen py-8 md:py-12">
+    <main className="min-h-screen py-12 md:py-16 lg:py-20 bg-gradient-to-b from-white to-muted/30">
       <div className="container max-w-7xl mx-auto px-4">
         <div
           className="
           grid grid-cols-1 md:grid-cols-2
-          gap-8 md:gap-12
+          gap-10 md:gap-12 lg:gap-16
         "
         >
           {/* Columna izquierda: Galería de imágenes */}
