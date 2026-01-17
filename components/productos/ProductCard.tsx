@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import type { Producto } from "@/lib/types";
 import { STORAGE } from "@/lib/constants";
+import { formatPrice } from "@/lib/utils";
 
 interface ProductCardProps {
   producto: Producto;
@@ -10,9 +11,10 @@ interface ProductCardProps {
 
 export function ProductCard({ producto, imagenPrincipal }: ProductCardProps) {
   const imageSrc = imagenPrincipal || STORAGE.productPlaceholder;
-  const precioFormateado = producto.precio_desde
-    ? `Desde $${producto.precio_desde.toLocaleString("es-AR")}`
-    : null;
+  const precioFormateado =
+    producto.precio_desde != null
+      ? `Desde ${formatPrice(producto.precio_desde)}`
+      : null;
 
   return (
     <Link
@@ -101,7 +103,9 @@ export function ProductCard({ producto, imagenPrincipal }: ProductCardProps) {
         </h3>
 
         {precioFormateado && (
-          <p className="text-sm font-semibold text-muted-foreground">{precioFormateado}</p>
+          <p className="text-sm font-semibold text-muted-foreground">
+            {precioFormateado}
+          </p>
         )}
       </div>
     </Link>

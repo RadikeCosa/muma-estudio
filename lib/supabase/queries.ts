@@ -5,6 +5,14 @@
 
 import { createClient } from "@/lib/supabase/server";
 import type { Categoria, ProductoCompleto } from "@/lib/types";
+import type { PaginatedResult } from "@/lib/types/pagination";
+import { ProductoRepository } from "@/lib/repositories/producto.repository";
+
+interface GetProductosParams {
+  categoriaSlug?: string;
+  page?: number;
+  pageSize?: number;
+}
 
 /**
  * Obtiene todas las categorías ordenadas
@@ -29,44 +37,37 @@ export async function getCategorias(): Promise<Categoria[]> {
  * @returns Lista de productos completos (destacados primero, luego por nombre)
  */
 export async function getProductos(
-  categoriaSlug?: string
-): Promise<ProductoCompleto[]> {
-  const supabase = await createClient();
+  params?: GetProductosParams,
+): Promise<PaginatedResult<ProductoCompleto>> {
+  const page = Math.max(1, params?.page ?? 1);
+  const pageSize = Math.max(1, params?.pageSize ?? 12);
+  const categoriaSlug = params?.categoriaSlug;
+
+  const productoRepository = new ProductoRepository();
 
   // Query base con relaciones
-  let query = supabase
-    .from("productos")
-    .select(
-      `
-      *,
-      categoria:categorias(*),
-      variaciones(*),
-      imagenes:imagenes_producto(*)
-    `
-    )
-    .eq("activo", true)
-    .order("destacado", { ascending: false })
-    .order("nombre", { ascending: true });
+  const start = (page - 1) * pageSize;
+  const end = start + pageSize - 1;
 
-  // Filtro por categoría si se proporciona slug
-  if (categoriaSlug) {
-    // Primero obtenemos el ID de la categoría por su slug
-    const { data: categoria } = await supabase
-      .from("categorias")
-      .select("id")
-      .eq("slug", categoriaSlug)
-      .single();
+  const { items, total } = await productoRepository.findAll({
+    categoria: categoriaSlug,
+    limit: pageSize,
+    offset: start,
+  });
 
-    if (categoria) {
-      query = query.eq("categoria_id", categoria.id);
-    }
-  }
+  const totalPages = total > 0 ? Math.ceil(total / pageSize) : 0;
 
-  const { data, error } = await query;
-
-  if (error) throw error;
-
-  return (data as ProductoCompleto[]) ?? [];
+  return {
+    items,
+    pagination: {
+      total,
+      page,
+      pageSize,
+      totalPages,
+      hasNextPage: page < totalPages,
+      hasPreviousPage: page > 1,
+    },
+  };
 }
 
 /**
@@ -75,8 +76,24 @@ export async function getProductos(
  * @returns Producto completo o null si no existe/inactivo
  */
 export async function getProductoBySlug(
-  slug: string
+  slug: string,
 ): Promise<ProductoCompleto | null> {
+  const productoRepository = new ProductoRepository();
+  return productoRepository.findBySlug(slug);
+}
+
+/**
+ * Obtiene productos relacionados de la misma categoría
+ * @param productoId - ID del producto actual (para excluir)
+ * @param categoriaId - ID de la categoría
+ * @param limite - Número de productos a retornar (default: 4)
+ * @returns Lista de productos relacionados activos
+ */
+export async function getProductosRelacionados(
+  productoId: string,
+  categoriaId: string,
+  limite: number = 4,
+): Promise<ProductoCompleto[]> {
   const supabase = await createClient();
 
   const { data, error } = await supabase
@@ -87,17 +104,14 @@ export async function getProductoBySlug(
       categoria:categorias(*),
       variaciones(*),
       imagenes:imagenes_producto(*)
-    `
+    `,
     )
-    .eq("slug", slug)
+    .eq("categoria_id", categoriaId)
     .eq("activo", true)
-    .single();
+    .neq("id", productoId)
+    .limit(limite);
 
-  if (error) {
-    // .single() lanza error si no encuentra resultados
-    if (error.code === "PGRST116") return null;
-    throw error;
-  }
+  if (error) throw error;
 
-  return data as ProductoCompleto;
+  return (data as ProductoCompleto[]) ?? [];
 }

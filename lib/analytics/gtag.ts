@@ -4,6 +4,7 @@
  */
 
 import type { Producto, Variacion } from "@/lib/types";
+import { ANALYTICS_EVENTS } from "./events";
 
 // Extend window object to include gtag
 declare global {
@@ -11,7 +12,7 @@ declare global {
     gtag?: (
       command: "config" | "event" | "set",
       targetId: string,
-      config?: Record<string, unknown>
+      config?: Record<string, unknown>,
     ) => void;
   }
 }
@@ -34,12 +35,13 @@ function canTrack(): boolean {
  */
 export function trackWhatsAppClick(
   producto: Producto,
-  variacion?: Variacion
+  variacion?: Variacion,
 ): void {
   if (!canTrack()) return;
 
-  window.gtag!("event", "whatsapp_click", {
-    event_category: "engagement",
+  const event = ANALYTICS_EVENTS.WHATSAPP_CLICK;
+  window.gtag!("event", event.name, {
+    event_category: event.category,
     event_label: producto.nombre,
     producto_id: producto.id,
     producto_nombre: producto.nombre,
@@ -58,8 +60,9 @@ export function trackWhatsAppClick(
 export function trackProductView(producto: Producto): void {
   if (!canTrack()) return;
 
-  window.gtag!("event", "view_item", {
-    event_category: "ecommerce",
+  const event = ANALYTICS_EVENTS.PRODUCT_VIEW;
+  window.gtag!("event", event.name, {
+    event_category: event.category,
     event_label: producto.nombre,
     producto_id: producto.id,
     producto_nombre: producto.nombre,
@@ -77,12 +80,13 @@ export function trackProductView(producto: Producto): void {
  */
 export function trackCategoryFilter(
   categoriaSlug: string,
-  categoriaNombre: string
+  categoriaNombre: string,
 ): void {
   if (!canTrack()) return;
 
-  window.gtag!("event", "filter_products", {
-    event_category: "navigation",
+  const event = ANALYTICS_EVENTS.CATEGORY_FILTER;
+  window.gtag!("event", event.name, {
+    event_category: event.category,
     event_label: categoriaNombre,
     filter_type: "category",
     filter_value: categoriaSlug,
@@ -96,12 +100,13 @@ export function trackCategoryFilter(
  */
 export function trackVariationSelect(
   producto: Producto,
-  variacion: Variacion
+  variacion: Variacion,
 ): void {
   if (!canTrack()) return;
 
-  window.gtag!("event", "select_item", {
-    event_category: "ecommerce",
+  const event = ANALYTICS_EVENTS.VARIATION_SELECT;
+  window.gtag!("event", event.name, {
+    event_category: event.category,
     event_label: `${producto.nombre} - ${variacion.tamanio} ${variacion.color}`,
     producto_id: producto.id,
     variacion_id: variacion.id,

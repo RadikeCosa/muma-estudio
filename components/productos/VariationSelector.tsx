@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { Variacion } from "@/lib/types";
+import { formatPrice, formatStock } from "@/lib/utils";
 
 interface VariationSelectorProps {
   variaciones: Variacion[];
@@ -23,23 +24,23 @@ export function VariationSelector({
   // Inicializar con primera variación disponible
   const primeraVariacion = useMemo(
     () => variaciones.find((v) => v.activo),
-    [variaciones]
+    [variaciones],
   );
 
   const [tamanioSeleccionado, setTamanioSeleccionado] = useState<string>(
-    primeraVariacion?.tamanio || ""
+    primeraVariacion?.tamanio || "",
   );
   const [colorSeleccionado, setColorSeleccionado] = useState<string>(
-    primeraVariacion?.color || ""
+    primeraVariacion?.color || "",
   );
 
   // Tamaños únicos
   const tamaniosDisponibles = useMemo(
     () =>
       Array.from(
-        new Set(variaciones.filter((v) => v.activo).map((v) => v.tamanio))
+        new Set(variaciones.filter((v) => v.activo).map((v) => v.tamanio)),
       ).sort(),
-    [variaciones]
+    [variaciones],
   );
 
   // Colores para el tamaño seleccionado
@@ -50,11 +51,11 @@ export function VariationSelector({
             new Set(
               variaciones
                 .filter((v) => v.activo && v.tamanio === tamanioSeleccionado)
-                .map((v) => v.color)
-            )
+                .map((v) => v.color),
+            ),
           ).sort()
         : [],
-    [tamanioSeleccionado, variaciones]
+    [tamanioSeleccionado, variaciones],
   );
 
   // Variación actual derivada
@@ -65,10 +66,10 @@ export function VariationSelector({
             (v) =>
               v.activo &&
               v.tamanio === tamanioSeleccionado &&
-              v.color === colorSeleccionado
+              v.color === colorSeleccionado,
           ) || null
         : null,
-    [tamanioSeleccionado, colorSeleccionado, variaciones]
+    [tamanioSeleccionado, colorSeleccionado, variaciones],
   );
 
   // Notificar cambio de variación
@@ -92,10 +93,6 @@ export function VariationSelector({
 
   const handleColorChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setColorSeleccionado(e.target.value);
-  };
-
-  const formatearPrecio = (precio: number): string => {
-    return `$${precio.toLocaleString("es-AR")}`;
   };
 
   const hayVariaciones = variaciones.length > 0;
@@ -194,7 +191,7 @@ export function VariationSelector({
         >
           <div className="space-y-3">
             <p className="text-3xl font-bold text-foreground tracking-tight">
-              {formatearPrecio(variacionActual.precio)}
+              {formatPrice(variacionActual.precio)}
             </p>
             <div
               className="
@@ -207,11 +204,7 @@ export function VariationSelector({
             >
               <div className="h-2 w-2 rounded-full bg-green-500" />
               <p className="text-sm font-medium text-muted-foreground">
-                {variacionActual.stock > 0
-                  ? `${variacionActual.stock} ${
-                      variacionActual.stock === 1 ? "disponible" : "disponibles"
-                    }`
-                  : "A pedido"}
+                {formatStock(variacionActual.stock)}
               </p>
             </div>
           </div>

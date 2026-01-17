@@ -3,6 +3,7 @@
 import { MessageCircle } from "lucide-react";
 import { Producto, Variacion } from "@/lib/types";
 import { WHATSAPP, SITE_CONFIG } from "@/lib/constants";
+import { formatPrice } from "@/lib/utils";
 import { trackWhatsAppClick } from "@/lib/analytics/gtag";
 
 interface WhatsAppButtonProps {
@@ -20,11 +21,6 @@ interface WhatsAppButtonProps {
  * @param variacion - Variación seleccionada (opcional)
  */
 export function WhatsAppButton({ producto, variacion }: WhatsAppButtonProps) {
-  // Formatear precio
-  const formatearPrecio = (precio: number): string => {
-    return precio.toLocaleString("es-AR");
-  };
-
   // Construir mensaje pre-formateado
   const construirMensaje = (): string => {
     let mensaje = `Hola! Me interesa este producto de ${SITE_CONFIG.name}: `;
@@ -33,7 +29,7 @@ export function WhatsAppButton({ producto, variacion }: WhatsAppButtonProps) {
     if (variacion) {
       mensaje += ` - Tamaño: ${variacion.tamanio}`;
       mensaje += `, Color: ${variacion.color}`;
-      mensaje += `, Precio: $${formatearPrecio(variacion.precio)}`;
+      mensaje += `, Precio: ${formatPrice(variacion.precio)}`;
     }
 
     mensaje += `. ¿Podrías darme más información?`;

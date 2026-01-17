@@ -30,6 +30,7 @@ Base Product:  "Mantel Floral"
 ```
 
 **Key Concepts:**
+
 - Prices live in **variations**, not base products
 - Each product can have multiple size/color combinations
 - `stock = 0` means "available on request" (not out of stock)
@@ -59,6 +60,7 @@ components/          # React components by domain
 lib/                # Business logic
   ├── constants/    # Global config (SITE_CONFIG, WHATSAPP)
   ├── supabase/     # Clients (server.ts, client.ts) and queries
+  ├── repositories/ # Repository layer (ProductoRepository, BaseRepository)
   ├── utils/        # Utilities (formatPrice, etc.)
   └── types.ts      # Shared TypeScript types
 ```
@@ -68,6 +70,7 @@ lib/                # Business logic
 **Tables:** `categorias`, `productos`, `variaciones`, `imagenes_producto`, `consultas`
 
 **Key Relations:**
+
 - `productos` → `categorias` (many-to-one)
 - `productos` → `variaciones` (one-to-many)
 - `productos` → `imagenes_producto` (one-to-many)
@@ -81,6 +84,7 @@ lib/                # Business logic
 ### 1. TypeScript Strict Mode
 
 **Always:**
+
 - Explicit types on all function parameters and return values
 - Use `interface` for objects, `type` for unions
 - Business property names in **Spanish**, code/comments in **English**
@@ -105,11 +109,13 @@ function get() {} // Missing return type
 **Default: Server Component** (no `'use client'`)
 
 Use Server Components for:
+
 - Database queries
 - Metadata generation
 - Static content
 
 **Client Components only when:**
+
 - Need React hooks (`useState`, `useEffect`)
 - Event handlers (`onClick`, `onChange`)
 - Browser APIs (`window`, `localStorage`)
@@ -144,6 +150,7 @@ import { createClient } from "@/lib/supabase/client";
 ```
 
 **Key patterns:**
+
 - Always check for `error` before using `data`
 - Use `.eq("activo", true)` for active records (not `disponible`)
 - ⚠️ **Cannot order nested relations** - sort in JavaScript after fetch
@@ -151,11 +158,18 @@ import { createClient } from "@/lib/supabase/client";
 
 📋 **Complete query patterns:** `.github/skills/supabase-queries/SKILL.md`
 
+**Repository Layer (productos):**
+
+- `lib/repositories/producto.repository.ts` encapsula Supabase
+- Usa `findAll` con filtros `{ categoria, limit, offset }` y ordena relaciones en JS
+- `getProductos` y `getProductoBySlug` consumen el repositorio (API pública se mantiene)
+
 ---
 
 ### 4. Error Handling Pattern
 
 **Server Components:**
+
 ```typescript
 const { data, error } = await supabase
   .from("productos")
@@ -174,13 +188,14 @@ if (error) {
 ```
 
 **Client Components:**
+
 ```typescript
 try {
-  const response = await fetch('/api/productos');
-  if (!response.ok) throw new Error('Failed to fetch');
+  const response = await fetch("/api/productos");
+  if (!response.ok) throw new Error("Failed to fetch");
   const data = await response.json();
 } catch (error) {
-  console.error('Error:', error);
+  console.error("Error:", error);
   setError(error.message);
 }
 ```
@@ -190,6 +205,7 @@ try {
 ### 5. Component Patterns
 
 **Loading States:**
+
 ```typescript
 // Option 1: Suspense boundaries
 import { Suspense } from "react";
@@ -210,6 +226,7 @@ export default function Loading() {
 ```
 
 **Naming Conventions:**
+
 - Components: `PascalCase` (ProductCard, VariationSelector)
 - Functions/variables: `camelCase` (getProductos, isLoading)
 - Constants: `UPPER_SNAKE_CASE` (SITE_CONFIG, ERROR_MESSAGES)
@@ -220,6 +237,7 @@ export default function Loading() {
 ### 6. Styling with Tailwind
 
 **Mobile-first approach:**
+
 ```tsx
 <div className="
   grid grid-cols-1
@@ -230,6 +248,7 @@ export default function Loading() {
 ```
 
 **Breakpoints:**
+
 - `sm`: 640px
 - `md`: 768px
 - `lg`: 1024px
@@ -237,6 +256,7 @@ export default function Loading() {
 - `2xl`: 1536px
 
 **Best practices:**
+
 - Multi-line class declarations for readability
 - Group related utilities (layout, spacing, colors)
 - Use design tokens from Tailwind config
@@ -265,21 +285,25 @@ import { getProductos, getProductoBySlug } from "@/lib/supabase/queries";
 GitHub Copilot will automatically activate these skills when relevant:
 
 **Database Operations:**
+
 - 📋 `.github/skills/supabase-queries/SKILL.md`
 - Use when: Building queries, handling relations, filtering/sorting data
 - Triggers: "query", "relaciones", "obtener productos", "filtrar"
 
 **WhatsApp Integration:**
+
 - 📋 `.github/skills/whatsapp-integration/SKILL.md`
 - Use when: Creating contact links, formatting messages, WhatsApp buttons
 - Triggers: "WhatsApp", "mensaje", "consulta", "contacto"
 
 **Product Variations:**
+
 - 📋 `.github/skills/product-variations/SKILL.md`
 - Use when: Building selectors, price calculations, stock management
 - Triggers: "variaciones", "tamaño", "color", "selector", "stock"
 
 **Reference Documentation:**
+
 - 📋 `.github/reference/database-schema.md` - Complete SQL schema
 - 📋 `.github/reference/business-logic.md` - Business rules and workflows
 
@@ -290,18 +314,22 @@ GitHub Copilot will automatically activate these skills when relevant:
 ### Anti-Patterns to Avoid
 
 **TypeScript:**
+
 ```typescript
 // ❌ Never use 'any'
 const data: any = await fetch();
 
 // ❌ Don't skip return types
-function getUser() { return user; }
+function getUser() {
+  return user;
+}
 
 // ❌ Don't use implicit types
 let value = getData();
 ```
 
 **Supabase:**
+
 ```typescript
 // ❌ Cannot order nested relations
 .order('variaciones(precio)') // Doesn't work!
@@ -319,6 +347,7 @@ data.forEach(p => {
 ```
 
 **Components:**
+
 ```typescript
 // ❌ Don't use Client Component unnecessarily
 'use client';
@@ -334,6 +363,7 @@ export default async function Page() {
 ```
 
 **Styling:**
+
 ```typescript
 // ❌ Don't use inline styles
 <div style={{ color: 'red' }}>
@@ -355,15 +385,18 @@ className="md:flex-row"
 This file contains **core rules only**. For detailed patterns and implementations, reference:
 
 **Skills (Activated Automatically):**
+
 - Supabase query patterns → `.github/skills/supabase-queries/SKILL.md`
 - WhatsApp integration → `.github/skills/whatsapp-integration/SKILL.md`
 - Product variations → `.github/skills/product-variations/SKILL.md`
 
 **Reference Documentation (Manual Lookup):**
+
 - Complete database schema → `.github/reference/database-schema.md`
 - Business rules & workflows → `.github/reference/business-logic.md`
 
 **Code Implementation:**
+
 - TypeScript types → `lib/types.ts`
 - Constants → `lib/constants/index.ts`
 - Queries → `lib/supabase/queries.ts`
