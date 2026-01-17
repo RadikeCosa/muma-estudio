@@ -10,7 +10,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://mumaestudio.com";
 
   // Fetch all active products
-  const productos = await getProductos();
+  const { items: productos } = await getProductos({ page: 1, pageSize: 500 });
 
   // Generate product URLs
   const productUrls: MetadataRoute.Sitemap = productos.map((producto) => ({

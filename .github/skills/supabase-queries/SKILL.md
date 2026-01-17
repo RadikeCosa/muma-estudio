@@ -22,6 +22,61 @@ Complete patterns for querying Supabase PostgreSQL database with relations, filt
 
 ## Core Patterns
 
+### Repository Layer (productos)
+
+La capa actual usa `ProductoRepository` sobre Supabase, para poder cambiar de ORM en el futuro sin romper la API.
+
+```typescript
+// lib/repositories/producto.repository.ts
+import { ProductoRepository } from "@/lib/repositories/producto.repository";
+
+const repo = new ProductoRepository();
+
+// Listar con filtro y paginacion (offset/limit)
+const { items, total } = await repo.findAll({
+  categoria: "manteles",
+  limit: 12,
+  offset: 0,
+});
+
+// Detalle por slug
+const producto = await repo.findBySlug("mantel-floral");
+```
+
+**Detalles:**
+
+- Ordena `variaciones` y `imagenes` en JavaScript (Supabase no ordena relaciones).
+- Maneja `PGRST116` como not found (retorna `null`).
+- Lanza `RepositoryError` con `code` y `originalError` para otros fallos.
+- API pública existente sigue igual: `getProductos()` y `getProductoBySlug()` usan el repositorio.
+
+### Get Products List (paginated)
+
+`getProductos` ahora admite paginacion y filtros. Devuelve `{ items, pagination }`.
+
+```typescript
+// lib/supabase/queries.ts
+import { getProductos } from "@/lib/supabase/queries";
+
+const { items, pagination } = await getProductos({
+  categoriaSlug: "manteles", // optional
+  page: 2, // default 1
+  pageSize: 12, // default 12
+});
+
+console.log(pagination);
+// {
+//   total, page, pageSize, totalPages,
+//   hasNextPage, hasPreviousPage
+// }
+```
+
+**Importante:**
+
+- Se usa `.range()` con `count: "exact"` para paginacion.
+- `hasNextPage` y `hasPreviousPage` se calculan con `totalPages`.
+- Para sitemap o usos sin paginacion, pasar `pageSize` grande o iterar.
+
 ### Get Single Product with All Relations
 
 Complete query for product detail page:
@@ -34,7 +89,7 @@ import { notFound } from "next/navigation";
 
 export default async function ProductoPage({ params }: { params: { slug: string } }) {
   const supabase = await createClient();
-  
+
   // Query with all relations
   const { data, error } = await supabase
     .from("productos")
@@ -47,7 +102,7 @@ export default async function ProductoPage({ params }: { params: { slug: string 
     .eq("slug", params.slug)
     .eq("activo", true)
     .single(); // ⚠️ Throws error if no results or multiple results
-  
+
   // Handle not found (error code PGRST116)
   if (error) {
     if (error.code === "PGRST116") {
@@ -56,7 +111,7 @@ export default async function ProductoPage({ params }: { params: { slug: string 
     console.error("Database error:", error);
     throw error; // Triggers error.tsx
   }
-  
+
   // ⚠️ CRITICAL: Sort relations in JavaScript
   // Supabase cannot order nested data with .order()
   data.variaciones.sort((a, b) => a.precio - b.precio);
@@ -66,14 +121,15 @@ export default async function ProductoPage({ params }: { params: { slug: string 
     if (b.es_principal) return 1;
     return a.orden - b.orden;
   });
-  
+
   const producto = data as ProductoCompleto;
-  
+
   return <ProductoDetail producto={producto} />;
 }
 ```
 
 **Key Points:**
+
 - ✅ Use `.single()` when expecting exactly one result
 - ✅ Check `error.code === "PGRST116"` for "not found"
 - ✅ Always sort relations in JavaScript after fetch
@@ -81,75 +137,11 @@ export default async function ProductoPage({ params }: { params: { slug: string 
 
 ---
 
-### Get Products List (Catalog)
-
-For product listings with optional category filter:
+**Uso previo (compat):**
 
 ```typescript
-// lib/supabase/queries.ts
-import { createClient } from "@/lib/supabase/server";
-import type { ProductoCompleto } from "@/lib/types";
-
-export async function getProductos(
-  categoriaSlug?: string
-): Promise<ProductoCompleto[]> {
-  const supabase = await createClient();
-  
-  // Build base query
-  let query = supabase
-    .from("productos")
-    .select(`
-      *,
-      categoria:categorias(*),
-      variaciones(*),
-      imagenes:imagenes_producto(*)
-    `)
-    .eq("activo", true)
-    .order("destacado", { ascending: false }) // Featured first
-    .order("nombre", { ascending: true });     // Then alphabetically
-  
-  // Optional: Filter by category
-  if (categoriaSlug) {
-    // First get category ID by slug
-    const { data: categoria } = await supabase
-      .from("categorias")
-      .select("id")
-      .eq("slug", categoriaSlug)
-      .single();
-    
-    if (categoria) {
-      query = query.eq("categoria_id", categoria.id);
-    }
-  }
-  
-  const { data, error } = await query;
-  
-  if (error) {
-    console.error("Error fetching productos:", error);
-    throw error;
-  }
-  
-  // Sort nested relations (Supabase limitation)
-  (data || []).forEach((producto) => {
-    producto.variaciones.sort((a, b) => a.precio - b.precio);
-    producto.imagenes.sort((a, b) => {
-      if (a.es_principal) return -1;
-      if (b.es_principal) return 1;
-      return a.orden - b.orden;
-    });
-  });
-  
-  return (data as ProductoCompleto[]) || [];
-}
-```
-
-**Usage:**
-```typescript
-// All active products
-const productos = await getProductos();
-
-// Products in specific category
-const manteles = await getProductos("manteles");
+// Compatibilidad: mismos nombres de params
+const { items } = await getProductos("manteles");
 ```
 
 ---
@@ -161,25 +153,27 @@ For home page or promotional sections:
 ```typescript
 // lib/supabase/queries.ts
 export async function getProductosDestacados(
-  limite: number = 6
+  limite: number = 6,
 ): Promise<ProductoCompleto[]> {
   const supabase = await createClient();
-  
+
   const { data, error } = await supabase
     .from("productos")
-    .select(`
+    .select(
+      `
       *,
       categoria:categorias(*),
       variaciones(*),
       imagenes:imagenes_producto(*)
-    `)
+    `,
+    )
     .eq("activo", true)
     .eq("destacado", true) // Only featured products
     .order("created_at", { ascending: false }) // Newest first
     .limit(limite);
-  
+
   if (error) throw error;
-  
+
   // Sort relations
   (data || []).forEach((producto) => {
     producto.variaciones.sort((a, b) => a.precio - b.precio);
@@ -189,7 +183,7 @@ export async function getProductosDestacados(
       return a.orden - b.orden;
     });
   });
-  
+
   return (data as ProductoCompleto[]) || [];
 }
 ```
@@ -206,29 +200,30 @@ import type { Categoria } from "@/lib/types";
 
 export async function getCategorias(): Promise<Categoria[]> {
   const supabase = await createClient();
-  
+
   const { data, error } = await supabase
     .from("categorias")
     .select("*")
     .order("orden", { ascending: true }); // Display order
-  
+
   if (error) {
     console.error("Error fetching categorias:", error);
     throw error;
   }
-  
+
   return data || [];
 }
 ```
 
 **Usage in Server Component:**
+
 ```typescript
 // components/layout/Header.tsx
 import { getCategorias } from "@/lib/supabase/queries";
 
 export async function Header() {
   const categorias = await getCategorias();
-  
+
   return (
     <nav>
       {categorias.map(categoria => (
@@ -256,16 +251,16 @@ export function getPriceRange(variaciones: Variacion[]): {
   max: number;
   hasRange: boolean;
 } {
-  const variacionesActivas = variaciones.filter(v => v.activo);
-  
+  const variacionesActivas = variaciones.filter((v) => v.activo);
+
   if (variacionesActivas.length === 0) {
     return { min: 0, max: 0, hasRange: false };
   }
-  
-  const precios = variacionesActivas.map(v => v.precio);
+
+  const precios = variacionesActivas.map((v) => v.precio);
   const min = Math.min(...precios);
   const max = Math.max(...precios);
-  
+
   return {
     min,
     max,
@@ -275,6 +270,7 @@ export function getPriceRange(variaciones: Variacion[]): {
 ```
 
 **Usage:**
+
 ```typescript
 const { min, max, hasRange } = getPriceRange(producto.variaciones);
 
@@ -294,28 +290,30 @@ Always implement comprehensive error handling:
 
 ```typescript
 export async function getProductoBySlug(
-  slug: string
+  slug: string,
 ): Promise<ProductoCompleto | null> {
   const supabase = await createClient();
-  
+
   const { data, error } = await supabase
     .from("productos")
-    .select(`
+    .select(
+      `
       *,
       categoria:categorias(*),
       variaciones(*),
       imagenes:imagenes_producto(*)
-    `)
+    `,
+    )
     .eq("slug", slug)
     .eq("activo", true)
     .single();
-  
+
   // ✅ Handle specific error: Not found
   if (error) {
     if (error.code === "PGRST116") {
       return null; // Product not found
     }
-    
+
     // ✅ Log unexpected errors
     console.error("Unexpected database error:", {
       code: error.code,
@@ -323,16 +321,16 @@ export async function getProductoBySlug(
       details: error.details,
       hint: error.hint,
     });
-    
+
     // ✅ Re-throw to trigger error boundary
     throw error;
   }
-  
+
   // ✅ Type guard: Ensure data exists
   if (!data) {
     return null;
   }
-  
+
   // ✅ Sort relations
   data.variaciones.sort((a, b) => a.precio - b.precio);
   data.imagenes.sort((a, b) => {
@@ -340,12 +338,13 @@ export async function getProductoBySlug(
     if (b.es_principal) return 1;
     return a.orden - b.orden;
   });
-  
+
   return data as ProductoCompleto;
 }
 ```
 
 **Error Codes to Handle:**
+
 - `PGRST116` - Not found (no rows returned for `.single()`)
 - `23503` - Foreign key violation
 - `23505` - Unique constraint violation
@@ -421,13 +420,11 @@ thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
 ```typescript
 // ⚠️ Complex: Requires filtering after fetch
-const { data } = await supabase
-  .from("productos")
-  .select("*, variaciones(*)");
+const { data } = await supabase.from("productos").select("*, variaciones(*)");
 
-const productosEnRango = data.filter(producto => {
-  return producto.variaciones.some(v =>
-    v.precio >= precioMin && v.precio <= precioMax
+const productosEnRango = data.filter((producto) => {
+  return producto.variaciones.some(
+    (v) => v.precio >= precioMin && v.precio <= precioMax,
   );
 });
 ```
@@ -455,7 +452,7 @@ const productosEnRango = data.filter(producto => {
 data.forEach(producto => {
   // Sort variations by price (ascending)
   producto.variaciones.sort((a, b) => a.precio - b.precio);
-  
+
   // Sort images (principal first, then by orden)
   producto.imagenes.sort((a, b) => {
     if (a.es_principal) return -1;
@@ -487,7 +484,12 @@ producto.variaciones.sort((a, b) => {
 
 ```typescript
 // ✅ Always import types explicitly
-import type { Producto, ProductoCompleto, Variacion, Categoria } from "@/lib/types";
+import type {
+  Producto,
+  ProductoCompleto,
+  Variacion,
+  Categoria,
+} from "@/lib/types";
 
 // ❌ Never use 'any'
 const producto: any = await getProducto(); // BAD!
@@ -518,32 +520,32 @@ async function fetchFromTable<T>(
     filter?: Record<string, any>;
     order?: { column: string; ascending: boolean };
     limit?: number;
-  }
+  },
 ): Promise<T[]> {
   const supabase = await createClient();
-  
+
   let query = supabase.from(table).select("*");
-  
+
   if (options?.filter) {
     Object.entries(options.filter).forEach(([key, value]) => {
       query = query.eq(key, value);
     });
   }
-  
+
   if (options?.order) {
     query = query.order(options.order.column, {
       ascending: options.order.ascending,
     });
   }
-  
+
   if (options?.limit) {
     query = query.limit(options.limit);
   }
-  
+
   const { data, error } = await query;
-  
+
   if (error) throw error;
-  
+
   return (data as T[]) || [];
 }
 
@@ -618,9 +620,7 @@ for (const producto of productos) {
 }
 
 // ✅ GOOD: Single query with joins
-const { data } = await supabase
-  .from("productos")
-  .select("*, variaciones(*)");
+const { data } = await supabase.from("productos").select("*, variaciones(*)");
 ```
 
 ---
@@ -632,6 +632,7 @@ const { data } = await supabase
 **Cause:** Multiple rows returned when expecting one.
 
 **Solution:**
+
 ```typescript
 // Add unique constraint to query
 .eq("slug", slug) // Ensure slug is unique in database
@@ -650,6 +651,7 @@ const { data } = await supabase
 **Cause:** Foreign key mismatch or inactive related records.
 
 **Solution:**
+
 ```typescript
 // Check foreign key in database
 SELECT * FROM productos WHERE id = 'producto-id';
@@ -671,6 +673,7 @@ producto.variaciones = producto.variaciones.filter(v => v.activo);
 **Cause:** Typo in column name or table name.
 
 **Solution:**
+
 ```typescript
 // ✅ Correct column names (check database schema)
 .select("categoria_id") // Not "categoriaId"
@@ -687,6 +690,7 @@ producto.variaciones = producto.variaciones.filter(v => v.activo);
 **Expected Behavior:** This is a Supabase/PostgREST limitation.
 
 **Solution:**
+
 ```typescript
 // ❌ This doesn't work
 .order("variaciones(precio)", { ascending: true })

@@ -5,12 +5,13 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { getProductos } from "@/lib/supabase/queries";
+import { getProductosRelacionados } from "@/lib/supabase/queries";
 import { formatPrice } from "@/lib/utils";
 
 interface RelatedProductsProps {
   productoId: string;
   categoriaId: string | null;
+  limite?: number;
 }
 
 /**
@@ -20,19 +21,17 @@ interface RelatedProductsProps {
 export async function RelatedProducts({
   productoId,
   categoriaId,
+  limite = 4,
 }: RelatedProductsProps) {
   // If no category, don't show related products
   if (!categoriaId) return null;
 
-  // Fetch all products (will filter on client side for simplicity)
-  const allProductos = await getProductos();
-
-  // Filter to same category, exclude current product, limit to 4
-  const related = allProductos
-    .filter(
-      (p) => p.categoria_id === categoriaId && p.id !== productoId && p.activo
-    )
-    .slice(0, 4);
+  // Fetch related products using optimized query
+  const related = await getProductosRelacionados(
+    productoId,
+    categoriaId,
+    limite,
+  );
 
   // If no related products, don't render
   if (related.length === 0) return null;
