@@ -2,21 +2,12 @@
  * Utility functions for the application
  */
 
-/**
- * Format price in Argentine Pesos
- * @param price - Price to format
- * @returns Formatted price string (e.g., "$15.000")
- */
-export function formatPrice(price: number | null | undefined): string {
-  if (price == null) return "Consultar precio";
-
-  return new Intl.NumberFormat("es-AR", {
-    style: "currency",
-    currency: "ARS",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(price);
-}
+export {
+  formatPrice,
+  formatPriceRange,
+  formatStock,
+  formatters,
+} from "./formatters";
 
 /**
  * Truncate text to a maximum length with ellipsis
