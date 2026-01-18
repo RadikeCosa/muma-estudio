@@ -175,6 +175,10 @@ export async function getProductoBySlugFresh(
 
 /**
  * Obtiene productos relacionados de la misma categoría
+ * 
+ * Note: This function is not cached as related products are dynamic
+ * based on the current product context and don't benefit from caching.
+ * 
  * @param productoId - ID del producto actual (para excluir)
  * @param categoriaId - ID de la categoría
  * @param limite - Número de productos a retornar (default: 4)
