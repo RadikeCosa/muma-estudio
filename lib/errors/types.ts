@@ -33,7 +33,7 @@ export enum ErrorType {
  * ```
  */
 export function classifyError(error: Error): ErrorType {
-  const errorMessage = error.message.toLowerCase();
+  const errorMessage = (error.message || "").toLowerCase();
   
   // Network errors: fetch failures, connection issues
   if (

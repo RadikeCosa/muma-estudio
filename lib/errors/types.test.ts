@@ -110,4 +110,16 @@ describe("classifyError", () => {
       assert.equal(classifyError(error), ErrorType.DATABASE);
     });
   });
+
+  describe("Edge cases", () => {
+    it("handles errors without messages", () => {
+      const error = new Error();
+      assert.equal(classifyError(error), ErrorType.UNKNOWN);
+    });
+
+    it("handles errors with empty messages", () => {
+      const error = new Error("");
+      assert.equal(classifyError(error), ErrorType.UNKNOWN);
+    });
+  });
 });
