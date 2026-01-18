@@ -24,6 +24,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
         
         <textarea
           ref={ref}
+          required={required}
           className={cn(
             COMPONENTS.input.base,
             COMPONENTS.input.placeholder,

@@ -24,6 +24,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         
         <input
           ref={ref}
+          required={required}
           className={cn(
             COMPONENTS.input.base,
             COMPONENTS.input.placeholder,
