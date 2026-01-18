@@ -1,4 +1,5 @@
 import { DecorativeBadge } from "./DecorativeBadge";
+import { cn } from "@/lib/utils";
 
 interface SectionHeaderProps {
   title: string;
@@ -12,7 +13,7 @@ export function SectionHeader({
   className = "",
 }: SectionHeaderProps) {
   return (
-    <div className={`mb-16 text-center ${className}`}>
+    <div className={cn("mb-16 text-center", className)}>
       <DecorativeBadge />
       <h2 className="mb-5 text-3xl font-bold text-foreground sm:text-4xl lg:text-5xl">
         {title}

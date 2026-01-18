@@ -1,6 +1,7 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import Link from "next/link";
 import { forwardRef } from "react";
+import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
   "inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 active:scale-[0.98]",
@@ -39,7 +40,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       return (
         <Link
           href={href}
-          className={buttonVariants({ variant, size, className })}
+          className={cn(buttonVariants({ variant, size }), className)}
         >
           {children}
         </Link>
@@ -48,7 +49,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
     return (
       <button
-        className={buttonVariants({ variant, size, className })}
+        className={cn(buttonVariants({ variant, size }), className)}
         ref={ref}
         {...props}
       >
