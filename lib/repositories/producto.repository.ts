@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import type { ProductoCompleto } from "@/lib/types";
 import { BaseRepository } from "./base.repository";
 import { RepositoryError } from "./errors";
-import { createCachedQuery, CACHE_CONFIG } from "@/lib/cache";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 interface ProductoFilter {
   categoria?: string;
@@ -14,13 +14,27 @@ interface ProductoFilter {
 }
 
 export class ProductoRepository extends BaseRepository<ProductoCompleto> {
+  private supabase: SupabaseClient | null;
+
+  constructor(supabase?: SupabaseClient) {
+    super();
+    this.supabase = supabase ?? null;
+  }
+
+  /**
+   * Get Supabase client - uses injected client if available, otherwise creates new one
+   */
+  private async getClient(): Promise<SupabaseClient> {
+    if (this.supabase) return this.supabase;
+    return await createClient();
+  }
   /**
    * Fetch products with optional category slug, pagination via limit/offset
    */
   async findAll(
     filter?: ProductoFilter,
   ): Promise<{ items: ProductoCompleto[]; total: number }> {
-    const supabase = await createClient();
+    const supabase = await this.getClient();
 
     const limit = filter?.limit ?? null;
     const offset = filter?.offset ?? 0;
@@ -86,22 +100,10 @@ export class ProductoRepository extends BaseRepository<ProductoCompleto> {
   }
 
   /**
-   * Cached version of findAll for public-facing pages
-   * Uses Next.js cache with 1 hour revalidation
-   */
-  findAllCached = createCachedQuery<
-    [ProductoFilter?],
-    { items: ProductoCompleto[]; total: number }
-  >(
-    (filter?: ProductoFilter) => this.findAll(filter),
-    CACHE_CONFIG.productos,
-  );
-
-  /**
    * Find a product by its ID
    */
   async findById(id: string): Promise<ProductoCompleto | null> {
-    const supabase = await createClient();
+    const supabase = await this.getClient();
 
     const { data, error } = await supabase
       .from("productos")
@@ -132,7 +134,7 @@ export class ProductoRepository extends BaseRepository<ProductoCompleto> {
    * Find a product by its slug
    */
   async findBySlug(slug: string): Promise<ProductoCompleto | null> {
-    const supabase = await createClient();
+    const supabase = await this.getClient();
 
     const { data, error } = await supabase
       .from("productos")
@@ -158,15 +160,6 @@ export class ProductoRepository extends BaseRepository<ProductoCompleto> {
 
     return this.sortRelations(data as ProductoCompleto);
   }
-
-  /**
-   * Cached version of findBySlug for product detail pages
-   * Uses Next.js cache with 30 minute revalidation
-   */
-  findBySlugCached = createCachedQuery<[string], ProductoCompleto | null>(
-    (slug: string) => this.findBySlug(slug),
-    CACHE_CONFIG.producto_detail,
-  );
 
   // The following methods are not implemented for now in this repository
   async create(): Promise<ProductoCompleto> {
