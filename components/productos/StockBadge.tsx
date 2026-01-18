@@ -1,4 +1,5 @@
 import type { Variacion } from "@/lib/types";
+import { STOCK_THRESHOLDS } from "@/lib/constants";
 
 interface StockBadgeProps {
   variacion: Variacion;
@@ -40,7 +41,7 @@ export function StockBadge({ variacion, className = "" }: StockBadgeProps) {
       };
     }
 
-    if (variacion.stock <= 3) {
+    if (variacion.stock <= STOCK_THRESHOLDS.lowStock) {
       return {
         text: `¡Solo quedan ${variacion.stock}!`,
         bgColor: "bg-orange-100",

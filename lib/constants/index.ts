@@ -67,6 +67,12 @@ export const PAGINATION = {
   maxProductsPerCategory: 50,
 } as const;
 
+/** Umbrales de stock para indicadores de disponibilidad */
+export const STOCK_THRESHOLDS = {
+  /** Stock bajo: muestra advertencia de pocas unidades */
+  lowStock: 3,
+} as const;
+
 /** Mensajes de error comunes */
 export const ERROR_MESSAGES = {
   productNotFound: "Producto no encontrado",

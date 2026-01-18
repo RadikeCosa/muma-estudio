@@ -190,7 +190,7 @@ export function VariationSelector({
         {/* Tooltip explicativo para productos a pedido */}
         {variacionActual && variacionActual.stock === 0 && (
           <p className="text-xs text-muted-foreground italic">
-            💡 Este producto se fabrica bajo pedido
+            <span aria-label="Información" role="img">💡</span> Este producto se fabrica bajo pedido
           </p>
         )}
       </div>
