@@ -3,6 +3,30 @@
  * - React cache(): Deduplicates requests within a single render
  * - unstable_cache(): Persists data across requests
  * - Skips caching in development mode
+ * 
+ * IMPORTANT: For Next.js 16+ compatibility, dynamic data sources like cookies()
+ * must be called OUTSIDE the cached function and passed as parameters.
+ * 
+ * @example
+ * // ✅ CORRECT - createClient() called outside cache scope
+ * async function getDataInternal(supabase: SupabaseClient) {
+ *   return supabase.from('table').select('*');
+ * }
+ * 
+ * export async function getData() {
+ *   const supabase = await createClient(); // Called outside cache scope
+ *   const cachedFn = createCachedQuery<[SupabaseClient], Data[]>(
+ *     getDataInternal,
+ *     CACHE_CONFIG.data
+ *   );
+ *   return cachedFn(supabase);
+ * }
+ * 
+ * // ❌ WRONG - createClient() called inside cache
+ * async function getDataInternal() {
+ *   const supabase = await createClient(); // ❌ Called inside cache scope!
+ *   return supabase.from('table').select('*');
+ * }
  */
 
 import { cache } from "react";
@@ -40,10 +64,21 @@ interface CacheOptions {
  * @returns Cached version of the function
  * 
  * @example
- * const getCachedProductos = createCachedQuery(
- *   async () => { ... },
- *   CACHE_CONFIG.productos
- * );
+ * // Create internal function that accepts Supabase client
+ * async function getProductosInternal(supabase: SupabaseClient, limit: number) {
+ *   const { data } = await supabase.from('productos').select('*').limit(limit);
+ *   return data;
+ * }
+ * 
+ * // Wrapper function calls createClient() outside cache and passes client
+ * export async function getProductos(limit: number) {
+ *   const supabase = await createClient(); // Called outside cache scope
+ *   const cachedFn = createCachedQuery<[SupabaseClient, number], Producto[]>(
+ *     getProductosInternal,
+ *     CACHE_CONFIG.productos
+ *   );
+ *   return cachedFn(supabase, limit);
+ * }
  */
 export function createCachedQuery<TArgs extends unknown[], TResult>(
   fn: (...args: TArgs) => Promise<TResult>,
