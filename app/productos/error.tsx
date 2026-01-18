@@ -1,10 +1,12 @@
 "use client";
 
 import { classifyError, ErrorType } from "@/lib/errors/types";
-import { NetworkError } from "@/components/errors/NetworkError";
-import { DatabaseError } from "@/components/errors/DatabaseError";
-import { NotFoundError } from "@/components/errors/NotFoundError";
-import { GenericError } from "@/components/errors/GenericError";
+import {
+  NetworkError,
+  DatabaseError,
+  NotFoundError,
+  GenericError,
+} from "@/components/errors";
 
 interface ErrorBoundaryProps {
   error: Error & { digest?: string };

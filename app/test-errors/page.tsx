@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { NetworkError } from "@/components/errors/NetworkError";
-import { DatabaseError } from "@/components/errors/DatabaseError";
-import { NotFoundError } from "@/components/errors/NotFoundError";
-import { GenericError } from "@/components/errors/GenericError";
+import {
+  NetworkError,
+  DatabaseError,
+  NotFoundError,
+  GenericError,
+} from "@/components/errors";
 
 export default function TestErrorsPage() {
   const [selectedError, setSelectedError] = useState<string>("network");
