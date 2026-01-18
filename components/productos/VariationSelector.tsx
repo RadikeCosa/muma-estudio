@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { Variacion } from "@/lib/types";
-import { formatPrice, formatStock } from "@/lib/utils";
+import { formatPrice } from "@/lib/utils";
+import { StockBadge } from "./StockBadge";
 
 interface VariationSelectorProps {
   variaciones: Variacion[];
@@ -173,12 +174,25 @@ export function VariationSelector({
           {coloresDisponibles.length === 0 && tamanioSeleccionado && (
             <option value="">Seleccione un tamaño primero</option>
           )}
-          {coloresDisponibles.map((color) => (
-            <option key={color} value={color}>
-              {color}
-            </option>
-          ))}
+          {coloresDisponibles.map((color) => {
+            const variacionColor = variaciones.find(
+              (v) => v.activo && v.tamanio === tamanioSeleccionado && v.color === color
+            );
+            const stockText = variacionColor?.stock === 0 ? " (A pedido)" : "";
+            
+            return (
+              <option key={color} value={color}>
+                {color}{stockText}
+              </option>
+            );
+          })}
         </select>
+        {/* Tooltip explicativo para productos a pedido */}
+        {variacionActual && variacionActual.stock === 0 && (
+          <p className="text-xs text-muted-foreground italic">
+            <span aria-label="Información" role="img">💡</span> Este producto se fabrica bajo pedido
+          </p>
+        )}
       </div>
 
       {/* Precio y stock */}
@@ -193,20 +207,7 @@ export function VariationSelector({
             <p className="text-3xl font-bold text-foreground tracking-tight">
               {formatPrice(variacionActual.precio)}
             </p>
-            <div
-              className="
-                inline-flex items-center gap-2
-                px-4 py-2
-                rounded-full
-                bg-muted/50
-                border border-border/50
-              "
-            >
-              <div className="h-2 w-2 rounded-full bg-green-500" />
-              <p className="text-sm font-medium text-muted-foreground">
-                {formatStock(variacionActual.stock)}
-              </p>
-            </div>
+            <StockBadge variacion={variacionActual} />
           </div>
         </div>
       )}

@@ -39,9 +39,16 @@ export function WhatsAppButton({ producto, variacion }: WhatsAppButtonProps) {
       mensaje += ` - Tamaño: ${variacion.tamanio}`;
       mensaje += `, Color: ${variacion.color}`;
       mensaje += `, Precio: ${formatPrice(variacion.precio)}`;
+      
+      // Agregar pregunta según disponibilidad de stock
+      if (variacion.stock === 0) {
+        mensaje += `. ¿Cuál es el tiempo de fabricación?`;
+      } else {
+        mensaje += `. ¿Está disponible para envío inmediato?`;
+      }
+    } else {
+      mensaje += `. ¿Podrías darme más información?`;
     }
-
-    mensaje += `. ¿Podrías darme más información?`;
 
     return mensaje;
   };
