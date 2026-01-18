@@ -293,7 +293,7 @@ export function VariationSelector() {
 ```css
 :root {
   --background: #ffffff;
-  --muted-foreground: #737373; /* Need to verify */
+  --muted-foreground: #737373; /* Current value */
 }
 ```
 

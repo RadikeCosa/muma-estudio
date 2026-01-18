@@ -18,6 +18,8 @@ lib/content/
 └── productos.ts         # Products page text
 ```
 
+**Note:** Content is structured by page/feature. Each file exports a constant (e.g., `HOME_CONTENT`, `CONTACTO_CONTENT`) with all text for that section.
+
 ### How to Change Text
 
 #### Example 1: Update Home Hero Title
