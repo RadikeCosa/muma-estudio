@@ -23,8 +23,9 @@ describe("truncateText", () => {
     assert.equal(truncateText("Hello", 3), "...");
     // When text length equals maxLength, returns original
     assert.equal(truncateText("Test", 4), "Test");
+    assert.equal(truncateText("Hello", 5), "Hello");
     // When text exceeds, truncates and adds ellipsis
-    assert.equal(truncateText("Hello", 5), "He...");
+    assert.equal(truncateText("Hello!", 5), "He...");
   });
 
   it("handles empty string", () => {

@@ -92,6 +92,75 @@ NEXT_PUBLIC_SITE_URL=https://mumaestudio.com
 - `npm run build` - Genera el build de producción
 - `npm run start` - Inicia el servidor de producción
 - `npm run lint` - Ejecuta el linter ESLint
+- `npm test` - Ejecuta todos los tests (node:test + Vitest)
+- `npm run test:node` - Ejecuta tests de lógica pura con node:test
+- `npm run test:unit` - Ejecuta tests de componentes con Vitest
+- `npm run test:watch` - Ejecuta Vitest en modo watch
+- `npm run test:coverage` - Genera reporte de cobertura
+
+## 🧪 Testing
+
+Este proyecto utiliza una estrategia dual de testing:
+
+### Node:test (Lógica Pura)
+Para funciones utilitarias, repositories y servicios que no dependen de React:
+
+```bash
+npm run test:node
+```
+
+**Archivos testeados:**
+- `lib/utils/` - Funciones utilitarias (formatters, slugify, truncateText, isDefined)
+- `lib/seo/` - Generación de schemas SEO (Product, Breadcrumb, Organization)
+- `lib/analytics/` - Funciones de tracking (WhatsApp, product view, category filter)
+
+### Vitest (Componentes React)
+Para componentes React y tests que necesitan jsdom:
+
+```bash
+# Ejecutar tests una vez
+npm run test:unit
+
+# Modo watch para desarrollo
+npm run test:watch
+
+# Con coverage
+npm run test:coverage
+```
+
+**Componentes testeados:**
+- `components/productos/ProductCard` - Tarjeta de producto con imagen y precio
+- `components/productos/CategoryFilter` - Filtro de categorías con analytics
+- `components/productos/RelatedProducts` - Productos relacionados
+- `components/ui/Breadcrumbs` - Navegación breadcrumb con JSON-LD
+
+### Ejecutar todos los tests
+```bash
+npm test
+```
+
+### Estructura de Tests
+```
+lib/
+├── utils/
+│   ├── index.test.ts          ← node:test
+│   └── formatters.test.ts     ← node:test
+├── seo/
+│   └── structured-data.test.ts ← node:test
+└── analytics/
+    └── gtag.test.ts           ← node:test
+
+components/
+├── productos/
+│   ├── ProductCard.test.tsx   ← vitest
+│   ├── CategoryFilter.test.tsx ← vitest
+│   └── RelatedProducts.test.tsx ← vitest
+└── ui/
+    └── Breadcrumbs.test.tsx   ← vitest
+```
+
+> 📖 **Guía completa de testing:** Ver [docs/TESTING.md](docs/TESTING.md) para patrones, convenciones y mejores prácticas.
+
 
 ## 📁 Estructura del Proyecto
 

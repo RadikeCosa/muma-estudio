@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "test": "npm run test:node && npm run test:unit",
-    "test:node": "node --test --import tsx \"**/*.test.ts\"",
+    "test:node": "node --test --import tsx $(find lib -name '*.test.ts' -type f)",
     "test:unit": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage"
