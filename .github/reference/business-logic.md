@@ -43,6 +43,7 @@ Admin Action: Create New Product
 ```
 
 **Validation Rules:**
+
 - Product cannot be activated without at least 1 variation
 - Product cannot be activated without at least 1 image
 - Exactly one image must be marked as `es_principal = true`
@@ -76,6 +77,7 @@ Admin Updates Product
 ```
 
 **Side Effects:**
+
 - Adding/removing variations → recalculates `precio_desde`
 - Deleting principal image → must set another as principal
 - Deactivating product → does NOT deactivate variations (separate control)
@@ -86,6 +88,7 @@ Admin Updates Product
 ### Product Deactivation Flow
 
 **Soft Delete (Recommended):**
+
 ```sql
 -- Deactivate product (keep data)
 UPDATE productos SET activo = false WHERE id = 'product-uuid';
@@ -98,6 +101,7 @@ UPDATE productos SET activo = false WHERE id = 'product-uuid';
 ```
 
 **Hard Delete (Rare):**
+
 ```sql
 -- Cascades to variaciones, imagenes_producto
 DELETE FROM productos WHERE id = 'product-uuid';
@@ -165,6 +169,7 @@ User visits mumaestudio.com
 ### Edge Cases
 
 **Case 1: Product with No Active Variations**
+
 ```
 Problem: Product.activo = true, but all Variacion.activo = false
 
@@ -181,6 +186,7 @@ Solution:
 ```
 
 **Case 2: Selected Variation Goes Out of Stock**
+
 ```
 Problem: User viewing product, variation stock becomes 0
 
@@ -196,6 +202,7 @@ Future Behavior (V2):
 ```
 
 **Case 3: Product Slug Changes**
+
 ```
 Problem: Admin changes product slug after URLs indexed
 
@@ -217,25 +224,27 @@ Solution (Future):
 ### Price Display Logic
 
 **Product Card (Listings):**
+
 ```typescript
 // Show "Desde" prefix if multiple variations
-const variacionesActivas = variaciones.filter(v => v.activo);
+const variacionesActivas = variaciones.filter((v) => v.activo);
 
 if (variacionesActivas.length > 1) {
-  const precioMinimo = Math.min(...variacionesActivas.map(v => v.precio));
-  display = `Desde $${precioMinimo.toLocaleString('es-AR')}`;
+  const precioMinimo = Math.min(...variacionesActivas.map((v) => v.precio));
+  display = `Desde $${precioMinimo.toLocaleString("es-AR")}`;
 } else if (variacionesActivas.length === 1) {
-  display = `$${variacionesActivas[0].precio.toLocaleString('es-AR')}`;
+  display = `$${variacionesActivas[0].precio.toLocaleString("es-AR")}`;
 } else {
   display = "Consultar precio";
 }
 ```
 
 **Product Detail:**
+
 ```typescript
 // Show exact price when variation selected
 if (variacionSeleccionada) {
-  display = `$${variacionSeleccionada.precio.toLocaleString('es-AR')}`;
+  display = `$${variacionSeleccionada.precio.toLocaleString("es-AR")}`;
 } else {
   display = "Seleccione una variación";
 }
@@ -246,12 +255,14 @@ if (variacionSeleccionada) {
 ### Price Formatting
 
 **Rules:**
+
 - Currency: ARS (Argentine Pesos)
 - Format: `$15.000` (period as thousands separator)
 - No decimals (prices stored as integers in cents)
 - Locale: `es-AR`
 
 **Implementation:**
+
 ```typescript
 function formatPrice(precio: number): string {
   return `$${precio.toLocaleString('es-AR')}`;
@@ -268,11 +279,13 @@ formatPrice(999)    → "$999"
 ### Tax and Legal Compliance
 
 **Current (V1):**
+
 - Prices shown are final (tax included)
 - No invoice generation
 - No formal checkout process
 
 **Future (V2):**
+
 - Integrate with AFIP (Argentine tax system)
 - Generate electronic invoices
 - Show price breakdown: subtotal + IVA
@@ -314,11 +327,13 @@ formatPrice(999)    → "$999"
 ### Image Ordering
 
 **Rules:**
+
 - Principal image (es_principal = true) shows first ALWAYS
 - Other images ordered by `orden` field (ascending)
 - Admin can drag-and-drop to reorder (future)
 
 **Implementation:**
+
 ```typescript
 // ⚠️ IMPORTANT: Order in JavaScript after fetch
 // Supabase cannot order nested relations
@@ -338,10 +353,12 @@ data.forEach((producto) => {
 ### Principal Image Logic
 
 **Business Rule:**
+
 - Each product must have exactly ONE `es_principal = true` image
 - Used for product cards, meta tags, social sharing
 
 **Enforcement:**
+
 ```sql
 -- Future: Database trigger
 CREATE OR REPLACE FUNCTION ensure_single_principal_image()
@@ -360,6 +377,7 @@ $$ LANGUAGE plpgsql;
 ```
 
 **Manual Fix:**
+
 ```sql
 -- Reset all to false, then set one to true
 UPDATE imagenes_producto SET es_principal = false WHERE producto_id = 'uuid';
@@ -373,25 +391,27 @@ UPDATE imagenes_producto SET es_principal = true WHERE id = 'image-uuid';
 ### Stock Levels
 
 **Interpretation:**
+
 - `stock > 0` → Available, show exact count
 - `stock = 0` → Available on request ("A pedido")
 - `activo = false` → Not available (hidden)
 
 **Display Logic:**
+
 ```typescript
 function getStockMessage(variacion: Variacion): string {
   if (!variacion.activo) {
     return "No disponible";
   }
-  
+
   if (variacion.stock === 0) {
     return "A pedido";
   }
-  
+
   if (variacion.stock === 1) {
     return "1 disponible";
   }
-  
+
   return `${variacion.stock} disponibles`;
 }
 ```
@@ -401,6 +421,7 @@ function getStockMessage(variacion: Variacion): string {
 ### Stock Alerts (Future)
 
 **Low Stock Warning:**
+
 ```typescript
 const LOW_STOCK_THRESHOLD = 3;
 
@@ -411,6 +432,7 @@ if (variacion.stock <= LOW_STOCK_THRESHOLD && variacion.stock > 0) {
 ```
 
 **Stock Reservation (V2):**
+
 ```
 Cart Created → Reserve Stock
          ↓
@@ -428,11 +450,13 @@ OR Timer Expires → Release Stock
 ### Current Implementation (V1)
 
 **Available Filters:**
+
 - By category: `/productos?categoria=manteles`
 - By featured: `destacado = true` (shows first)
 - By active: `activo = true` (implicit)
 
 **Sorting:**
+
 - Destacados first
 - Then alphabetically by name
 - No user-controlled sorting
@@ -442,6 +466,7 @@ OR Timer Expires → Release Stock
 ### Future Enhancements (V2)
 
 **Filters:**
+
 - Price range: `precio >= min AND precio <= max`
 - Color: `variaciones.color IN (...)`
 - Size: `variaciones.tamanio IN (...)`
@@ -449,6 +474,7 @@ OR Timer Expires → Release Stock
 - Material: `material LIKE '%algodón%'`
 
 **Full-Text Search:**
+
 ```sql
 -- Add tsvector column
 ALTER TABLE productos ADD COLUMN search_vector tsvector;
@@ -475,6 +501,7 @@ WHERE search_vector @@ to_tsquery('spanish', 'mantel & rojo');
 ### URL Structure
 
 **Pattern:**
+
 ```
 /                            → Home page
 /productos                   → All products
@@ -483,6 +510,7 @@ WHERE search_vector @@ to_tsquery('spanish', 'mantel & rojo');
 ```
 
 **Rules:**
+
 - All lowercase
 - Hyphens for spaces (not underscores)
 - No special characters
@@ -490,6 +518,7 @@ WHERE search_vector @@ to_tsquery('spanish', 'mantel & rojo');
 - Descriptive and unique
 
 **Examples:**
+
 ```
 ✅ /productos/mantel-floral-rojo
 ✅ /productos/servilleta-algodon-azul
@@ -503,29 +532,35 @@ WHERE search_vector @@ to_tsquery('spanish', 'mantel & rojo');
 ### Meta Tags
 
 **Product Detail Page:**
+
 ```tsx
 export async function generateMetadata({ params }): Promise<Metadata> {
   const producto = await getProductoBySlug(params.slug);
-  
+
   if (!producto) {
-    return { title: 'Producto no encontrado' };
+    return { title: "Producto no encontrado" };
   }
-  
-  const imagenPrincipal = producto.imagenes.find(i => i.es_principal);
-  const precioDesde = Math.min(...producto.variaciones.map(v => v.precio));
-  
+
+  const imagenPrincipal = producto.imagenes.find((i) => i.es_principal);
+  const precioDesde = Math.min(...producto.variaciones.map((v) => v.precio));
+
   return {
     title: `${producto.nombre} | Muma Estudio`,
     description: producto.descripcion.slice(0, 160),
-    keywords: [producto.nombre, producto.categoria?.nombre, 'textiles', 'artesanal'],
+    keywords: [
+      producto.nombre,
+      producto.categoria?.nombre,
+      "textiles",
+      "artesanal",
+    ],
     openGraph: {
       title: producto.nombre,
       description: producto.descripcion,
       images: [imagenPrincipal?.url],
-      type: 'product',
+      type: "product",
     },
     twitter: {
-      card: 'summary_large_image',
+      card: "summary_large_image",
       title: producto.nombre,
       description: producto.descripcion,
       images: [imagenPrincipal?.url],
@@ -539,25 +574,26 @@ export async function generateMetadata({ params }): Promise<Metadata> {
 ### Structured Data (JSON-LD)
 
 **Product Schema:**
+
 ```tsx
 const structuredData = {
   "@context": "https://schema.org",
   "@type": "Product",
-  "name": producto.nombre,
-  "description": producto.descripcion,
-  "image": producto.imagenes.map(i => i.url),
-  "brand": {
+  name: producto.nombre,
+  description: producto.descripcion,
+  image: producto.imagenes.map((i) => i.url),
+  brand: {
     "@type": "Brand",
-    "name": "Muma Estudio"
+    name: "Muma Estudio",
   },
-  "offers": {
+  offers: {
     "@type": "AggregateOffer",
-    "priceCurrency": "ARS",
-    "lowPrice": Math.min(...producto.variaciones.map(v => v.precio)),
-    "highPrice": Math.max(...producto.variaciones.map(v => v.precio)),
-    "offerCount": producto.variaciones.filter(v => v.activo).length,
-    "availability": "https://schema.org/InStock"
-  }
+    priceCurrency: "ARS",
+    lowPrice: Math.min(...producto.variaciones.map((v) => v.precio)),
+    highPrice: Math.max(...producto.variaciones.map((v) => v.precio)),
+    offerCount: producto.variaciones.filter((v) => v.activo).length,
+    availability: "https://schema.org/InStock",
+  },
 };
 ```
 
@@ -568,11 +604,13 @@ const structuredData = {
 ### 404 - Product Not Found
 
 **Triggers:**
+
 - Invalid slug
 - Product exists but `activo = false`
 - Database error returns null
 
 **Response:**
+
 ```tsx
 // app/productos/[slug]/page.tsx
 const producto = await getProductoBySlug(slug);
@@ -583,6 +621,7 @@ if (!producto) {
 ```
 
 **not-found.tsx:**
+
 ```tsx
 export default function NotFound() {
   return (
@@ -600,27 +639,31 @@ export default function NotFound() {
 ### Database Errors
 
 **Query Failure:**
+
 ```typescript
 export async function getProductos(): Promise<ProductoCompleto[]> {
   const supabase = await createClient();
-  
+
   const { data, error } = await supabase
     .from("productos")
-    .select("*, categoria:categorias(*), variaciones(*), imagenes:imagenes_producto(*)");
-  
+    .select(
+      "*, categoria:categorias(*), variaciones(*), imagenes:imagenes_producto(*)",
+    );
+
   if (error) {
     console.error("Database error:", error);
     throw error; // Caught by error.tsx
   }
-  
+
   return data ?? [];
 }
 ```
 
 **Error Boundary:**
+
 ```tsx
 // app/productos/error.tsx
-'use client';
+"use client";
 
 export default function Error({ error, reset }) {
   return (
@@ -638,6 +681,7 @@ export default function Error({ error, reset }) {
 ### Image Loading Failures
 
 **Fallback Image:**
+
 ```tsx
 <Image
   src={imagen.url}
@@ -645,7 +689,7 @@ export default function Error({ error, reset }) {
   width={800}
   height={800}
   onError={(e) => {
-    e.currentTarget.src = '/images/placeholders/producto-sin-imagen.jpg';
+    e.currentTarget.src = "/images/placeholders/producto-sin-imagen.jpg";
   }}
 />
 ```
@@ -656,7 +700,8 @@ export default function Error({ error, reset }) {
 
 ### Caching Strategy
 
-**Server Components (Next.js 15):**
+**Server Components (Next.js 16):**
+
 ```typescript
 // Page-level revalidation
 export const revalidate = 3600; // 1 hour
@@ -668,17 +713,18 @@ export default async function ProductosPage() {
 ```
 
 **On-Demand Revalidation:**
+
 ```typescript
 // In admin panel or after product update
-import { revalidatePath } from 'next/cache';
+import { revalidatePath } from "next/cache";
 
 export async function updateProducto(id: string, data: Partial<Producto>) {
   // Update database
-  await supabase.from('productos').update(data).eq('id', id);
-  
+  await supabase.from("productos").update(data).eq("id", id);
+
   // Revalidate affected paths
-  revalidatePath('/productos');
-  revalidatePath('/'); // Home page if featured
+  revalidatePath("/productos");
+  revalidatePath("/"); // Home page if featured
 }
 ```
 
@@ -687,6 +733,7 @@ export async function updateProducto(id: string, data: Partial<Producto>) {
 ### Image Optimization
 
 **Next.js Image Component:**
+
 ```tsx
 // Product card (lazy load)
 <Image
@@ -714,6 +761,7 @@ export async function updateProducto(id: string, data: Partial<Producto>) {
 ### Query Optimization
 
 **Avoid N+1 Queries:**
+
 ```typescript
 // ❌ BAD: Separate queries
 const productos = await getProductos();
@@ -723,9 +771,7 @@ for (const producto of productos) {
 }
 
 // ✅ GOOD: Single query with joins
-const { data } = await supabase
-  .from("productos")
-  .select(`
+const { data } = await supabase.from("productos").select(`
     *,
     categoria:categorias(*),
     variaciones(*),
@@ -740,6 +786,7 @@ const { data } = await supabase
 ### Shopping Cart
 
 **Data Structure:**
+
 ```typescript
 interface CarritoItem {
   id: string; // client-side UUID
@@ -758,6 +805,7 @@ interface Carrito {
 ```
 
 **Storage:**
+
 - Client-side: Context API + localStorage
 - Server-side: Database table for authenticated users
 
@@ -766,6 +814,7 @@ interface Carrito {
 ### Order Management
 
 **Order Lifecycle:**
+
 ```
 Cart → Checkout → Payment → Confirmed → Shipped → Delivered
                     ↓
@@ -773,6 +822,7 @@ Cart → Checkout → Payment → Confirmed → Shipped → Delivered
 ```
 
 **Database Tables:**
+
 ```sql
 CREATE TABLE pedidos (
   id UUID PRIMARY KEY,
@@ -797,19 +847,21 @@ CREATE TABLE pedidos_items (
 ### User Accounts
 
 **Features:**
+
 - Email/password authentication
 - Order history
 - Saved addresses
 - Wishlist
 
 **Implementation:**
+
 ```typescript
 // Supabase Auth
-import { createClient } from '@/lib/supabase/client';
+import { createClient } from "@/lib/supabase/client";
 
 const { data, error } = await supabase.auth.signUp({
-  email: 'user@example.com',
-  password: 'password',
+  email: "user@example.com",
+  password: "password",
 });
 ```
 
@@ -818,21 +870,25 @@ const { data, error } = await supabase.auth.signUp({
 ### Admin Panel
 
 **Features:**
+
 - CRUD products, variations, images
 - Order management
 - Stock updates
 - Analytics dashboard
 
 **Access Control:**
+
 ```typescript
 // Middleware
 export async function middleware(request: NextRequest) {
-  const { data: { user } } = await supabase.auth.getUser();
-  
-  if (!user || user.role !== 'admin') {
-    return NextResponse.redirect('/');
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user || user.role !== "admin") {
+    return NextResponse.redirect("/");
   }
-  
+
   return NextResponse.next();
 }
 ```
@@ -844,18 +900,21 @@ export async function middleware(request: NextRequest) {
 ### Key Metrics
 
 **Performance:**
+
 - Core Web Vitals (LCP, CLS, FID)
 - Time to First Byte (TTFB)
 - Server response time
 - Image load time
 
 **Business:**
+
 - Products viewed
 - WhatsApp button clicks
 - Top categories
 - Search queries (future)
 
 **Technical:**
+
 - Error rate
 - Database query time
 - Cache hit rate
@@ -866,8 +925,9 @@ export async function middleware(request: NextRequest) {
 ### Error Tracking
 
 **Sentry Integration (Future):**
+
 ```typescript
-import * as Sentry from '@sentry/nextjs';
+import * as Sentry from "@sentry/nextjs";
 
 Sentry.init({
   dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
@@ -885,12 +945,14 @@ Sentry.init({
 ### Privacy Policy
 
 **Data Collection (V1):**
+
 - No user accounts
 - No cookies (except Next.js functional)
 - No tracking scripts
 - WhatsApp interactions outside platform
 
 **Data Collection (V2):**
+
 - User accounts (email, name, address)
 - Order history
 - Payment information (via Mercado Pago)
@@ -901,6 +963,7 @@ Sentry.init({
 ### Terms of Service
 
 **Key Points:**
+
 - Prices in ARS, subject to change
 - Products made to order (tiempo_fabricacion)
 - Exchange/return policy

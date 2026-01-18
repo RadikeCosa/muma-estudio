@@ -598,7 +598,7 @@ const categorias = await fetchFromTable<Categoria>("categorias", {
 // Only returns products that have at least one variation
 ```
 
-### 4. Cache Queries (Next.js 15)
+### 4. Cache Queries (Next.js 16)
 
 ```typescript
 // Page-level caching

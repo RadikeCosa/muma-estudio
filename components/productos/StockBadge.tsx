@@ -21,6 +21,16 @@ interface StockBadgeProps {
 export function StockBadge({ variacion, className = "" }: StockBadgeProps) {
   // Determinar el estado y estilo del badge
   const getBadgeConfig = () => {
+    if (variacion.stock === -1) {
+      return {
+        text: "Agotado",
+        bgColor: "bg-red-100",
+        textColor: "text-red-700",
+        borderColor: "border-red-700/20",
+        dotColor: "bg-red-500",
+      };
+    }
+
     if (!variacion.activo) {
       return {
         text: "No disponible",
@@ -74,9 +84,7 @@ export function StockBadge({ variacion, className = "" }: StockBadgeProps) {
       `}
     >
       <div className={`h-2 w-2 rounded-full ${config.dotColor}`} />
-      <p className={`text-sm font-medium ${config.textColor}`}>
-        {config.text}
-      </p>
+      <p className={`text-sm font-medium ${config.textColor}`}>{config.text}</p>
     </div>
   );
 }

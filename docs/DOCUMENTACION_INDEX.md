@@ -1,7 +1,7 @@
 # 📖 Índice de Documentación - Checklist Completado
 
 **Proyecto:** Muma Estudio (Textile E-commerce)  
-**Stack:** Next.js 15 + Supabase + Tailwind CSS  
+**Stack:** Next.js 16 + Supabase + Tailwind CSS  
 **Fecha:** 17 de enero de 2026  
 **Estado:** ✅ 100% COMPLETADO
 

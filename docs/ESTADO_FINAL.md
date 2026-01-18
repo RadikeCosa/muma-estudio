@@ -242,4 +242,4 @@ El proyecto Muma Estudio ahora tiene:
 **Creado:** 17 de enero de 2026  
 **Completado por:** GitHub Copilot  
 **Versión:** 1.0  
-**Stack:** Next.js 15 + Supabase + Tailwind CSS
+**Stack:** Next.js 16 + Supabase + Tailwind CSS

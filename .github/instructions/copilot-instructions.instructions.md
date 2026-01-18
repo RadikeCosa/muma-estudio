@@ -1,10 +1,10 @@
 ---
 title: "GitHub Copilot Instructions - Muma Estudio"
-description: "Development guidelines for textile e-commerce with Next.js 15 + Supabase"
+description: "Development guidelines for textile e-commerce with Next.js 16 + Supabase"
 version: "3.0"
 lastUpdated: "2026-01-16"
 stack:
-  - Next.js 15 (App Router)
+  - Next.js 16 (App Router)
   - TypeScript (strict mode)
   - Supabase (PostgreSQL + Storage)
   - Tailwind CSS
@@ -43,7 +43,7 @@ Base Product:  "Mantel Floral"
 
 ### Stack
 
-- **Framework:** Next.js 15 (App Router)
+- **Framework:** Next.js 16 (App Router)
 - **Language:** TypeScript (strict mode)
 - **Database:** Supabase (PostgreSQL)
 - **Styling:** Tailwind CSS (utility-first)
