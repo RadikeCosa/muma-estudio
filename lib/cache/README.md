@@ -1,0 +1,137 @@
+# Cache Layer Documentation
+
+## Overview
+
+The cache layer combines React's `cache()` for request-level deduplication with Next.js's `unstable_cache()` for cross-request persistence.
+
+## Configuration
+
+Cache settings are defined in `lib/cache/index.ts`:
+
+```typescript
+export const CACHE_CONFIG = {
+  productos: {
+    revalidate: 3600, // 1 hour
+    tags: ["productos"],
+  },
+  categorias: {
+    revalidate: 86400, // 24 hours
+    tags: ["categorias"],
+  },
+  producto_detail: {
+    revalidate: 1800, // 30 minutes
+    tags: ["productos"],
+  },
+};
+```
+
+## Usage
+
+### In Server Components
+
+The cache is automatically applied to public-facing queries:
+
+```typescript
+import { getProductos, getCategorias, getProductoBySlug } from "@/lib/supabase/queries";
+
+// These use cache automatically
+const productos = await getProductos();
+const categorias = await getCategorias();
+const producto = await getProductoBySlug("mantel-floral");
+```
+
+### Fresh (Non-Cached) Queries
+
+For admin interfaces or when fresh data is required:
+
+```typescript
+import { getProductosFresh, getCategoriasFresh, getProductoBySlugFresh } from "@/lib/supabase/queries";
+
+// These bypass cache
+const productos = await getProductosFresh();
+const categorias = await getCategoriasFresh();
+const producto = await getProductoBySlugFresh("mantel-floral");
+```
+
+## Cache Revalidation
+
+After data mutations (create, update, delete), invalidate the cache:
+
+```typescript
+import { revalidateProductos, revalidateProducto, revalidateCategorias } from "@/lib/cache/revalidate";
+
+// After updating multiple products
+await updateMultipleProductos(data);
+revalidateProductos();
+
+// After updating a single product
+await updateProducto(id, data);
+revalidateProducto(producto.slug);
+
+// After updating categories
+await updateCategoria(id, data);
+revalidateCategorias();
+```
+
+## Development Mode
+
+Cache is **automatically disabled** in development (`NODE_ENV === 'development'`) to ensure fresh data during development.
+
+## Repository Layer
+
+The `ProductoRepository` provides both cached and non-cached methods:
+
+```typescript
+const repository = new ProductoRepository();
+
+// Cached methods (for public pages)
+const result = await repository.findAllCached({ categoria: "manteles" });
+const producto = await repository.findBySlugCached("mantel-floral");
+
+// Non-cached methods (for admin)
+const result = await repository.findAll({ categoria: "manteles" });
+const producto = await repository.findBySlug("mantel-floral");
+```
+
+## Creating Custom Cached Queries
+
+Use `createCachedQuery` for custom caching needs:
+
+```typescript
+import { createCachedQuery, CACHE_CONFIG } from "@/lib/cache";
+
+async function myQueryInternal(id: string): Promise<MyData> {
+  // Your query logic
+}
+
+export const myCachedQuery = createCachedQuery<[string], MyData>(
+  myQueryInternal,
+  CACHE_CONFIG.productos, // or custom config
+);
+```
+
+## Best Practices
+
+1. **Use cached versions by default** - They provide better performance
+2. **Use Fresh versions for admin** - Ensures data is always up-to-date
+3. **Revalidate after mutations** - Keep cache fresh after updates
+4. **Choose appropriate revalidation times** - Balance freshness vs performance
+5. **Use proper cache tags** - Enable targeted invalidation
+
+## Cache Tags
+
+- `productos`: All product-related data
+- `categorias`: Category data
+
+When you call `revalidateTag("productos")`, all caches with that tag are invalidated.
+
+## Next.js 16 Changes
+
+In Next.js 16, `revalidateTag()` requires a second parameter (profile):
+
+```typescript
+revalidateTag("productos", "default"); // Correct
+revalidateTag("productos"); // Error in Next.js 16
+```
+
+The cache layer handles this automatically.
