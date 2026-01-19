@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { HOME_CONTENT } from "@/lib/content/home";
-import { TYPOGRAPHY, SPACING } from "@/lib/design/tokens";
+import { TYPOGRAPHY, SPACING, COMPONENTS } from "@/lib/design/tokens";
 import { cn } from "@/lib/utils";
 
 /**
@@ -51,7 +51,10 @@ export function CollectionsGrid() {
                 src={collection.image}
                 alt={collection.name}
                 fill
-                className="object-cover opacity-80 group-hover:scale-105 transition-transform duration-1000"
+                className={cn(
+                  "object-cover group-hover:scale-105",
+                  COMPONENTS.card.imageOverlay
+                )}
                 sizes={
                   collection.featured
                     ? "(max-width: 768px) 100vw, 512px"

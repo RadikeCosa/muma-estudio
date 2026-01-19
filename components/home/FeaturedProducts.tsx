@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Plus } from "lucide-react";
 import { DecorativeBadge } from "@/components/ui/DecorativeBadge";
 import { getProductosDestacados } from "@/lib/supabase/queries";
-import { HOME_CONTENT } from "@/lib/content/home";
+import { HOME_CONTENT, FEATURED_PRODUCTS_LIMIT } from "@/lib/content/home";
 import { TYPOGRAPHY, SPACING, COMPONENTS } from "@/lib/design/tokens";
 import { cn } from "@/lib/utils";
 
@@ -22,7 +22,7 @@ export async function FeaturedProducts() {
   const { featured } = HOME_CONTENT;
   
   // Fetch productos destacados desde Supabase
-  const productos = await getProductosDestacados(4);
+  const productos = await getProductosDestacados(FEATURED_PRODUCTS_LIMIT);
 
   if (productos.length === 0) {
     return null;

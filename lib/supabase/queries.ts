@@ -4,7 +4,7 @@
  */
 
 import { createClient } from "@/lib/supabase/server";
-import type { Categoria, ProductoCompleto, Variacion, ImagenProducto } from "@/lib/types";
+import type { Categoria, ProductoCompleto } from "@/lib/types";
 import type { PaginatedResult } from "@/lib/types/pagination";
 import { ProductoRepository } from "@/lib/repositories/producto.repository";
 import { createCachedQuery, CACHE_CONFIG } from "@/lib/cache";
@@ -280,8 +280,8 @@ async function getProductosDestacadosInternal(
 
   // Sort relations in JavaScript (Supabase limitation)
   (data || []).forEach((producto) => {
-    producto.variaciones.sort((a: Variacion, b: Variacion) => a.precio - b.precio);
-    producto.imagenes.sort((a: ImagenProducto, b: ImagenProducto) => {
+    producto.variaciones.sort((a, b) => a.precio - b.precio);
+    producto.imagenes.sort((a, b) => {
       if (a.es_principal) return -1;
       if (b.es_principal) return 1;
       return a.orden - b.orden;

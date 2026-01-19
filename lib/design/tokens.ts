@@ -66,6 +66,7 @@ export const COMPONENTS = {
     product: "group relative",
     image: "relative aspect-[4/5] overflow-hidden bg-zinc-100 dark:bg-zinc-900",
     imageHover: "transition-transform duration-700 group-hover:scale-105",
+    imageOverlay: "opacity-80 transition-transform duration-1000",
   },
   iconContainer: {
     base: "flex items-center justify-center rounded-2xl bg-gradient-to-br from-muted/50 to-muted text-foreground shadow-md",

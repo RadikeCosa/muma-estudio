@@ -3,6 +3,9 @@
  * Contenido centralizado para la página principal
  */
 
+/** Número de productos destacados a mostrar en la home */
+export const FEATURED_PRODUCTS_LIMIT = 4;
+
 export const HOME_CONTENT = {
   hero: {
     badge: "Textiles Artesanales Únicos",
