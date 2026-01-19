@@ -13,8 +13,9 @@ import { cn } from "@/lib/utils";
  * 
  * Features:
  * - Fixed top con backdrop blur
- * - Logo centrado (Playfair Display)
+ * - Logo centrado en mobile, alineado a la izquierda en desktop
  * - Menú hamburguesa en mobile
+ * - Navegación horizontal en desktop (md: 768px+)
  * - Transición suave en scroll
  */
 export function Header() {
@@ -31,7 +32,20 @@ export function Header() {
             </h1>
           </Link>
 
-          {/* Menu Button */}
+          {/* Desktop Navigation */}
+          <div className={COMPONENTS.header.nav}>
+            {NAV_LINKS.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={COMPONENTS.header.navLink}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
+
+          {/* Mobile Menu Button */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             className={COMPONENTS.header.menuButton}
