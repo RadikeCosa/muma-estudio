@@ -1,7 +1,7 @@
 "use client";
 
 import { MessageCircle } from "lucide-react";
-import { Produto, Variacion } from "@/lib/types";
+import { Producto, Variacion } from "@/lib/types";
 import { WHATSAPP, SITE_CONFIG } from "@/lib/constants";
 import { formatPrice } from "@/lib/utils";
 import { trackWhatsAppClick } from "@/lib/analytics/gtag";

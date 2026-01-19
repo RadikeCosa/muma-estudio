@@ -1,7 +1,6 @@
 "use client";
 
 import { COMPONENTS } from "@/lib/design/tokens";
-import { cn } from "@/lib/utils";
 
 type ErrorType = 'network' | 'database' | 'generic';
 
