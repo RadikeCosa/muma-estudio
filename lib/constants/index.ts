@@ -26,14 +26,25 @@ export const SITE_CONFIG = {
 
 /** Configuración de WhatsApp */
 export const WHATSAPP = {
-  number: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "5492999XXXXXX",
+  /**
+   * Getter para el número (dificulta scraping)
+   */
+  get number(): string {
+    return process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "5492999XXXXXX";
+  },
+  
   /**
    * Genera URL de WhatsApp con mensaje pre-formateado
+   * Incluye timestamp para dificultar scraping automatizado
+   * 
    * @param message - Mensaje a enviar
    * @returns URL completa de WhatsApp
    */
-  getUrl: (message: string): string =>
-    `https://wa.me/${WHATSAPP.number}?text=${encodeURIComponent(message)}`,
+  getUrl: (message: string): string => {
+    const timestamp = Date.now();
+    const hash = timestamp.toString(36); // Base36 para acortar
+    return `https://wa.me/${WHATSAPP.number}?text=${encodeURIComponent(message)}&_t=${hash}`;
+  },
 } as const;
 
 /** Rutas de almacenamiento de imágenes */

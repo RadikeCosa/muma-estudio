@@ -14,6 +14,8 @@ import {
   VALIDATION_LIMITS,
   type ContactFormData,
 } from "@/lib/utils/validation";
+import { checkServerRateLimit } from "@/lib/utils/rate-limit-server";
+import { logSecurityEvent, detectSuspiciousPattern, logXSSAttempt } from "@/lib/utils/security-logger";
 
 export function ContactForm() {
   const { form } = CONTACTO_CONTENT;
@@ -46,10 +48,10 @@ export function ContactForm() {
     };
   }, []);
   
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
-    // Check rate limit
+    // Check client-side rate limit
     if (isRateLimited) {
       setRateLimitMessage("Has alcanzado el límite de mensajes. Por favor, esperá unos minutos.");
       return;
@@ -65,15 +67,43 @@ export function ContactForm() {
     const honeypot = formData.get("website");
     if (honeypot && typeof honeypot === "string" && honeypot.trim().length > 0) {
       // Silent rejection - don't give feedback to bots
+      logSecurityEvent("bot_detected", {
+        context: "contact_form",
+        honeypot: "filled",
+      });
       return;
     }
     
-    // Get form values and sanitize
+    // Get form values (raw, before sanitization for XSS detection)
+    const rawData = {
+      nombre: (formData.get("nombre") as string) || "",
+      email: (formData.get("email") as string) || "",
+      telefono: formData.get("telefono") ? (formData.get("telefono") as string) : undefined,
+      mensaje: (formData.get("mensaje") as string) || "",
+    };
+    
+    // Check for XSS attempts before sanitization
+    const fieldsToCheck = [
+      { field: "nombre", value: rawData.nombre },
+      { field: "email", value: rawData.email },
+      { field: "telefono", value: rawData.telefono || "" },
+      { field: "mensaje", value: rawData.mensaje },
+    ];
+    
+    for (const { field, value } of fieldsToCheck) {
+      if (detectSuspiciousPattern(value)) {
+        logXSSAttempt(field, value, "contact_form");
+        setErrors({ [field]: "Contenido no permitido detectado" });
+        return;
+      }
+    }
+    
+    // Sanitize data
     const data: ContactFormData = {
-      nombre: sanitizeText(formData.get("nombre") as string || ""),
-      email: sanitizeText(formData.get("email") as string || ""),
-      telefono: formData.get("telefono") ? sanitizeText(formData.get("telefono") as string) : undefined,
-      mensaje: sanitizeText(formData.get("mensaje") as string || ""),
+      nombre: sanitizeText(rawData.nombre),
+      email: sanitizeText(rawData.email),
+      telefono: rawData.telefono ? sanitizeText(rawData.telefono) : undefined,
+      mensaje: sanitizeText(rawData.mensaje),
     };
     
     // Validate form
@@ -81,6 +111,12 @@ export function ContactForm() {
     
     if (!validation.isValid) {
       setErrors(validation.errors);
+      
+      // Log validation failure
+      logSecurityEvent("validation_failed", {
+        context: "contact_form",
+        errors: Object.keys(validation.errors),
+      });
       
       // Focus on first field with error using refs
       if (validation.errors.nombre) {
@@ -99,7 +135,16 @@ export function ContactForm() {
     // Clear errors
     setErrors({});
     
-    // Record action for rate limiting
+    // Check server-side rate limit
+    const rateLimitResult = await checkServerRateLimit("contact");
+    if (!rateLimitResult.allowed) {
+      setRateLimitMessage(
+        rateLimitResult.message || "Has alcanzado el límite de mensajes. Por favor, esperá unos minutos."
+      );
+      return;
+    }
+    
+    // Record action for client-side rate limiting
     recordAction();
     
     // Set submitting state
