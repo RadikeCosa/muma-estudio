@@ -46,6 +46,8 @@ export function logSecurityEvent(
   }
 
   // TODO(#future): Integrate with monitoring service like Sentry for production alerting
+  // Current: Logs to console only - suitable for development and basic production monitoring
+  // Consider: Real-time alerting for high-severity events (xss_attempt, rate_limit_exceeded)
   // Example: Sentry.captureMessage(`Security event: ${event}`, {
   //   level: 'warning',
   //   extra: logEntry,

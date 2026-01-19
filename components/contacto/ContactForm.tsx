@@ -93,16 +93,16 @@ export function ContactForm() {
     for (const { field, value } of fieldsToCheck) {
       if (detectSuspiciousPattern(value)) {
         logXSSAttempt(field, value, "contact_form");
-        setErrors({ [field]: "Contenido no permitido detectado" });
+        setErrors((prev) => ({ ...prev, [field]: "Contenido no permitido detectado" }));
         return;
       }
     }
     
-    // Sanitize data
+    // Sanitize data (convert empty telefono to undefined)
     const data: ContactFormData = {
       nombre: sanitizeText(rawData.nombre),
       email: sanitizeText(rawData.email),
-      telefono: rawData.telefono ? sanitizeText(rawData.telefono) : undefined,
+      telefono: rawData.telefono && rawData.telefono.trim() ? sanitizeText(rawData.telefono) : undefined,
       mensaje: sanitizeText(rawData.mensaje),
     };
     

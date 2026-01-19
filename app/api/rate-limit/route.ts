@@ -176,12 +176,17 @@ export async function GET(): Promise<NextResponse> {
 
 /**
  * Auto-cleanup: Remove expired records every 5 minutes
- * Uses lazy initialization to prevent multiple intervals during hot reloading
+ * Uses a global singleton pattern to prevent multiple intervals
  */
-let cleanupInterval: NodeJS.Timeout | null = null;
 
-if (!cleanupInterval) {
-  cleanupInterval = setInterval(() => {
+// Use a symbol in global scope to ensure singleton across module reloads
+const CLEANUP_INTERVAL_KEY = Symbol.for("muma.rateLimitCleanup");
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const globalWithCleanup = global as any;
+
+if (!globalWithCleanup[CLEANUP_INTERVAL_KEY]) {
+  globalWithCleanup[CLEANUP_INTERVAL_KEY] = setInterval(() => {
     const now = Date.now();
     for (const [key, record] of rateLimitStore.entries()) {
       if (now > record.resetAt) {
@@ -190,12 +195,11 @@ if (!cleanupInterval) {
     }
   }, 300000); // 5 minutes
 
-  // Clean up interval on module unload (for development)
-  if (process.env.NODE_ENV === "development") {
-    process.on("SIGTERM", () => {
-      if (cleanupInterval) {
-        clearInterval(cleanupInterval);
-      }
-    });
-  }
+  // Clean up interval on process termination
+  process.on("SIGTERM", () => {
+    if (globalWithCleanup[CLEANUP_INTERVAL_KEY]) {
+      clearInterval(globalWithCleanup[CLEANUP_INTERVAL_KEY]);
+      delete globalWithCleanup[CLEANUP_INTERVAL_KEY];
+    }
+  });
 }
