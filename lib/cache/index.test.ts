@@ -7,12 +7,14 @@ describe("CACHE_CONFIG", () => {
     assert.equal(CACHE_CONFIG.productos.revalidate, 3600); // 1 hour
     assert.equal(CACHE_CONFIG.categorias.revalidate, 86400); // 24 hours
     assert.equal(CACHE_CONFIG.producto_detail.revalidate, 1800); // 30 minutes
+    assert.equal(CACHE_CONFIG.productos_relacionados.revalidate, 3600); // 1 hour
   });
 
   it("has correct tags", () => {
     assert.deepEqual(CACHE_CONFIG.productos.tags, ["productos"]);
     assert.deepEqual(CACHE_CONFIG.categorias.tags, ["categorias"]);
     assert.deepEqual(CACHE_CONFIG.producto_detail.tags, ["productos"]);
+    assert.deepEqual(CACHE_CONFIG.productos_relacionados.tags, ["productos"]);
   });
 });
 
@@ -25,6 +27,8 @@ describe("createCachedQuery", () => {
     assert.ok(CACHE_CONFIG.categorias.tags.length > 0);
     assert.ok(CACHE_CONFIG.producto_detail.revalidate > 0);
     assert.ok(CACHE_CONFIG.producto_detail.tags.length > 0);
+    assert.ok(CACHE_CONFIG.productos_relacionados.revalidate > 0);
+    assert.ok(CACHE_CONFIG.productos_relacionados.tags.length > 0);
   });
 
   it("cache config has appropriate hierarchy", () => {
@@ -34,5 +38,8 @@ describe("createCachedQuery", () => {
     
     // Products list should cache longer than individual product details
     assert.ok(CACHE_CONFIG.productos.revalidate > CACHE_CONFIG.producto_detail.revalidate);
+    
+    // Related products should have same cache as products list
+    assert.equal(CACHE_CONFIG.productos_relacionados.revalidate, CACHE_CONFIG.productos.revalidate);
   });
 });

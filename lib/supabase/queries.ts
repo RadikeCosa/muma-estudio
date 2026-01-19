@@ -174,23 +174,19 @@ export async function getProductoBySlugFresh(
 }
 
 /**
- * Obtiene productos relacionados de la misma categoría
- * 
- * Note: This function is not cached as related products are dynamic
- * based on the current product context and don't benefit from caching.
- * 
+ * Obtiene productos relacionados de la misma categoría (implementación interna)
+ * @param supabase - Supabase client instance
  * @param productoId - ID del producto actual (para excluir)
  * @param categoriaId - ID de la categoría
  * @param limite - Número de productos a retornar (default: 4)
  * @returns Lista de productos relacionados activos
  */
-export async function getProductosRelacionados(
+async function getProductosRelacionadosInternal(
+  supabase: SupabaseClient,
   productoId: string,
   categoriaId: string,
   limite: number = 4,
 ): Promise<ProductoCompleto[]> {
-  const supabase = await createClient();
-
   const { data, error } = await supabase
     .from("productos")
     .select(
@@ -209,4 +205,42 @@ export async function getProductosRelacionados(
   if (error) throw error;
 
   return (data as ProductoCompleto[]) ?? [];
+}
+
+/**
+ * Obtiene productos relacionados de la misma categoría (con cache)
+ * @param productoId - ID del producto actual (para excluir)
+ * @param categoriaId - ID de la categoría
+ * @param limite - Número de productos a retornar (default: 4)
+ * @returns Lista de productos relacionados activos
+ */
+export async function getProductosRelacionados(
+  productoId: string,
+  categoriaId: string,
+  limite: number = 4,
+): Promise<ProductoCompleto[]> {
+  const supabase = await createClient();
+
+  const cachedFn = createCachedQuery<
+    [SupabaseClient, string, string, number],
+    ProductoCompleto[]
+  >(getProductosRelacionadosInternal, CACHE_CONFIG.productos_relacionados);
+
+  return cachedFn(supabase, productoId, categoriaId, limite);
+}
+
+/**
+ * Obtiene productos relacionados sin cache (para admin)
+ * @param productoId - ID del producto actual (para excluir)
+ * @param categoriaId - ID de la categoría
+ * @param limite - Número de productos a retornar (default: 4)
+ * @returns Lista de productos relacionados activos
+ */
+export async function getProductosRelacionadosFresh(
+  productoId: string,
+  categoriaId: string,
+  limite: number = 4,
+): Promise<ProductoCompleto[]> {
+  const supabase = await createClient();
+  return getProductosRelacionadosInternal(supabase, productoId, categoriaId, limite);
 }

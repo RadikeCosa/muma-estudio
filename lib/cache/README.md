@@ -22,6 +22,10 @@ export const CACHE_CONFIG = {
     revalidate: 1800, // 30 minutes
     tags: ["productos"],
   },
+  productos_relacionados: {
+    revalidate: 3600, // 1 hour
+    tags: ["productos"],
+  },
 };
 ```
 
@@ -32,12 +36,13 @@ export const CACHE_CONFIG = {
 The cache is automatically applied to public-facing queries:
 
 ```typescript
-import { getProductos, getCategorias, getProductoBySlug } from "@/lib/supabase/queries";
+import { getProductos, getCategorias, getProductoBySlug, getProductosRelacionados } from "@/lib/supabase/queries";
 
 // These use cache automatically
 const productos = await getProductos();
 const categorias = await getCategorias();
 const producto = await getProductoBySlug("mantel-floral");
+const relacionados = await getProductosRelacionados(producto.id, producto.categoria_id);
 ```
 
 ### Fresh (Non-Cached) Queries
@@ -45,12 +50,13 @@ const producto = await getProductoBySlug("mantel-floral");
 For admin interfaces or when fresh data is required:
 
 ```typescript
-import { getProductosFresh, getCategoriasFresh, getProductoBySlugFresh } from "@/lib/supabase/queries";
+import { getProductosFresh, getCategoriasFresh, getProductoBySlugFresh, getProductosRelacionadosFresh } from "@/lib/supabase/queries";
 
 // These bypass cache
 const productos = await getProductosFresh();
 const categorias = await getCategoriasFresh();
 const producto = await getProductoBySlugFresh("mantel-floral");
+const relacionados = await getProductosRelacionadosFresh(producto.id, producto.categoria_id);
 ```
 
 ## Cache Revalidation
@@ -124,6 +130,8 @@ export const myCachedQuery = createCachedQuery<[string], MyData>(
 - `categorias`: Category data
 
 When you call `revalidateTag("productos")`, all caches with that tag are invalidated.
+
+> **Note:** Products relacionados share the `"productos"` tag, so calling `revalidateProductos()` or `revalidateProducto(slug)` will automatically invalidate related products cache.
 
 ## Next.js 16 Changes
 
