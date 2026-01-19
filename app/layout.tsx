@@ -51,7 +51,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${playfairDisplay.variable} antialiased flex flex-col min-h-screen`}
       >
         <Header />
-        <main className="flex-grow">{children}</main>
+        <main className="flex-grow pt-16">{children}</main>
         <Footer />
         <SpeedInsights />
         <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID!} />
