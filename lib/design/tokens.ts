@@ -66,9 +66,11 @@ export const COMPONENTS = {
   // Header/Navigation
   header: {
     base: "fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b transition-colors",
-    container: "px-6 py-4 flex justify-between items-center max-w-lg mx-auto",
+    container: "px-6 py-4 flex justify-between items-center max-w-lg mx-auto md:max-w-7xl",
     logo: "font-display text-xl tracking-widest uppercase font-bold",
-    menuButton: "p-2 hover:bg-muted rounded transition-colors",
+    menuButton: "p-2 hover:bg-muted rounded transition-colors md:hidden",
+    nav: "hidden md:flex md:items-center md:gap-8",
+    navLink: "text-sm font-medium text-foreground hover:text-foreground/70 transition-colors duration-200",
   },
   
   // Footer
