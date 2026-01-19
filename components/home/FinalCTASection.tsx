@@ -6,7 +6,10 @@ import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function FinalCTASection() {
-  const { title, description, ctaText } = HOME_CONTENT.finalCta;
+  // Map new contact structure to old finalCta structure for backward compatibility
+  const title = HOME_CONTENT.contact.title;
+  const description = HOME_CONTENT.contact.description;
+  const ctaText = HOME_CONTENT.contact.cta.text;
 
   return (
     <section

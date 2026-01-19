@@ -1,52 +1,69 @@
-// Centraliza el contenido textual de la página de inicio (Home)
-// Español argentino
+/**
+ * Home Page Content
+ * Contenido centralizado para la página principal
+ */
 
 export const HOME_CONTENT = {
   hero: {
     badge: "Textiles Artesanales Únicos",
-    title: "Muma Estudio", // Este valor puede ser reemplazado dinámicamente si es necesario
-    subtitle: "Textiles artesanales para tu hogar",
+    title: "Muma Estudio",
+    subtitle: "La belleza de lo hecho",
+    subtitleHighlight: "a mano.",
     description:
-      "Creamos manteles, servilletas y caminos de mesa con dedicación artesanal. Cada pieza es única y diseñada para transformar tus espacios en lugares especiales.",
+      "Piezas únicas diseñadas para transformar tus espacios cotidianos en lugares especiales.",
     cta: {
       primary: "Ver Productos",
+      primaryHref: "/productos",
       secondary: "Sobre Nosotros",
+      secondaryHref: "/sobre-nosotros",
     },
   },
-  featuredProducts: {
-    title: "Productos Destacados",
-    description:
-      "Nuestras piezas más especiales, creadas con dedicación y amor por el detalle",
-    viewAllCta: "Ver todos los productos",
+
+  featured: {
+    sectionTitle: "Destacados",
+    sectionSubtitle: "Selección de temporada",
+    cta: {
+      text: "Explorar Colección Completa",
+      href: "/productos",
+    },
   },
-  categories: {
-    title: "Nuestras Categorías",
-    description: "Explora nuestra colección de textiles artesanales",
+
+  collections: {
+    title: "Colecciones",
     items: [
       {
-        id: "manteles",
-        title: "Manteles",
-        description: "Para darle un toque especial a tu mesa",
-        href: "/productos",
+        name: "Manteles",
+        slug: "manteles",
+        image: "/images/colecciones/manteles.jpg",
+        featured: true, // Ocupa 2 columnas en grid
       },
       {
-        id: "servilletas",
-        title: "Servilletas",
-        description: "Ideales para acompañar tus comidas y reuniones",
-        href: "/productos",
+        name: "Servilletas",
+        slug: "servilletas",
+        image: "/images/colecciones/servilletas.jpg",
+        featured: false,
       },
       {
-        id: "caminos",
-        title: "Caminos de Mesa",
-        description: "El detalle perfecto para realzar cualquier ambiente",
-        href: "/productos",
+        name: "Caminos",
+        slug: "caminos-de-mesa",
+        image: "/images/colecciones/caminos.jpg",
+        featured: false,
       },
     ],
   },
-  finalCta: {
+
+  contact: {
     title: "¿Tenés alguna consulta?",
     description:
-      "Estamos para ayudarte a encontrar el producto perfecto para tu hogar",
-    ctaText: "Contactanos",
+      "Personalizamos medidas y diseños para eventos especiales. Escribinos y creamos algo único juntos.",
+    cta: {
+      text: "Contactanos",
+      href: "/contacto",
+    },
   },
-};
+
+  textureImage: {
+    src: "/images/textures/linen-texture.jpg",
+    alt: "Textura de lino artesanal",
+  },
+} as const;

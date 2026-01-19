@@ -35,7 +35,15 @@ function CategoryCard({ title, description, href }: CategoryCardProps) {
 }
 
 export function CategoriesSection() {
-  const { title, description, items } = HOME_CONTENT.categories;
+  // Map new collections structure to old categories structure for backward compatibility
+  const title = HOME_CONTENT.collections.title;
+  const description = "Explora nuestra colección de textiles artesanales";
+  const items = HOME_CONTENT.collections.items.map(item => ({
+    id: item.slug,
+    title: item.name,
+    description: `Explora nuestra colección de ${item.name.toLowerCase()}`,
+    href: `/productos?categoria=${item.slug}`,
+  }));
 
   return (
     <section className={cn(GRADIENTS.section, SPACING.sectionPadding.sm)}>

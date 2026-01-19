@@ -13,12 +13,14 @@ export const COLORS = {
 // SISTEMA DE TIPOGRAFÍA
 export const TYPOGRAPHY = {
   heading: {
+    hero: "text-5xl font-display font-bold leading-tight tracking-tight sm:text-6xl lg:text-7xl",
     page: "text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl",
     section: "text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl",
     card: "text-xl font-bold sm:text-2xl",
     subsection: "text-2xl font-semibold sm:text-3xl",
   },
   body: {
+    large: "text-lg leading-relaxed sm:text-xl",
     base: "text-base leading-relaxed",
     small: "text-sm leading-relaxed",
     muted: "text-base text-muted-foreground",
@@ -39,7 +41,11 @@ export const SPACING = {
   },
   page: "px-4 py-12 sm:px-8 sm:py-20 lg:px-16 lg:py-28",
   pageNarrow: "px-4 py-12 max-w-5xl mx-auto sm:px-8 sm:py-20 lg:px-16 lg:py-28",
-  section: "mb-20 sm:mb-28",
+  section: {
+    sm: "py-12 sm:py-16",
+    md: "py-16 sm:py-20 lg:py-24",
+    lg: "py-20 sm:py-28 lg:py-32",
+  },
   sectionLarge: "mb-32 sm:mb-40",
 } as const;
 
@@ -57,6 +63,9 @@ export const COMPONENTS = {
     paddingMd: "p-8 sm:p-10",
     paddingLg: "p-10 sm:p-12",
     hover: "transition-all duration-300 hover:shadow-2xl hover:border-foreground/10 hover:-translate-y-2",
+    product: "group relative",
+    image: "relative aspect-[4/5] overflow-hidden bg-zinc-100 dark:bg-zinc-900",
+    imageHover: "transition-transform duration-700 group-hover:scale-105",
   },
   iconContainer: {
     base: "flex items-center justify-center rounded-2xl bg-gradient-to-br from-muted/50 to-muted text-foreground shadow-md",

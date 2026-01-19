@@ -14,7 +14,10 @@ interface FeaturedProductsSectionProps {
 export function FeaturedProductsSection({
   productos,
 }: FeaturedProductsSectionProps) {
-  const { title, description, viewAllCta } = HOME_CONTENT.featuredProducts;
+  // Map new featured structure to old featuredProducts structure for backward compatibility
+  const title = HOME_CONTENT.featured.sectionTitle;
+  const description = HOME_CONTENT.featured.sectionSubtitle;
+  const viewAllCta = HOME_CONTENT.featured.cta.text;
 
   if (!productos || productos.length === 0) return null;
 

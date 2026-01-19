@@ -4,7 +4,7 @@
  */
 
 import { createClient } from "@/lib/supabase/server";
-import type { Categoria, ProductoCompleto } from "@/lib/types";
+import type { Categoria, ProductoCompleto, Variacion, ImagenProducto } from "@/lib/types";
 import type { PaginatedResult } from "@/lib/types/pagination";
 import { ProductoRepository } from "@/lib/repositories/producto.repository";
 import { createCachedQuery, CACHE_CONFIG } from "@/lib/cache";
@@ -249,4 +249,74 @@ export async function getProductosRelacionadosFresh(
 ): Promise<ProductoCompleto[]> {
   const supabase = await createClient();
   return getProductosRelacionadosInternal(supabase, productoId, categoriaId, limite);
+}
+
+/**
+ * Obtiene productos destacados (implementación interna)
+ * @param supabase - Supabase client instance
+ * @param limite - Número de productos a retornar (default: 6)
+ * @returns Lista de productos destacados activos
+ */
+async function getProductosDestacadosInternal(
+  supabase: SupabaseClient,
+  limite: number = 6,
+): Promise<ProductoCompleto[]> {
+  const { data, error } = await supabase
+    .from("productos")
+    .select(
+      `
+      *,
+      categoria:categorias(*),
+      variaciones(*),
+      imagenes:imagenes_producto(*)
+    `,
+    )
+    .eq("activo", true)
+    .eq("destacado", true)
+    .order("created_at", { ascending: false })
+    .limit(limite);
+
+  if (error) throw error;
+
+  // Sort relations in JavaScript (Supabase limitation)
+  (data || []).forEach((producto) => {
+    producto.variaciones.sort((a: Variacion, b: Variacion) => a.precio - b.precio);
+    producto.imagenes.sort((a: ImagenProducto, b: ImagenProducto) => {
+      if (a.es_principal) return -1;
+      if (b.es_principal) return 1;
+      return a.orden - b.orden;
+    });
+  });
+
+  return (data as ProductoCompleto[]) || [];
+}
+
+/**
+ * Obtiene productos destacados (con cache)
+ * @param limite - Número de productos a retornar (default: 6)
+ * @returns Lista de productos destacados activos
+ */
+export async function getProductosDestacados(
+  limite: number = 6,
+): Promise<ProductoCompleto[]> {
+  const supabase = await createClient();
+
+  const cachedFn = createCachedQuery<
+    [SupabaseClient, number],
+    ProductoCompleto[]
+  >(getProductosDestacadosInternal, CACHE_CONFIG.productos);
+
+  return cachedFn(supabase, limite);
+}
+
+/**
+ * Obtiene productos destacados sin cache (para admin)
+ * @param limite - Número de productos a retornar (default: 6)
+ * @returns Lista de productos destacados activos
+ */
+export async function getProductosDestacadosFresh(
+  limite: number = 6,
+): Promise<ProductoCompleto[]> {
+  const supabase = await createClient();
+  return getProductosDestacadosInternal(supabase, limite);
 }
