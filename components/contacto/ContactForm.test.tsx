@@ -2,12 +2,21 @@
  * Tests for Contact page components (Phase 4)
  */
 
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { ContactForm } from "./ContactForm";
 import { ContactInfo } from "./ContactInfo";
 
 describe("ContactForm", () => {
+  // Mock localStorage
+  beforeEach(() => {
+    // Clear localStorage before each test
+    localStorage.clear();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
   it("renders all form fields from CONTACTO_CONTENT", () => {
     render(<ContactForm />);
     
@@ -84,15 +93,15 @@ describe("ContactForm", () => {
     
     render(<ContactForm />);
     
-    // Fill form without telefono
+    // Fill form without telefono (but with valid mensaje length)
     fireEvent.change(screen.getByLabelText(/Nombre/), {
-      target: { value: "María" },
+      target: { value: "María González" },
     });
     fireEvent.change(screen.getByLabelText(/Email/), {
       target: { value: "maria@example.com" },
     });
     fireEvent.change(screen.getByLabelText(/Mensaje/), {
-      target: { value: "Consulta" },
+      target: { value: "Me interesa consultar sobre productos" },
     });
     
     // Submit form
@@ -110,6 +119,111 @@ describe("ContactForm", () => {
     // Card should have border and shadow classes
     const card = container.querySelector(".rounded-2xl");
     expect(card).toBeInTheDocument();
+  });
+
+  // Security feature tests
+  it("shows validation errors for invalid inputs", () => {
+    render(<ContactForm />);
+    
+    // Fill form with invalid data
+    const nombreInput = screen.getByLabelText(/Nombre/);
+    const emailInput = screen.getByLabelText(/Email/);
+    const mensajeInput = screen.getByLabelText(/Mensaje/);
+    
+    fireEvent.change(nombreInput, {
+      target: { value: "J" }, // Too short
+    });
+    fireEvent.change(emailInput, {
+      target: { value: "invalid" }, // Invalid email
+    });
+    fireEvent.change(mensajeInput, {
+      target: { value: "Hi" }, // Too short
+    });
+    
+    // Submit form using the form element itself
+    const form = nombreInput.closest("form")!;
+    fireEvent.submit(form);
+    
+    // Check that errors are displayed (they should appear synchronously)
+    expect(screen.getByText(/El nombre debe tener al menos/)).toBeInTheDocument();
+    expect(screen.getByText(/Por favor, ingresá un email válido/)).toBeInTheDocument();
+    expect(screen.getByText(/El mensaje debe tener al menos/)).toBeInTheDocument();
+  });
+
+  it("sanitizes HTML from inputs", () => {
+    const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
+    
+    render(<ContactForm />);
+    
+    // Fill form with HTML (use valid name after sanitization)
+    fireEvent.change(screen.getByLabelText(/Nombre/), {
+      target: { value: "Juan Pedro" },
+    });
+    fireEvent.change(screen.getByLabelText(/Email/), {
+      target: { value: "juan@example.com" },
+    });
+    fireEvent.change(screen.getByLabelText(/Mensaje/), {
+      target: { value: "<script>alert('xss')</script>Mensaje importante sobre productos" },
+    });
+    
+    // Submit form
+    fireEvent.click(screen.getByText("Enviar Consulta por WhatsApp"));
+    
+    // Check window.open was called with sanitized data
+    expect(openSpy).toHaveBeenCalledTimes(1);
+    const callArgs = openSpy.mock.calls[0][0] as string;
+    
+    // Should not contain HTML tags
+    expect(callArgs).not.toContain("<script>");
+    
+    openSpy.mockRestore();
+  });
+
+  it("has honeypot field for bot detection", () => {
+    const { container } = render(<ContactForm />);
+    
+    // Check honeypot field exists and is hidden
+    const honeypot = container.querySelector('input[name="website"]');
+    expect(honeypot).toBeInTheDocument();
+    expect(honeypot).toHaveStyle({ opacity: 0 });
+    expect(honeypot).toHaveAttribute("tabIndex", "-1");
+  });
+
+  it("blocks submission when honeypot is filled", () => {
+    const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
+    
+    render(<ContactForm />);
+    
+    // Fill form including honeypot (bot behavior)
+    const honeypot = screen.getByRole("textbox", { hidden: true, name: "" });
+    fireEvent.change(honeypot, { target: { value: "bot-value" } });
+    
+    fireEvent.change(screen.getByLabelText(/Nombre/), {
+      target: { value: "Juan Pérez" },
+    });
+    fireEvent.change(screen.getByLabelText(/Email/), {
+      target: { value: "juan@example.com" },
+    });
+    fireEvent.change(screen.getByLabelText(/Mensaje/), {
+      target: { value: "Mensaje válido de consulta" },
+    });
+    
+    // Submit form
+    fireEvent.click(screen.getByText("Enviar Consulta por WhatsApp"));
+    
+    // Should NOT open WhatsApp (silent block)
+    expect(openSpy).not.toHaveBeenCalled();
+    
+    openSpy.mockRestore();
+  });
+
+  it("respects maxLength attributes on inputs", () => {
+    render(<ContactForm />);
+    
+    expect(screen.getByLabelText(/Nombre/)).toHaveAttribute("maxLength", "50");
+    expect(screen.getByLabelText(/Email/)).toHaveAttribute("maxLength", "100");
+    expect(screen.getByLabelText(/Teléfono/)).toHaveAttribute("maxLength", "20");
+    expect(screen.getByLabelText(/Mensaje/)).toHaveAttribute("maxLength", "500");
   });
 });
 
