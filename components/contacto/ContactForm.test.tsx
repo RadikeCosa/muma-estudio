@@ -6,12 +6,21 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { ContactForm } from "./ContactForm";
 import { ContactInfo } from "./ContactInfo";
+import * as rateLimitServer from "@/lib/utils/rate-limit-server";
+
+// Mock the checkServerRateLimit function
+vi.mock("@/lib/utils/rate-limit-server", () => ({
+  checkServerRateLimit: vi.fn(),
+}));
 
 describe("ContactForm", () => {
   // Mock localStorage
   beforeEach(() => {
     // Clear localStorage before each test
     localStorage.clear();
+    
+    // Reset and setup the mock for checkServerRateLimit
+    vi.mocked(rateLimitServer.checkServerRateLimit).mockResolvedValue({ allowed: true });
   });
 
   afterEach(() => {
@@ -52,7 +61,7 @@ describe("ContactForm", () => {
     expect(screen.getByLabelText(/Mensaje/)).toHaveAttribute("required");
   });
 
-  it("opens WhatsApp with formatted message on submit", () => {
+  it("opens WhatsApp with formatted message on submit", async () => {
     // Mock window.open
     const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
     
@@ -76,8 +85,10 @@ describe("ContactForm", () => {
     const submitButton = screen.getByText("Enviar Consulta por WhatsApp");
     fireEvent.click(submitButton);
     
-    // Check window.open was called
-    expect(openSpy).toHaveBeenCalledTimes(1);
+    // Wait for async operations to complete
+    await vi.waitFor(() => {
+      expect(openSpy).toHaveBeenCalledTimes(1);
+    });
     
     // Check URL contains WhatsApp format
     const callArgs = openSpy.mock.calls[0][0] as string;
@@ -88,7 +99,7 @@ describe("ContactForm", () => {
     openSpy.mockRestore();
   });
 
-  it("handles optional telefono field correctly", () => {
+  it("handles optional telefono field correctly", async () => {
     const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
     
     render(<ContactForm />);
@@ -107,8 +118,10 @@ describe("ContactForm", () => {
     // Submit form
     fireEvent.click(screen.getByText("Enviar Consulta por WhatsApp"));
     
-    // Check window.open was called
-    expect(openSpy).toHaveBeenCalledTimes(1);
+    // Wait for async operations to complete
+    await vi.waitFor(() => {
+      expect(openSpy).toHaveBeenCalledTimes(1);
+    });
     
     openSpy.mockRestore();
   });
@@ -150,7 +163,7 @@ describe("ContactForm", () => {
     expect(screen.getByText(/El mensaje debe tener al menos/)).toBeInTheDocument();
   });
 
-  it("sanitizes HTML from inputs", () => {
+  it("sanitizes HTML from inputs", async () => {
     const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
     
     render(<ContactForm />);
@@ -169,12 +182,14 @@ describe("ContactForm", () => {
     // Submit form
     fireEvent.click(screen.getByText("Enviar Consulta por WhatsApp"));
     
-    // Check window.open was called with sanitized data
-    expect(openSpy).toHaveBeenCalledTimes(1);
-    const callArgs = openSpy.mock.calls[0][0] as string;
+    // XSS should be detected and rejected - window.open should not be called
+    await vi.waitFor(() => {
+      // The form should not submit due to XSS detection
+      expect(openSpy).not.toHaveBeenCalled();
+    });
     
-    // Should not contain HTML tags
-    expect(callArgs).not.toContain("<script>");
+    // Check for error message
+    expect(screen.getByText(/Contenido no permitido detectado/)).toBeInTheDocument();
     
     openSpy.mockRestore();
   });
