@@ -48,6 +48,10 @@ export const CACHE_CONFIG = {
     revalidate: 1800, // 30 minutes
     tags: ["productos"] as string[],
   },
+  productos_relacionados: {
+    revalidate: 3600, // 1 hour
+    tags: ["productos"] as string[],
+  },
 };
 
 export type CacheEntity = keyof typeof CACHE_CONFIG;
