@@ -10,6 +10,8 @@ export interface Categoria {
   slug: string;
   descripcion: string | null;
   orden: number;
+  imagen?: string | null;
+  featured?: boolean | null;
 }
 
 /** Producto base del catálogo */

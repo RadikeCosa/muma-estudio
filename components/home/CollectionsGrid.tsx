@@ -4,10 +4,12 @@ import Link from "next/link";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { ArrowRight } from "lucide-react";
+import { getCategorias } from "@/lib/supabase/queries";
+import type { Categoria } from "@/lib/types";
 
 /**
  * CollectionsGrid - Grid 2x2 de colecciones con manteles full-width
- * 
+ *
  * Layout:
  * ┌─────────────────────┐
  * │     Manteles        │  (full-width)
@@ -17,41 +19,10 @@ import { ArrowRight } from "lucide-react";
  * └──────────┴──────────┘
  */
 
-interface Collection {
-  name: string;
-  slug: string;
-  image: string;
-  description: string;
-  featured?: boolean; // Si es true, ocupa full-width
-}
-
-const COLLECTIONS: Collection[] = [
-  {
-    name: "Manteles",
-    slug: "manteles",
-    // Temporary: Use existing product image until real collection image is added
-    image: "/images/productos/manteles/mantel-beige.jpg",
-    description: "Para darle un toque especial a tu mesa",
-    featured: true, // Full-width
-  },
-  {
-    name: "Servilletas",
-    slug: "servilletas",
-    // Temporary: Use existing product image until real collection image is added
-    image: "/images/productos/servilletas/servilleta-azul.jpg",
-    description: "Ideales para acompañar tus comidas y reuniones",
-  },
-  {
-    name: "Caminos de Mesa",
-    slug: "caminos",
-    // Temporary: Use existing product image until real collection image is added
-    image: "/images/productos/caminos/camino-blanco (1).jpg",
-    description: "El detalle perfecto para realzar cualquier ambiente",
-  },
-];
+const PLACEHOLDER_IMAGE = "/images/placeholders/placeholder-image.jpeg";
 
 interface CollectionCardProps {
-  collection: Collection;
+  collection: Categoria;
   featured?: boolean;
 }
 
@@ -61,19 +32,19 @@ function CollectionCard({ collection, featured = false }: CollectionCardProps) {
       href={`/productos?categoria=${collection.slug}`}
       className={cn(
         "group shine-effect overflow-hidden rounded-2xl border border-border/50 bg-white shadow-card transition-all duration-300 hover:shadow-card-hover hover:border-foreground/10 hover:-translate-y-2",
-        featured && "sm:col-span-2", // Full-width on medium+ screens
+        featured && "sm:col-span-2",
       )}
     >
       {/* Image Container */}
       <div
         className={cn(
-          "relative overflow-hidden bg-gradient-to-br from-muted/50 to-muted",
-          featured ? "aspect-[21/9]" : "aspect-[2/3]", // Panoramic vs Portrait
+          "relative overflow-hidden bg-linear-to-br from-muted/50 to-muted",
+          featured ? "aspect-21/9" : "aspect-2/3",
         )}
       >
         <Image
-          src={collection.image}
-          alt={collection.name}
+          src={collection.imagen || PLACEHOLDER_IMAGE}
+          alt={collection.nombre}
           fill
           className="object-cover transition-transform duration-500 group-hover:scale-110"
           sizes={
@@ -83,20 +54,20 @@ function CollectionCard({ collection, featured = false }: CollectionCardProps) {
           }
         />
         {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-t from-black/60 via-black/20 to-transparent" />
 
         {/* Text Overlay */}
         <div className="absolute inset-0 flex flex-col justify-end p-6 sm:p-8">
           <h3
             className={cn(
-              "mb-2 font-bold text-white transition-all duration-300 group-hover:translate-y-[-4px]",
+              "mb-2 font-bold text-white transition-all duration-300 group-hover:-translate-y-1",
               featured ? "text-3xl sm:text-4xl" : "text-2xl sm:text-3xl",
             )}
           >
-            {collection.name}
+            {collection.nombre}
           </h3>
           <p className="mb-4 text-sm leading-relaxed text-white/90 sm:text-base">
-            {collection.description}
+            {collection.descripcion}
           </p>
           {/* Arrow Icon */}
           <div className="inline-flex items-center gap-2 text-sm font-medium text-white">
@@ -115,7 +86,8 @@ function CollectionCard({ collection, featured = false }: CollectionCardProps) {
   );
 }
 
-export function CollectionsGrid() {
+export async function CollectionsGrid() {
+  const categorias = await getCategorias();
   return (
     <section className={cn(SPACING.sectionPadding.sm, "bg-muted/30")}>
       <div className={LAYOUT.container.maxW7xl}>
@@ -127,11 +99,11 @@ export function CollectionsGrid() {
 
         {/* Collections Grid */}
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:gap-8">
-          {COLLECTIONS.map((collection) => (
+          {categorias.map((collection) => (
             <CollectionCard
               key={collection.slug}
               collection={collection}
-              featured={collection.featured}
+              featured={!!collection.featured}
             />
           ))}
         </div>
