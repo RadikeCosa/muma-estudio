@@ -20,6 +20,9 @@ import type { Categoria } from "@/lib/types";
  */
 
 const PLACEHOLDER_IMAGE = "/images/placeholders/placeholder-image.jpeg";
+// BlurDataURL base64 para el placeholder (puedes reemplazarlo por uno generado real si tienes)
+const PLACEHOLDER_BLUR =
+  "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD...";
 
 interface CollectionCardProps {
   collection: Categoria;
@@ -43,22 +46,45 @@ function CollectionCard({ collection, featured = false }: CollectionCardProps) {
           featured ? "aspect-21/9" : "aspect-2/3",
         )}
       >
-        <Image
-          src={collection.imagen || PLACEHOLDER_IMAGE}
-          alt={
-            collection.nombre
-              ? `Imagen de la colección ${collection.nombre}`
-              : "Imagen de colección"
-          }
-          fill
-          className="object-cover transition-transform duration-500 group-hover:scale-110"
-          sizes={
-            featured
-              ? "(max-width: 640px) 100vw, 80vw"
-              : "(max-width: 640px) 100vw, 40vw"
-          }
-          priority={featured}
-        />
+        {collection.imagen ? (
+          <Image
+            src={collection.imagen}
+            alt={
+              collection.nombre
+                ? `Imagen de la colección ${collection.nombre}`
+                : "Imagen de colección"
+            }
+            fill
+            className="object-cover transition-transform duration-500 group-hover:scale-110"
+            sizes={
+              featured
+                ? "(max-width: 640px) 100vw, (max-width: 1024px) 80vw, 60vw"
+                : "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+            }
+            priority={featured}
+            loading={featured ? "eager" : "lazy"}
+          />
+        ) : (
+          <Image
+            src={PLACEHOLDER_IMAGE}
+            alt={
+              collection.nombre
+                ? `Imagen de la colección ${collection.nombre}`
+                : "Imagen de colección"
+            }
+            fill
+            className="object-cover transition-transform duration-500 group-hover:scale-110"
+            sizes={
+              featured
+                ? "(max-width: 640px) 100vw, (max-width: 1024px) 80vw, 60vw"
+                : "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+            }
+            priority={featured}
+            placeholder="blur"
+            blurDataURL={PLACEHOLDER_BLUR}
+            loading={featured ? "eager" : "lazy"}
+          />
+        )}
         {/* Gradient Overlay: asegurar contraste */}
         <div
           className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"
@@ -103,7 +129,16 @@ function CollectionCard({ collection, featured = false }: CollectionCardProps) {
 }
 
 export async function CollectionsGrid() {
-  const categorias = await getCategorias();
+  let categorias: Categoria[] | null = null;
+  try {
+    categorias = await getCategorias();
+  } catch (error) {
+    // Opcional: console.error('Error al cargar categorías', error);
+    return null;
+  }
+  if (!categorias || !Array.isArray(categorias) || categorias.length === 0) {
+    return null;
+  }
   return (
     <section
       className={cn(SPACING.sectionPadding.sm, "bg-muted/30")}
