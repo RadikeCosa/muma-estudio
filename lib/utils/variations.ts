@@ -1,4 +1,15 @@
 /**
+ * Check if a size is available (any active variation with stock > 0)
+ */
+export function isSizeAvailable(
+  variaciones: Variacion[],
+  tamanio: string,
+): boolean {
+  return variaciones.some(
+    (v) => v.activo && v.tamanio === tamanio && v.stock > 0,
+  );
+}
+/**
  * Utility functions for handling product variations
  */
 import type { Variacion } from "@/lib/types";
@@ -8,9 +19,7 @@ import type { Variacion } from "@/lib/types";
  * Only includes active variations, sorted naturally
  */
 export function getUniqueSizes(variaciones: Variacion[]): string[] {
-  const activeSizes = variaciones
-    .filter((v) => v.activo)
-    .map((v) => v.tamanio);
+  const activeSizes = variaciones.filter((v) => v.activo).map((v) => v.tamanio);
 
   const uniqueSizes = Array.from(new Set(activeSizes));
 
@@ -72,9 +81,7 @@ export function calculatePriceRange(variaciones: Variacion[]): {
   max: number;
   hasRange: boolean;
 } {
-  const activePrices = variaciones
-    .filter((v) => v.activo)
-    .map((v) => v.precio);
+  const activePrices = variaciones.filter((v) => v.activo).map((v) => v.precio);
 
   if (activePrices.length === 0) {
     return { min: 0, max: 0, hasRange: false };

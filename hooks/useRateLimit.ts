@@ -21,16 +21,16 @@ interface UseRateLimitReturn {
 
 /**
  * useRateLimit Hook
- * 
+ *
  * Manages rate limiting for user actions using localStorage
- * 
+ *
  * @param config - Configuration object
  * @param config.maxActions - Maximum number of actions allowed in the time window
  * @param config.windowMs - Time window in milliseconds
  * @param config.key - Unique key for storing rate limit data
- * 
+ *
  * @returns Object with isRateLimited, recordAction function, and timeUntilReset
- * 
+ *
  * @example
  * const { isRateLimited, recordAction, timeUntilReset } = useRateLimit({
  *   maxActions: 5,
@@ -80,7 +80,7 @@ export function useRateLimit({
 
   // Initial check and cleanup
   useEffect(() => {
-    checkStatus();
+    setTimeout(checkStatus, 0);
   }, [checkStatus]);
 
   // Update countdown timer

@@ -4,6 +4,11 @@ import { useState, useEffect, useMemo } from "react";
 import { Variacion } from "@/lib/types";
 import { formatPrice } from "@/lib/utils";
 import { StockBadge } from "./StockBadge";
+import {
+  getUniqueSizes,
+  getColorsForSize,
+  findVariation,
+} from "@/lib/utils/variations";
 
 interface VariationSelectorProps {
   variaciones: Variacion[];
@@ -37,25 +42,13 @@ export function VariationSelector({
 
   // Tamaños únicos
   const tamaniosDisponibles = useMemo(
-    () =>
-      Array.from(
-        new Set(variaciones.filter((v) => v.activo).map((v) => v.tamanio)),
-      ).sort(),
+    () => getUniqueSizes(variaciones),
     [variaciones],
   );
 
   // Colores para el tamaño seleccionado
   const coloresDisponibles = useMemo(
-    () =>
-      tamanioSeleccionado
-        ? Array.from(
-            new Set(
-              variaciones
-                .filter((v) => v.activo && v.tamanio === tamanioSeleccionado)
-                .map((v) => v.color),
-            ),
-          ).sort()
-        : [],
+    () => getColorsForSize(variaciones, tamanioSeleccionado),
     [tamanioSeleccionado, variaciones],
   );
 
@@ -63,12 +56,7 @@ export function VariationSelector({
   const variacionActual = useMemo(
     () =>
       tamanioSeleccionado && colorSeleccionado
-        ? variaciones.find(
-            (v) =>
-              v.activo &&
-              v.tamanio === tamanioSeleccionado &&
-              v.color === colorSeleccionado,
-          ) || null
+        ? findVariation(variaciones, tamanioSeleccionado, colorSeleccionado)
         : null,
     [tamanioSeleccionado, colorSeleccionado, variaciones],
   );
@@ -176,13 +164,17 @@ export function VariationSelector({
           )}
           {coloresDisponibles.map((color) => {
             const variacionColor = variaciones.find(
-              (v) => v.activo && v.tamanio === tamanioSeleccionado && v.color === color
+              (v) =>
+                v.activo &&
+                v.tamanio === tamanioSeleccionado &&
+                v.color === color,
             );
             const stockText = variacionColor?.stock === 0 ? " (A pedido)" : "";
-            
+
             return (
               <option key={color} value={color}>
-                {color}{stockText}
+                {color}
+                {stockText}
               </option>
             );
           })}
@@ -190,7 +182,10 @@ export function VariationSelector({
         {/* Tooltip explicativo para productos a pedido */}
         {variacionActual && variacionActual.stock === 0 && (
           <p className="text-xs text-muted-foreground italic">
-            <span aria-label="Información" role="img">💡</span> Este producto se fabrica bajo pedido
+            <span aria-label="Información" role="img">
+              💡
+            </span>{" "}
+            Este producto se fabrica bajo pedido
           </p>
         )}
       </div>

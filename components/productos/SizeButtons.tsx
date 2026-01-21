@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { Variacion } from "@/lib/types";
+import { isSizeAvailable } from "@/lib/utils/variations";
 
 export interface SizeButtonsProps {
   tamanios: string[];
@@ -17,9 +18,8 @@ export function SizeButtons({
 }: SizeButtonsProps) {
   const [hovered, setHovered] = useState<string | null>(null);
 
-  // Verifica disponibilidad por tamaño
-  const isAvailable = (size: string) =>
-    variaciones.some((v) => v.tamanio === size && v.stock > 0 && v.activo);
+  // Verifica disponibilidad por tamaño usando la función utilitaria
+  const isAvailable = (size: string) => isSizeAvailable(variaciones, size);
 
   return (
     <div

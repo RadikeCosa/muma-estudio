@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 
 /**
  * TextureDivider - Full-width grayscale texture divider
- * 
+ *
  * Displays a panoramic texture image (linen, fabric) with grayscale filter
  * to create visual separation between sections while maintaining boutique aesthetic.
  */
@@ -25,14 +25,14 @@ interface TextureDividerProps {
 }
 
 export function TextureDivider({
-  imagePath = "/images/about.webp", // Temporary: using existing image until linen-texture.jpg is added
+  imagePath = "/images/line-texture.webp", // Temporary: using existing image until linen-texture.jpg is added
   alt = "Textura de lino natural",
   className,
 }: TextureDividerProps) {
   return (
     <div
       className={cn(
-        "relative h-[200px] w-full overflow-hidden sm:h-[250px] lg:h-[300px]",
+        "relative h-50 w-full overflow-hidden sm:h-62.5 lg:h-75",
         className,
       )}
     >
@@ -40,7 +40,7 @@ export function TextureDivider({
         src={imagePath}
         alt={alt}
         fill
-        className="object-cover grayscale opacity-30"
+        className="object-cover  opacity-40 grayscale"
         priority={false}
         sizes="100vw"
       />

@@ -11,6 +11,7 @@ interface ProductoFilter {
   categoria?: string;
   limit?: number;
   offset?: number;
+  destacado?: boolean; // <--- NUEVO
 }
 
 export class ProductoRepository extends BaseRepository<ProductoCompleto> {
@@ -39,6 +40,7 @@ export class ProductoRepository extends BaseRepository<ProductoCompleto> {
     const limit = filter?.limit ?? null;
     const offset = filter?.offset ?? 0;
     const categoriaSlug = filter?.categoria;
+    const destacado = filter?.destacado; // <--- NUEVO
 
     let query = supabase
       .from("productos")
@@ -74,6 +76,10 @@ export class ProductoRepository extends BaseRepository<ProductoCompleto> {
       }
 
       query = query.eq("categoria_id", categoria.id);
+    }
+
+    if (destacado !== undefined) {
+      query = query.eq("destacado", destacado); // <--- NUEVO
     }
 
     if (limit !== null) {
@@ -180,12 +186,16 @@ export class ProductoRepository extends BaseRepository<ProductoCompleto> {
   private sortRelations(producto: ProductoCompleto): ProductoCompleto {
     return {
       ...producto,
-      variaciones: [...producto.variaciones].sort((a: Variacion, b: Variacion) => {
-        const sizeCompare = a.tamanio.localeCompare(b.tamanio);
-        if (sizeCompare !== 0) return sizeCompare;
-        return a.color.localeCompare(b.color);
-      }),
-      imagenes: [...producto.imagenes].sort((a: ImagenProducto, b: ImagenProducto) => a.orden - b.orden),
+      variaciones: [...producto.variaciones].sort(
+        (a: Variacion, b: Variacion) => {
+          const sizeCompare = a.tamanio.localeCompare(b.tamanio);
+          if (sizeCompare !== 0) return sizeCompare;
+          return a.color.localeCompare(b.color);
+        },
+      ),
+      imagenes: [...producto.imagenes].sort(
+        (a: ImagenProducto, b: ImagenProducto) => a.orden - b.orden,
+      ),
     };
   }
 }

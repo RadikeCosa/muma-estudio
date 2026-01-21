@@ -8,10 +8,10 @@ import { getProductos } from "@/lib/supabase/queries";
 
 /**
  * FeaturedProducts - Grid de productos destacados con layout offset
- * 
+ *
  * Muestra productos con `destacado = true` de la base de datos
  * con un diseño escalonado (staggered) para visual interés.
- * 
+ *
  * Layout:
  * [Product 1]
  *     [Product 2] (offset)
@@ -28,10 +28,12 @@ interface FeaturedProductsProps {
 
 export async function FeaturedProducts({ limit = 4 }: FeaturedProductsProps) {
   // Fetch featured products from database
-  const productosResult = await getProductos({ page: 1, pageSize: 50 });
-  const productosDestacados = productosResult.items
-    .filter((p) => p.destacado)
-    .slice(0, limit);
+  const productosResult = await getProductos({
+    destacado: true,
+    page: 1,
+    pageSize: limit,
+  });
+  const productosDestacados = productosResult.items;
 
   // Don't render section if no featured products
   if (productosDestacados.length === 0) {

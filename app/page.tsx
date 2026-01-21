@@ -9,7 +9,7 @@ import { SITE_CONFIG } from "@/lib/constants";
 
 /**
  * Home Page - Muma Estudio
- * 
+ *
  * Estructura:
  * 1. Hero Section - Badge, título, descripción, CTAs
  * 2. Texture Divider - Imagen de textura grayscale
@@ -20,13 +20,11 @@ import { SITE_CONFIG } from "@/lib/constants";
  */
 
 export const metadata: Metadata = {
-  title: `${SITE_CONFIG.name} | Textiles Artesanales`,
-  description:
-    "Piezas únicas diseñadas para transformar tus espacios cotidianos en lugares especiales. Textiles artesanales hechos a mano.",
+  title: `${SITE_CONFIG.name}`,
+  description: SITE_CONFIG.description,
   openGraph: {
-    title: `${SITE_CONFIG.name} | Textiles Artesanales`,
-    description:
-      "Piezas únicas diseñadas para transformar tus espacios cotidianos en lugares especiales.",
+    title: `${SITE_CONFIG.name}`,
+    description: SITE_CONFIG.description,
     type: "website",
     locale: "es_AR",
     url: SITE_CONFIG.url,
@@ -34,9 +32,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: `${SITE_CONFIG.name} | Textiles Artesanales`,
-    description:
-      "Piezas únicas diseñadas para transformar tus espacios cotidianos en lugares especiales.",
+    title: `${SITE_CONFIG.name}`,
+    description: SITE_CONFIG.description,
   },
 };
 

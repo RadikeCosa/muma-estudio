@@ -14,6 +14,7 @@ interface GetProductosParams {
   categoriaSlug?: string;
   page?: number;
   pageSize?: number;
+  destacado?: boolean; // <--- NUEVO
 }
 
 /**
@@ -72,6 +73,7 @@ async function getProductosInternal(
   const page = Math.max(1, params?.page ?? 1);
   const pageSize = Math.max(1, params?.pageSize ?? 12);
   const categoriaSlug = params?.categoriaSlug;
+  const destacado = params?.destacado; // <--- NUEVO
 
   const productoRepository = new ProductoRepository(supabase);
 
@@ -82,6 +84,7 @@ async function getProductosInternal(
     categoria: categoriaSlug,
     limit: pageSize,
     offset: start,
+    destacado, // <--- NUEVO
   });
 
   const totalPages = total > 0 ? Math.ceil(total / pageSize) : 0;
@@ -111,9 +114,9 @@ export async function getProductos(
   const supabase = await createClient();
 
   // Usar configuración específica si hay filtro de categoría
-  const cacheConfig = params?.categoriaSlug 
-    ? CACHE_CONFIG.productos_filtrados  // 2 horas (más estable)
-    : CACHE_CONFIG.productos;           // 1 hora (general)
+  const cacheConfig = params?.categoriaSlug
+    ? CACHE_CONFIG.productos_filtrados // 2 horas (más estable)
+    : CACHE_CONFIG.productos; // 1 hora (general)
 
   const cachedFn = createCachedQuery<
     [SupabaseClient, GetProductosParams?],
@@ -248,5 +251,10 @@ export async function getProductosRelacionadosFresh(
   limite: number = 4,
 ): Promise<ProductoCompleto[]> {
   const supabase = await createClient();
-  return getProductosRelacionadosInternal(supabase, productoId, categoriaId, limite);
+  return getProductosRelacionadosInternal(
+    supabase,
+    productoId,
+    categoriaId,
+    limite,
+  );
 }

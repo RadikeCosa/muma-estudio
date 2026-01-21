@@ -1,5 +1,5 @@
 import { HOME_CONTENT } from "@/lib/content/home";
-import { SPACING, ANIMATIONS, COMPONENTS } from "@/lib/design/tokens";
+import { SPACING, ANIMATIONS, COMPONENTS, BLOBS } from "@/lib/design/tokens";
 import { Button } from "@/components/ui/Button";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -37,8 +37,8 @@ export function HeroSection({ customClassName }: HeroSectionProps) {
     >
       {/* Decorative gradient blobs */}
       <div className="absolute inset-0 -z-10 overflow-hidden">
-        <div className="absolute -top-40 -right-40 h-96 w-96 rounded-full bg-gradient-to-br from-muted to-transparent opacity-40 blur-3xl" />
-        <div className="absolute -bottom-40 -left-40 h-96 w-96 rounded-full bg-gradient-to-tr from-muted to-transparent opacity-40 blur-3xl" />
+        <div className={BLOBS.heroTop} />
+        <div className={BLOBS.heroBottom} />
       </div>
 
       <div className="mx-auto max-w-4xl text-center relative z-10">
