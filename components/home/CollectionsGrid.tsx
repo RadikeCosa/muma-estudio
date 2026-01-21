@@ -34,6 +34,7 @@ function CollectionCard({ collection, featured = false }: CollectionCardProps) {
         "group shine-effect overflow-hidden rounded-2xl border border-border/50 bg-white shadow-card transition-all duration-300 hover:shadow-card-hover hover:border-foreground/10 hover:-translate-y-2",
         featured && "sm:col-span-2",
       )}
+      aria-label={`Explorar colección ${collection.nombre}`}
     >
       {/* Image Container */}
       <div
@@ -44,7 +45,11 @@ function CollectionCard({ collection, featured = false }: CollectionCardProps) {
       >
         <Image
           src={collection.imagen || PLACEHOLDER_IMAGE}
-          alt={collection.nombre}
+          alt={
+            collection.nombre
+              ? `Imagen de la colección ${collection.nombre}`
+              : "Imagen de colección"
+          }
           fill
           className="object-cover transition-transform duration-500 group-hover:scale-110"
           sizes={
@@ -52,9 +57,13 @@ function CollectionCard({ collection, featured = false }: CollectionCardProps) {
               ? "(max-width: 640px) 100vw, 80vw"
               : "(max-width: 640px) 100vw, 40vw"
           }
+          priority={featured}
         />
-        {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-linear-to-t from-black/60 via-black/20 to-transparent" />
+        {/* Gradient Overlay: asegurar contraste */}
+        <div
+          className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"
+          aria-hidden="true"
+        />
 
         {/* Text Overlay */}
         <div className="absolute inset-0 flex flex-col justify-end p-6 sm:p-8">
@@ -63,6 +72,7 @@ function CollectionCard({ collection, featured = false }: CollectionCardProps) {
               "mb-2 font-bold text-white transition-all duration-300 group-hover:-translate-y-1",
               featured ? "text-3xl sm:text-4xl" : "text-2xl sm:text-3xl",
             )}
+            id={`collection-title-${collection.slug}`}
           >
             {collection.nombre}
           </h3>
@@ -70,7 +80,11 @@ function CollectionCard({ collection, featured = false }: CollectionCardProps) {
             {collection.descripcion}
           </p>
           {/* Arrow Icon */}
-          <div className="inline-flex items-center gap-2 text-sm font-medium text-white">
+          <div
+            className="inline-flex items-center gap-2 text-sm font-medium text-white"
+            aria-label="Explorar colección"
+            role="button"
+          >
             <span>Explorar colección</span>
             <ArrowRight
               className={cn(
@@ -78,6 +92,8 @@ function CollectionCard({ collection, featured = false }: CollectionCardProps) {
                 ANIMATIONS.hoverIcon,
                 "group-hover:text-white",
               )}
+              aria-hidden="true"
+              focusable="false"
             />
           </div>
         </div>
@@ -89,9 +105,18 @@ function CollectionCard({ collection, featured = false }: CollectionCardProps) {
 export async function CollectionsGrid() {
   const categorias = await getCategorias();
   return (
-    <section className={cn(SPACING.sectionPadding.sm, "bg-muted/30")}>
+    <section
+      className={cn(SPACING.sectionPadding.sm, "bg-muted/30")}
+      role="region"
+      aria-labelledby="collections-section-title"
+    >
       <div className={LAYOUT.container.maxW7xl}>
         {/* Section Header */}
+
+        {/* Heading oculto para aria-labelledby */}
+        <h2 id="collections-section-title" className="sr-only">
+          Nuestras Colecciones
+        </h2>
         <SectionHeader
           title="Nuestras Colecciones"
           description="Explora nuestra colección de textiles artesanales"
