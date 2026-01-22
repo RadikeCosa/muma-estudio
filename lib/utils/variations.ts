@@ -1,14 +1,7 @@
 /**
  * Check if a size is available (any active variation with stock > 0)
  */
-export function isSizeAvailable(
-  variaciones: Variacion[],
-  tamanio: string,
-): boolean {
-  return variaciones.some(
-    (v) => v.activo && v.tamanio === tamanio && v.stock > 0,
-  );
-}
+
 /**
  * Utility functions for handling product variations
  */

@@ -13,43 +13,80 @@ import { SITE_CONFIG } from "@/lib/constants";
 import { PRODUCTOS_CONTENT } from "@/lib/content/productos";
 
 interface ProductosPageProps {
-  searchParams: {
+  searchParams: Promise<{
     categoria?: string;
     page?: string;
-  };
+  }>;
 }
 
-export const metadata: Metadata = {
-  title: "Productos",
-  description: SITE_CONFIG.description,
-  openGraph: {
-    title: `Productos | ${SITE_CONFIG.name}`,
-    description: SITE_CONFIG.description,
-    type: "website",
-    url: `${SITE_CONFIG.url}/productos`,
-    siteName: SITE_CONFIG.name,
-  },
-};
+// ISR: Revalidar cada hora
+export const revalidate = 3600;
+
+// Metadata dinámica basada en categoría
+export async function generateMetadata({
+  searchParams,
+}: ProductosPageProps): Promise<Metadata> {
+  const params = await searchParams;
+  const categoriaSlug = params.categoria;
+
+  // Si hay categoría, fetch para obtener nombre
+  let categoriaName = "Productos";
+  let categoriaDescription: string = SITE_CONFIG.description;
+
+  if (categoriaSlug) {
+    try {
+      const categorias = await getCategorias();
+      const categoria = categorias.find((c) => c.slug === categoriaSlug);
+      if (categoria) {
+        categoriaName = categoria.nombre;
+        categoriaDescription = categoria.descripcion || SITE_CONFIG.description;
+      }
+    } catch (error) {
+      console.error("Error fetching category for metadata:", error);
+    }
+  }
+
+  return {
+    title: categoriaName,
+    description: categoriaDescription,
+    openGraph: {
+      title: `${categoriaName} | ${SITE_CONFIG.name}`,
+      description: categoriaDescription,
+      type: "website",
+      url: categoriaSlug
+        ? `${SITE_CONFIG.url}/productos?categoria=${categoriaSlug}`
+        : `${SITE_CONFIG.url}/productos`,
+      siteName: SITE_CONFIG.name,
+    },
+  };
+}
 
 export default async function ProductosPage({
   searchParams,
 }: ProductosPageProps) {
   const params = await searchParams;
-  const categoriaSlug = params.categoria;
+
+  // Validar y sanitizar categoriaSlug
+  const rawCategoriaSlug = params.categoria;
+  const categoriaSlug = rawCategoriaSlug?.match(/^[a-z0-9-]+$/)
+    ? rawCategoriaSlug
+    : undefined;
+
   const pageParam = params.page ? Number.parseInt(params.page, 10) : 1;
   const page = Number.isFinite(pageParam) && pageParam > 0 ? pageParam : 1;
   const pageSize = 12;
 
-  // Fetch products (filtered by category if provided)
-  const productosResult = await getProductos({
-    categoriaSlug,
-    page,
-    pageSize,
-  });
-  const { items: productos, pagination } = productosResult;
+  // Paralelizar fetches para mejor performance
+  const [productosResult, categorias] = await Promise.all([
+    getProductos({
+      categoriaSlug,
+      page,
+      pageSize,
+    }),
+    getCategorias(),
+  ]);
 
-  // Fetch all categories for filter
-  const categorias = await getCategorias();
+  const { items: productos, pagination } = productosResult;
 
   // Find active category name for display
   const activeCategoria = categorias.find((c) => c.slug === categoriaSlug);
@@ -82,7 +119,9 @@ export default async function ProductosPage({
 
         {/* Page Header */}
         <PageHeader
-          title={activeCategoria ? activeCategoria.nombre : pageContent.defaultTitle}
+          title={
+            activeCategoria ? activeCategoria.nombre : pageContent.defaultTitle
+          }
           description={
             activeCategoria
               ? activeCategoria.descripcion || pageContent.defaultDescription
