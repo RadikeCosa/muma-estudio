@@ -2,7 +2,7 @@ import { HeroSection } from "@/components/home/HeroSection";
 import { TextureDivider } from "@/components/home/TextureDivider";
 import { FeaturedProducts } from "@/components/home/FeaturedProducts";
 import { CollectionsGrid } from "@/components/home/CollectionsGrid";
-import { ContactSection } from "@/components/home/ContactSection";
+import { FinalCTASection } from "@/components/home/FinalCTASection";
 import { ProgressBar } from "@/components/layout/ProgressBar";
 import type { Metadata } from "next";
 import { SITE_CONFIG } from "@/lib/constants";
@@ -15,7 +15,7 @@ import { SITE_CONFIG } from "@/lib/constants";
  * 2. Texture Divider - Imagen de textura grayscale
  * 3. Featured Products - Grid de productos destacados
  * 4. Collections Grid - Grid 2x2 de colecciones
- * 5. Contact Section - CTA de consulta personalizada
+ * 5. Final CTA Section - CTA de consulta personalizada
  * 6. Progress Bar - Barra de progreso de scroll
  */
 
@@ -52,8 +52,8 @@ export default function HomePage() {
       {/* Collections Grid */}
       <CollectionsGrid />
 
-      {/* Contact Section */}
-      <ContactSection />
+      {/* Final CTA Section */}
+      <FinalCTASection />
 
       {/* Progress Bar */}
       <ProgressBar />

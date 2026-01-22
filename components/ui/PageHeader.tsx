@@ -1,4 +1,3 @@
-import { DecorativeBadge } from "./DecorativeBadge";
 import { cn } from "@/lib/utils";
 import { TYPOGRAPHY, LAYOUT } from "@/lib/design/tokens";
 
@@ -12,12 +11,11 @@ interface PageHeaderProps {
 export function PageHeader({ 
   title, 
   description, 
-  showBadge = true,
+  
   className 
 }: PageHeaderProps) {
   return (
     <div className={cn("mb-12 text-center", className)}>
-      {showBadge && <DecorativeBadge />}
       
       <h1 className={cn(TYPOGRAPHY.heading.page, "mb-5 text-foreground")}>
         {title}

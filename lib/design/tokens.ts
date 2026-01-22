@@ -87,14 +87,18 @@ export const COMPONENTS = {
 
   // Footer
   footer: {
-    base: "text-center border-t",
-    container: "py-12 px-6 max-w-lg mx-auto",
+    base: "border-t",
+    container: "py-12 px-6 max-w-lg mx-auto lg:max-w-7xl lg:px-8",
+    innerWrapper: "flex flex-col items-center lg:flex-row lg:justify-between lg:items-start",
+    brandSection: "text-center lg:text-left mb-10 lg:mb-0",
     logo: "font-display text-2xl tracking-widest uppercase mb-2",
     subtitle: "text-muted-foreground text-xs tracking-[0.2em] uppercase",
-    nav: "flex justify-center gap-8 mb-12",
+    navSection: "mb-10 lg:mb-0 flex flex-col items-center lg:items-start",
+    nav: "flex flex-wrap justify-center lg:justify-start gap-6 lg:gap-8",
     navLink:
       "text-sm font-medium text-foreground hover:text-foreground transition-colors",
-    socialLinks: "flex justify-center gap-6 mb-12",
+    socialSection: "flex flex-col items-center lg:items-end text-center lg:text-right",
+    socialLinks: "flex gap-6 mb-4",
     socialIcon: "text-muted-foreground hover:text-foreground transition-colors",
     copyright: "text-[10px] text-muted-foreground uppercase tracking-widest",
   },
@@ -177,6 +181,15 @@ export const COMPONENTS = {
   // Hero Badge
   heroBadge: {
     base: "mb-8 inline-flex items-center gap-2 rounded-full border border-border/50 bg-white/80 backdrop-blur-sm px-5 py-2.5 text-sm font-medium text-accent shadow-sm transition-all duration-300 hover:shadow-md hover:border-border",
+  },
+
+  // Category Filter
+  categoryFilter: {
+    container: "mb-8 overflow-x-auto",
+    buttonList: "flex gap-3 pb-2 min-w-max",
+    button: "px-5 py-2.5 rounded-full font-medium text-sm transition-all duration-200 whitespace-nowrap",
+    buttonActive: "bg-foreground text-background",
+    buttonInactive: "bg-muted text-muted-foreground hover:bg-muted/80",
   },
 } as const;
 

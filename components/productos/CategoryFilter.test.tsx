@@ -126,10 +126,10 @@ describe("CategoryFilter", () => {
       get: vi.fn().mockReturnValue(null),
     } as any);
 
-    render(<CategoryFilter categorias={[]} />);
+    const { container } = render(<CategoryFilter categorias={[]} />);
 
-    // Should still render "Todos" button
-    expect(screen.getByText("Todos")).toBeInTheDocument();
+    // Should return null and not render anything
+    expect(container.firstChild).toBeNull();
   });
 
   it("marks only one category as active at a time", () => {
@@ -159,5 +159,87 @@ describe("CategoryFilter", () => {
 
     const scrollContainer = container.querySelector(".overflow-x-auto");
     expect(scrollContainer).toBeInTheDocument();
+  });
+
+  // Accessibility Tests
+  describe("Accessibility", () => {
+    it("has semantic navigation structure", () => {
+      vi.mocked(useSearchParams).mockReturnValue({
+        get: vi.fn().mockReturnValue(null),
+      } as any);
+
+      const { container } = render(
+        <CategoryFilter categorias={mockCategorias} />
+      );
+
+      const nav = container.querySelector("nav");
+      expect(nav).toBeInTheDocument();
+      expect(nav).toHaveAttribute(
+        "aria-label",
+        "Filtrar productos por categoría"
+      );
+    });
+
+    it("has tablist role on button container", () => {
+      vi.mocked(useSearchParams).mockReturnValue({
+        get: vi.fn().mockReturnValue(null),
+      } as any);
+
+      const { container } = render(
+        <CategoryFilter categorias={mockCategorias} />
+      );
+
+      const tablist = container.querySelector('[role="tablist"]');
+      expect(tablist).toBeInTheDocument();
+    });
+
+    it("has proper ARIA attributes on tabs", () => {
+      vi.mocked(useSearchParams).mockReturnValue({
+        get: vi.fn().mockReturnValue("manteles"),
+      } as any);
+
+      render(<CategoryFilter categorias={mockCategorias} />);
+
+      const mantelesLink = screen.getByText("Manteles").closest("a");
+      const servilletasLink = screen.getByText("Servilletas").closest("a");
+
+      // Active tab should have aria-selected="true" and aria-current="page"
+      expect(mantelesLink).toHaveAttribute("role", "tab");
+      expect(mantelesLink).toHaveAttribute("aria-selected", "true");
+      expect(mantelesLink).toHaveAttribute("aria-current", "page");
+
+      // Inactive tab should have aria-selected="false" and no aria-current
+      expect(servilletasLink).toHaveAttribute("role", "tab");
+      expect(servilletasLink).toHaveAttribute("aria-selected", "false");
+      expect(servilletasLink).not.toHaveAttribute("aria-current");
+    });
+
+    it("has aria-current on Todos when no category selected", () => {
+      vi.mocked(useSearchParams).mockReturnValue({
+        get: vi.fn().mockReturnValue(null),
+      } as any);
+
+      render(<CategoryFilter categorias={mockCategorias} />);
+
+      const todosLink = screen.getByText("Todos").closest("a");
+
+      expect(todosLink).toHaveAttribute("aria-selected", "true");
+      expect(todosLink).toHaveAttribute("aria-current", "page");
+    });
+
+    it("has focus-visible styles for keyboard navigation", () => {
+      vi.mocked(useSearchParams).mockReturnValue({
+        get: vi.fn().mockReturnValue(null),
+      } as any);
+
+      render(<CategoryFilter categorias={mockCategorias} />);
+
+      const todosLink = screen.getByText("Todos").closest("a");
+
+      // Check that focus-visible classes are present
+      expect(todosLink).toHaveClass("focus-visible:outline-none");
+      expect(todosLink).toHaveClass("focus-visible:ring-2");
+      expect(todosLink).toHaveClass("focus-visible:ring-foreground");
+    });
   });
 });

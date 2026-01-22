@@ -9,6 +9,8 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import type { Categoria } from "@/lib/types";
 import { trackCategoryFilter } from "@/lib/analytics/gtag";
+import { COMPONENTS } from "@/lib/design/tokens";
+import { cn } from "@/lib/utils";
 
 interface CategoryFilterProps {
   categorias: Categoria[];
@@ -22,29 +24,44 @@ export function CategoryFilter({ categorias }: CategoryFilterProps) {
   const searchParams = useSearchParams();
   const activeCategory = searchParams.get("categoria");
 
-  const handleCategoryClick = (slug: string, nombre: string) => {
+  // TODO: Performance optimization - Implement useCallback in future global optimization
+  // This will prevent unnecessary re-renders by memoizing the handler function
+  // const handleCategoryClick = useCallback((slug: string, nombre: string): void => {
+  //   trackCategoryFilter(slug, nombre);
+  // }, []);
+  const handleCategoryClick = (slug: string, nombre: string): void => {
     // Track category filter usage
     trackCategoryFilter(slug, nombre);
   };
 
+  // Early return if no categories to display
+  if (!categorias.length) {
+    return null;
+  }
+
   return (
-    <div className="mb-8 overflow-x-auto">
-      <div className="flex gap-3 pb-2 min-w-max">
+    <nav
+      className={COMPONENTS.categoryFilter.container}
+      aria-label="Filtrar productos por categoría"
+    >
+      <div
+        className={COMPONENTS.categoryFilter.buttonList}
+        role="tablist"
+      >
         {/* "Todos" button */}
         <Link
           href="/productos"
+          role="tab"
+          aria-selected={!activeCategory}
+          aria-current={!activeCategory ? "page" : undefined}
           onClick={() => handleCategoryClick("all", "Todos")}
-          className={`
-            px-5 py-2.5 rounded-full
-            font-medium text-sm
-            transition-all duration-200
-            whitespace-nowrap
-            ${
-              !activeCategory
-                ? "bg-foreground text-background"
-                : "bg-muted text-muted-foreground hover:bg-muted/80"
-            }
-          `}
+          className={cn(
+            COMPONENTS.categoryFilter.button,
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2",
+            !activeCategory
+              ? COMPONENTS.categoryFilter.buttonActive
+              : COMPONENTS.categoryFilter.buttonInactive
+          )}
         >
           Todos
         </Link>
@@ -57,26 +74,25 @@ export function CategoryFilter({ categorias }: CategoryFilterProps) {
             <Link
               key={categoria.id}
               href={`/productos?categoria=${categoria.slug}`}
+              role="tab"
+              aria-selected={isActive}
+              aria-current={isActive ? "page" : undefined}
               onClick={() =>
                 handleCategoryClick(categoria.slug, categoria.nombre)
               }
-              className={`
-                px-5 py-2.5 rounded-full
-                font-medium text-sm
-                transition-all duration-200
-                whitespace-nowrap
-                ${
-                  isActive
-                    ? "bg-foreground text-background"
-                    : "bg-muted text-muted-foreground hover:bg-muted/80"
-                }
-              `}
+              className={cn(
+                COMPONENTS.categoryFilter.button,
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2",
+                isActive
+                  ? COMPONENTS.categoryFilter.buttonActive
+                  : COMPONENTS.categoryFilter.buttonInactive
+              )}
             >
               {categoria.nombre}
             </Link>
           );
         })}
       </div>
-    </div>
+    </nav>
   );
 }

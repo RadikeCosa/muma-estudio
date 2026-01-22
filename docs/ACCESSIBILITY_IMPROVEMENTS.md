@@ -182,7 +182,40 @@ export function useFocusTrap(isActive: boolean) {
 
 ---
 
-### 3. ARIA Labels for FilterBar Checkboxes
+### 3. CategoryFilter - Horizontal Category Navigation ✅
+**Status:** Implemented
+
+**Changes Made:**
+- ✅ Semantic `<nav>` element with `aria-label="Filtrar productos por categoría"`
+- ✅ `role="tablist"` on button container
+- ✅ `role="tab"` on each category link
+- ✅ `aria-selected` attribute (true for active, false for inactive)
+- ✅ `aria-current="page"` on active category
+- ✅ Enhanced focus indicators (`focus-visible:ring-2 focus-visible:ring-foreground`)
+- ✅ Early return for empty categories array (returns null)
+- ✅ Comprehensive accessibility tests added
+
+**Location:** `components/productos/CategoryFilter.tsx`
+
+**Testing:**
+- Tests validate ARIA attributes (`aria-selected`, `aria-current`, `role="tab"`)
+- Tests verify semantic navigation structure
+- Tests confirm focus-visible classes for keyboard navigation
+- Tests check empty state handling
+
+**Future Optimization:**
+- Note added for future `useCallback` implementation in global performance optimization
+
+**Acceptance Criteria:**
+- ✅ Screen readers announce "Tab, Manteles, selected" for active category
+- ✅ Keyboard users see clear focus indicators
+- ✅ Semantic navigation structure
+- ✅ No rendering when categories array is empty
+- ✅ All tests passing
+
+---
+
+### 4. ARIA Labels for FilterBar Checkboxes
 **Issue:** Checkboxes may not be clearly labeled for screen readers.
 
 **Solution:** Add explicit ARIA labels.
@@ -214,7 +247,7 @@ export function useFocusTrap(isActive: boolean) {
 
 ---
 
-### 4. Keyboard Navigation for VariationSelector
+### 4. ARIA Labels for FilterBar Checkboxes
 **Issue:** Size/color selection may not be fully keyboard accessible.
 
 **Solution:** Implement keyboard support.
@@ -275,9 +308,7 @@ export function VariationSelector() {
 
 ---
 
-## 🔶 Medium Priority - To Implement
-
-### 5. Color Contrast
+### 5. Keyboard Navigation for VariationSelector
 **Issue:** Muted text may not meet WCAG AA contrast ratio (4.5:1).
 
 **Solution:** Check and adjust if needed.

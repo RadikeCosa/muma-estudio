@@ -23,59 +23,67 @@ export function Footer() {
   };
 
   return (
-    <footer
-      className={cn(
-        COMPONENTS.footer.base,
-        COMPONENTS.footer.container,
-        COLORS.border,
-      )}
-    >
-      {/* Logo y subtítulo desde SITE_CONFIG */}
-      <div className="mb-10">
-        <h2 className={COMPONENTS.footer.logo}>{SITE_CONFIG.name}</h2>
-        <p className={COMPONENTS.footer.subtitle}>
-          {SITE_CONFIG.footerSubtitle}
-        </p>
+    <footer className={cn(COMPONENTS.footer.base, COLORS.border)}>
+      <div className={COMPONENTS.footer.container}>
+        <div className={COMPONENTS.footer.innerWrapper}>
+          {/* Logo y subtítulo desde SITE_CONFIG */}
+          <div className={COMPONENTS.footer.brandSection}>
+            <h2 className={COMPONENTS.footer.logo}>{SITE_CONFIG.name}</h2>
+            <p className={COMPONENTS.footer.subtitle}>
+              {SITE_CONFIG.footerSubtitle}
+            </p>
+          </div>
+
+          {/* Enlaces de navegación desde NAV_LINKS */}
+          <div className={COMPONENTS.footer.navSection}>
+            <nav
+              className={COMPONENTS.footer.nav}
+              aria-label="Enlaces principales"
+            >
+              {NAV_LINKS.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={COMPONENTS.footer.navLink}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
+          </div>
+
+          {/* Redes sociales y copyright */}
+          <div className={COMPONENTS.footer.socialSection}>
+            {/* Íconos y enlaces sociales desde SOCIAL_LINKS */}
+            <div
+              className={COMPONENTS.footer.socialLinks}
+              aria-label="Redes sociales"
+            >
+              {Object.entries(SOCIAL_LINKS).map(([key, social]) => (
+                <a
+                  key={key}
+                  href={social.href}
+                  target={social.href.startsWith("http") ? "_blank" : undefined}
+                  rel={
+                    social.href.startsWith("http")
+                      ? "noopener noreferrer"
+                      : undefined
+                  }
+                  className={COMPONENTS.footer.socialIcon}
+                  aria-label={social.ariaLabel}
+                >
+                  {getIcon(key)}
+                </a>
+              ))}
+            </div>
+
+            {/* Copyright dinámico y sin hardcodeo */}
+            <p className={COMPONENTS.footer.copyright}>
+              © {currentYear} {SITE_CONFIG.name}. Todos los derechos reservados.
+            </p>
+          </div>
+        </div>
       </div>
-
-      {/* Enlaces de navegación desde NAV_LINKS */}
-      <nav className={COMPONENTS.footer.nav} aria-label="Enlaces principales">
-        {NAV_LINKS.map((link) => (
-          <Link
-            key={link.href}
-            href={link.href}
-            className={COMPONENTS.footer.navLink}
-          >
-            {link.label}
-          </Link>
-        ))}
-      </nav>
-
-      {/* Íconos y enlaces sociales desde SOCIAL_LINKS */}
-      <div
-        className={COMPONENTS.footer.socialLinks}
-        aria-label="Redes sociales"
-      >
-        {Object.entries(SOCIAL_LINKS).map(([key, social]) => (
-          <a
-            key={key}
-            href={social.href}
-            target={social.href.startsWith("http") ? "_blank" : undefined}
-            rel={
-              social.href.startsWith("http") ? "noopener noreferrer" : undefined
-            }
-            className={COMPONENTS.footer.socialIcon}
-            aria-label={social.ariaLabel}
-          >
-            {getIcon(key)}
-          </a>
-        ))}
-      </div>
-
-      {/* Copyright dinámico y sin hardcodeo */}
-      <p className={COMPONENTS.footer.copyright}>
-        © {currentYear} {SITE_CONFIG.name}. Todos los derechos reservados.
-      </p>
     </footer>
   );
 }
