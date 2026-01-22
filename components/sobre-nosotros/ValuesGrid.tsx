@@ -2,6 +2,7 @@ import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Card } from "@/components/ui/Card";
 import { Icon } from "@/components/ui/Icon";
 import { ABOUT_CONTENT } from "@/lib/content/sobre-nosotros";
+import { TYPOGRAPHY, COLORS } from "@/lib/design/tokens";
 
 /**
  * Values grid component for About page
@@ -19,12 +20,10 @@ export function ValuesGrid() {
         {valores.items.map((value, index) => (
           <Card key={index} hover className="group">
             <Icon icon={value.icon} size="md" animated className="mb-6" />
-            
-            <h3 className="mb-4 text-xl font-bold text-foreground">
+            <h3 className={`mb-4 ${TYPOGRAPHY.heading.card} ${COLORS.foreground}`}>
               {value.title}
             </h3>
-            
-            <p className="text-base leading-relaxed text-muted-foreground">
+            <p className={`${TYPOGRAPHY.body.base} ${COLORS.muted}`}>
               {value.description}
             </p>
           </Card>

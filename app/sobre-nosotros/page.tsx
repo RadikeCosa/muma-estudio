@@ -9,8 +9,9 @@ import { SITE_CONFIG } from "@/lib/constants";
 import { LAYOUT, SPACING, COMPONENTS, ANIMATIONS } from "@/lib/design/tokens";
 
 export const metadata: Metadata = buildMetadata({
-  title: "Sobre Nosotros",
-  description: `Conocé la historia de ${SITE_CONFIG.name}, nuestro proceso artesanal y los valores que nos inspiran.`,
+  title: ABOUT_CONTENT.page.title,
+  description: `${ABOUT_CONTENT.page.subtitle} ${SITE_CONFIG.description}`,
+  image: ABOUT_CONTENT.image.src,
 });
 
 export default function SobreNosotrosPage() {

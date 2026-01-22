@@ -1,5 +1,6 @@
 import { LucideIcon } from "lucide-react";
 import { Icon } from "@/components/ui/Icon";
+import { TYPOGRAPHY, COLORS } from "@/lib/design/tokens";
 
 interface AboutSectionProps {
   title: string;
@@ -17,14 +18,14 @@ export function AboutSection({ title, icon, paragraphs }: AboutSectionProps) {
     <section>
       <div className="mb-10 flex items-center gap-4">
         <Icon icon={icon} size="md" animated />
-        <h2 className="text-3xl font-bold text-foreground sm:text-4xl">
+        <h2 className={`${TYPOGRAPHY.heading.section} ${COLORS.foreground}`}>
           {title}
         </h2>
       </div>
       
       <div className="space-y-6">
         {paragraphs.map((paragraph, index) => (
-          <p key={index} className="text-base leading-relaxed text-muted-foreground sm:text-lg">
+          <p key={index} className={`${TYPOGRAPHY.body.muted} sm:text-lg`}>
             {paragraph}
           </p>
         ))}
