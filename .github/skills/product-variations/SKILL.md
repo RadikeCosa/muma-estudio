@@ -1,5 +1,5 @@
 ---
-title: "Product Variations - Muma Estudio"
+title: "Product Variations - Fira Estudio"
 description: "Handling product variations with size, color, price, and stock management"
 version: "1.0"
 lastUpdated: "2026-01-19"
@@ -56,20 +56,21 @@ Located at: `components/productos/VariationSelector.tsx`
 **Purpose**: Allow users to select size and color combinations.
 
 **Usage**:
+
 ```typescript
 'use client';
 import { VariationSelector } from "@/components/productos/VariationSelector";
 
 export function ProductDetail({ producto }) {
   const [selectedVariacion, setSelectedVariacion] = useState<Variacion | null>(null);
-  
+
   return (
     <div>
       <VariationSelector
         variaciones={producto.variaciones}
         onSelect={setSelectedVariacion}
       />
-      
+
       {selectedVariacion && (
         <div>
           <p>Precio: {formatPrice(selectedVariacion.precio)}</p>
@@ -82,6 +83,7 @@ export function ProductDetail({ producto }) {
 ```
 
 **Props**:
+
 - `variaciones: Variacion[]` - All active variations
 - `onSelect: (variacion: Variacion) => void` - Callback when user selects
 
@@ -94,19 +96,20 @@ Located at: `components/productos/ProductActions.tsx`
 **Purpose**: WhatsApp button with selected variation context.
 
 **Usage**:
+
 ```typescript
 import { ProductActions } from "@/components/productos/ProductActions";
 
 export function ProductDetail({ producto }) {
   const [selectedVariacion, setSelectedVariacion] = useState<Variacion | null>(null);
-  
+
   return (
     <div>
       <VariationSelector
         variaciones={producto.variaciones}
         onSelect={setSelectedVariacion}
       />
-      
+
       <ProductActions
         producto={producto}
         variacion={selectedVariacion}
@@ -117,6 +120,7 @@ export function ProductDetail({ producto }) {
 ```
 
 **Features**:
+
 - Generates WhatsApp message with variation details
 - Tracks analytics with `trackWhatsAppClick(producto, variacion)`
 - Shows price from selected variation
@@ -150,10 +154,10 @@ export function ProductCard({ producto }) {
 ```typescript
 export function ProductDetail({ producto }) {
   const [selectedVariacion, setSelectedVariacion] = useState<Variacion | null>(null);
-  
+
   // Show selected variation price or default to precio_desde
   const displayPrice = selectedVariacion?.precio ?? producto.precio_desde;
-  
+
   return (
     <div>
       <p>{formatPrice(displayPrice)}</p>
@@ -184,7 +188,7 @@ function getStockLabel(stock: number): string {
 ### Filter Active Variations
 
 ```typescript
-const variacionesActivas = producto.variaciones.filter(v => v.activo);
+const variacionesActivas = producto.variaciones.filter((v) => v.activo);
 ```
 
 **Always filter** before displaying in UI.
@@ -197,15 +201,18 @@ const variacionesActivas = producto.variaciones.filter(v => v.activo);
 
 ```typescript
 // Get unique sizes
-const tamanios = [...new Set(variaciones.map(v => v.tamanio))];
+const tamanios = [...new Set(variaciones.map((v) => v.tamanio))];
 
 // For each size, get available colors
-const coloresPorTamanio = tamanios.reduce((acc, tamanio) => {
-  acc[tamanio] = variaciones
-    .filter(v => v.tamanio === tamanio && v.activo)
-    .map(v => v.color);
-  return acc;
-}, {} as Record<string, string[]>);
+const coloresPorTamanio = tamanios.reduce(
+  (acc, tamanio) => {
+    acc[tamanio] = variaciones
+      .filter((v) => v.tamanio === tamanio && v.activo)
+      .map((v) => v.color);
+    return acc;
+  },
+  {} as Record<string, string[]>,
+);
 ```
 
 ### Find Variation by Size + Color
@@ -214,10 +221,10 @@ const coloresPorTamanio = tamanios.reduce((acc, tamanio) => {
 function findVariacion(
   variaciones: Variacion[],
   tamanio: string,
-  color: string
+  color: string,
 ): Variacion | undefined {
   return variaciones.find(
-    v => v.tamanio === tamanio && v.color === color && v.activo
+    (v) => v.tamanio === tamanio && v.color === color && v.activo,
   );
 }
 ```
@@ -234,7 +241,7 @@ import { getProductoBySlug } from "@/lib/supabase/queries";
 const producto = await getProductoBySlug("mantel-floral");
 
 // Variations are included automatically
-producto.variaciones.forEach(v => {
+producto.variaciones.forEach((v) => {
   console.log(`${v.tamanio} - ${v.color}: ${v.precio}`);
 });
 ```
@@ -242,11 +249,13 @@ producto.variaciones.forEach(v => {
 ### Sort Variations
 
 **By Price** (ascending):
+
 ```typescript
 producto.variaciones.sort((a, b) => a.precio - b.precio);
 ```
 
 **By Size, then Color**:
+
 ```typescript
 producto.variaciones.sort((a, b) => {
   if (a.tamanio !== b.tamanio) {
@@ -272,6 +281,7 @@ function handleVariationSelect(variacion: Variacion) {
 ```
 
 **Tracked Data**:
+
 - `producto_id`, `variacion_id`
 - `variacion_tamanio`, `variacion_color`, `variacion_precio`
 - `value` (price for conversion tracking)
@@ -329,7 +339,7 @@ const sizes = ["150x200cm", "180x250cm"];
 
 ```typescript
 // ✅ Extract unique sizes
-const sizes = [...new Set(variaciones.map(v => v.tamanio))];
+const sizes = [...new Set(variaciones.map((v) => v.tamanio))];
 ```
 
 ---

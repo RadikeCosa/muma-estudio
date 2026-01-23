@@ -4,10 +4,10 @@
 export const HOME_CONTENT = {
   hero: {
     badge: "Textiles Artesanales Únicos",
-    title: "Muma Estudio", // Este valor puede ser reemplazado dinámicamente si es necesario
+    title: "Fira Estudio", // Este valor puede ser reemplazado dinámicamente si es necesario
     subtitle: "Textiles artesanales para tu hogar",
     description:
-      "Creamos manteles, servilletas y caminos de mesa con dedicación artesanal. Cada pieza es única y diseñada para transformar tus espacios en lugares especiales.",
+      "Creamos manteles, servilletas, caminos de mesa y accesorios de cocina con dedicación y cuidado artesanal. Lindos. Útiles. Para usar cada día.",
     cta: {
       primary: "Ver Productos",
       secondary: "Sobre Nosotros",
@@ -20,7 +20,7 @@ export const HOME_CONTENT = {
     viewAllCta: "Ver todos los productos",
   },
   categories: {
-    title: "Nuestras Categorías",
+    title: "Nuestras Colecciones",
     description: "Explora nuestra colección de textiles artesanales",
     items: [
       {
@@ -32,7 +32,7 @@ export const HOME_CONTENT = {
       {
         id: "servilletas",
         title: "Servilletas",
-        description: "Ideales para acompañar tus comidas y reuniones",
+        description: "Servilletas de tela de alta calidad",
         href: "/productos",
       },
       {

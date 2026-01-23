@@ -27,14 +27,14 @@ describe("Header", () => {
     it("renders the logo", () => {
       render(<Header />);
 
-      const logo = screen.getByText("Muma Estudio");
+      const logo = screen.getByText("fira Estudio");
       expect(logo).toBeInTheDocument();
     });
 
     it("logo links to home page", () => {
       render(<Header />);
 
-      const logoLink = screen.getByText("Muma Estudio").closest("a");
+      const logoLink = screen.getByText("fira Estudio").closest("a");
       expect(logoLink).toHaveAttribute("href", "/");
     });
   });
@@ -61,16 +61,18 @@ describe("Header", () => {
       const allLinks = screen.getAllByRole("link");
       const productosLink = allLinks.find(
         (link) =>
-          link.textContent === "Productos" && link.getAttribute("href") === "/productos"
+          link.textContent === "Productos" &&
+          link.getAttribute("href") === "/productos",
       );
       const nosotrosLink = allLinks.find(
         (link) =>
           link.textContent === "Nosotros" &&
-          link.getAttribute("href") === "/sobre-nosotros"
+          link.getAttribute("href") === "/sobre-nosotros",
       );
       const contactoLink = allLinks.find(
         (link) =>
-          link.textContent === "Contacto" && link.getAttribute("href") === "/contacto"
+          link.textContent === "Contacto" &&
+          link.getAttribute("href") === "/contacto",
       );
 
       expect(productosLink).toBeInTheDocument();
@@ -103,7 +105,7 @@ describe("Header", () => {
       // Get all close buttons and find the one in the header (has aria-expanded)
       const closeButtons = screen.getAllByLabelText("Cerrar menú");
       const headerCloseButton = closeButtons.find((btn) =>
-        btn.hasAttribute("aria-expanded")
+        btn.hasAttribute("aria-expanded"),
       );
       expect(headerCloseButton).toHaveAttribute("aria-expanded", "true");
     });
@@ -131,7 +133,7 @@ describe("Header", () => {
 
       // Close menu - click the header button (has aria-expanded)
       const headerCloseButton = closeButtons.find((btn) =>
-        btn.hasAttribute("aria-expanded")
+        btn.hasAttribute("aria-expanded"),
       );
       if (headerCloseButton) {
         fireEvent.click(headerCloseButton);
@@ -173,7 +175,7 @@ describe("Header", () => {
 
       // Find the overlay (not the icon)
       const overlay = Array.from(
-        document.querySelectorAll('[aria-hidden="true"]')
+        document.querySelectorAll('[aria-hidden="true"]'),
       ).find((el) => el.classList.contains("backdrop-blur-sm"));
 
       expect(overlay).toBeInTheDocument();
@@ -219,7 +221,7 @@ describe("Header", () => {
       expect(closeButtons.length).toBeGreaterThan(0);
       // Header button should have aria-expanded
       const headerCloseButton = closeButtons.find((btn) =>
-        btn.hasAttribute("aria-expanded")
+        btn.hasAttribute("aria-expanded"),
       );
       expect(headerCloseButton).toBeInTheDocument();
     });

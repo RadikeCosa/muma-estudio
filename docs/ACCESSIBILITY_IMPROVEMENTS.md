@@ -1,13 +1,15 @@
 # Accessibility Improvements Checklist
 
 ## Overview
-This document outlines accessibility (a11y) improvements for Muma Estudio. The goal is to meet WCAG 2.1 Level AA standards and provide an excellent experience for all users.
+
+This document outlines accessibility (a11y) improvements for fira Estudio. The goal is to meet WCAG 2.1 Level AA standards and provide an excellent experience for all users.
 
 ---
 
 ## ✅ Implemented
 
 ### 1. Button Component
+
 - ✅ Proper focus ring styles (`focus:ring-2`)
 - ✅ Active state feedback
 - ✅ Keyboard navigation support
@@ -15,6 +17,7 @@ This document outlines accessibility (a11y) improvements for Muma Estudio. The g
 - ✅ Adequate touch target size (minimum 44x44px)
 
 ### 2. Input Component
+
 - ✅ Associated labels with inputs via `htmlFor`
 - ✅ Error messages linked with `aria-describedby`
 - ✅ Required field indicators
@@ -22,12 +25,14 @@ This document outlines accessibility (a11y) improvements for Muma Estudio. The g
 - ✅ Helper text support
 
 ### 3. Textarea Component
+
 - ✅ Associated labels with textarea
 - ✅ Error and helper text support
 - ✅ Focus states
 - ✅ Required field indicators
 
 ### 4. Breadcrumbs Component
+
 - ✅ Semantic `<nav>` element
 - ✅ `aria-label="Breadcrumb"`
 - ✅ `aria-current="page"` on last item
@@ -35,6 +40,7 @@ This document outlines accessibility (a11y) improvements for Muma Estudio. The g
 - ✅ Keyboard navigable links
 
 ### 5. Link Components
+
 - ✅ External links have `rel="noopener noreferrer"`
 - ✅ Clear focus states
 - ✅ Hover states for visual feedback
@@ -44,6 +50,7 @@ This document outlines accessibility (a11y) improvements for Muma Estudio. The g
 ## ⚠️ High Priority - To Implement
 
 ### 1. Skip to Content Link
+
 **Issue:** Keyboard users must tab through entire navigation to reach main content.
 
 **Solution:** Add skip link at the top of the page.
@@ -51,22 +58,24 @@ This document outlines accessibility (a11y) improvements for Muma Estudio. The g
 **Location:** `app/layout.tsx`
 
 ```tsx
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="es">
       <body>
         {/* Skip to content link */}
-        <a 
-          href="#main-content" 
+        <a
+          href="#main-content"
           className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-foreground focus:text-background focus:rounded-lg focus:shadow-lg"
         >
           Saltar al contenido principal
         </a>
-        
+
         <Header />
-        <main id="main-content">
-          {children}
-        </main>
+        <main id="main-content">{children}</main>
         <Footer />
       </body>
     </html>
@@ -75,6 +84,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 ```
 
 **Acceptance Criteria:**
+
 - [ ] Link is visually hidden by default
 - [ ] Link becomes visible when focused via keyboard
 - [ ] Clicking/activating link jumps to main content
@@ -83,6 +93,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 ---
 
 ### 2. Focus Trap in MobileNav
+
 **Issue:** When mobile menu is open, focus can escape to background content.
 
 **Solution:** Implement focus trap using `focus-trap-react` or custom solution.
@@ -96,17 +107,17 @@ npm install focus-trap-react
 ```
 
 ```tsx
-import FocusTrap from 'focus-trap-react';
+import FocusTrap from "focus-trap-react";
 
 export function MobileNav() {
   const [isOpen, setIsOpen] = useState(false);
-  
+
   return (
     <>
       <button onClick={() => setIsOpen(true)} aria-label="Abrir menú">
         <Menu />
       </button>
-      
+
       {isOpen && (
         <FocusTrap
           focusTrapOptions={{
@@ -114,9 +125,7 @@ export function MobileNav() {
             clickOutsideDeactivates: true,
           }}
         >
-          <div className="mobile-nav-overlay">
-            {/* Menu content */}
-          </div>
+          <div className="mobile-nav-overlay">{/* Menu content */}</div>
         </FocusTrap>
       )}
     </>
@@ -128,7 +137,7 @@ export function MobileNav() {
 
 ```tsx
 // hooks/useFocusTrap.ts
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef } from "react";
 
 export function useFocusTrap(isActive: boolean) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -140,13 +149,15 @@ export function useFocusTrap(isActive: boolean) {
     if (!container) return;
 
     const focusableElements = container.querySelectorAll(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
     );
     const firstElement = focusableElements[0] as HTMLElement;
-    const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+    const lastElement = focusableElements[
+      focusableElements.length - 1
+    ] as HTMLElement;
 
     function handleTabKey(e: KeyboardEvent) {
-      if (e.key !== 'Tab') return;
+      if (e.key !== "Tab") return;
 
       if (e.shiftKey) {
         if (document.activeElement === firstElement) {
@@ -161,11 +172,11 @@ export function useFocusTrap(isActive: boolean) {
       }
     }
 
-    container.addEventListener('keydown', handleTabKey);
+    container.addEventListener("keydown", handleTabKey);
     firstElement?.focus();
 
     return () => {
-      container.removeEventListener('keydown', handleTabKey);
+      container.removeEventListener("keydown", handleTabKey);
     };
   }, [isActive]);
 
@@ -174,6 +185,7 @@ export function useFocusTrap(isActive: boolean) {
 ```
 
 **Acceptance Criteria:**
+
 - [ ] Focus stays within mobile menu when open
 - [ ] Tab key cycles through menu items
 - [ ] Shift+Tab cycles backwards
@@ -183,9 +195,11 @@ export function useFocusTrap(isActive: boolean) {
 ---
 
 ### 3. CategoryFilter - Horizontal Category Navigation ✅
+
 **Status:** Implemented
 
 **Changes Made:**
+
 - ✅ Semantic `<nav>` element with `aria-label="Filtrar productos por categoría"`
 - ✅ `role="tablist"` on button container
 - ✅ `role="tab"` on each category link
@@ -198,15 +212,18 @@ export function useFocusTrap(isActive: boolean) {
 **Location:** `components/productos/CategoryFilter.tsx`
 
 **Testing:**
+
 - Tests validate ARIA attributes (`aria-selected`, `aria-current`, `role="tab"`)
 - Tests verify semantic navigation structure
 - Tests confirm focus-visible classes for keyboard navigation
 - Tests check empty state handling
 
 **Future Optimization:**
+
 - Note added for future `useCallback` implementation in global performance optimization
 
 **Acceptance Criteria:**
+
 - ✅ Screen readers announce "Tab, Manteles, selected" for active category
 - ✅ Keyboard users see clear focus indicators
 - ✅ Semantic navigation structure
@@ -216,6 +233,7 @@ export function useFocusTrap(isActive: boolean) {
 ---
 
 ### 4. ARIA Labels for FilterBar Checkboxes
+
 **Issue:** Checkboxes may not be clearly labeled for screen readers.
 
 **Solution:** Add explicit ARIA labels.
@@ -240,6 +258,7 @@ export function useFocusTrap(isActive: boolean) {
 ```
 
 **Acceptance Criteria:**
+
 - [ ] Each checkbox has unique `id` and `aria-label`
 - [ ] Label is associated with checkbox via `htmlFor`
 - [ ] `aria-checked` reflects current state
@@ -248,6 +267,7 @@ export function useFocusTrap(isActive: boolean) {
 ---
 
 ### 4. ARIA Labels for FilterBar Checkboxes
+
 **Issue:** Size/color selection may not be fully keyboard accessible.
 
 **Solution:** Implement keyboard support.
@@ -257,14 +277,14 @@ export function useFocusTrap(isActive: boolean) {
 ```tsx
 export function VariationSelector() {
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
-  
+
   function handleKeyDown(e: React.KeyboardEvent, size: string) {
-    if (e.key === 'Enter' || e.key === ' ') {
+    if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
       setSelectedSize(size);
     }
   }
-  
+
   return (
     <div role="group" aria-label="Selección de tamaño">
       {sizes.map((size) => (
@@ -273,10 +293,7 @@ export function VariationSelector() {
           onClick={() => setSelectedSize(size)}
           onKeyDown={(e) => handleKeyDown(e, size)}
           aria-pressed={selectedSize === size}
-          className={cn(
-            "...",
-            selectedSize === size && "..."
-          )}
+          className={cn("...", selectedSize === size && "...")}
         >
           {size}
         </button>
@@ -300,6 +317,7 @@ export function VariationSelector() {
 ```
 
 **Acceptance Criteria:**
+
 - [ ] Tab key focuses each option
 - [ ] Enter/Space selects option
 - [ ] Visual focus indicator
@@ -309,6 +327,7 @@ export function VariationSelector() {
 ---
 
 ### 5. Keyboard Navigation for VariationSelector
+
 **Issue:** Muted text may not meet WCAG AA contrast ratio (4.5:1).
 
 **Solution:** Check and adjust if needed.
@@ -316,11 +335,13 @@ export function VariationSelector() {
 **Location:** `app/globals.css`
 
 **Steps:**
+
 1. Use contrast checker tool (e.g., WebAIM Contrast Checker)
 2. Test `--muted-foreground` against `--background`
 3. Adjust if contrast ratio < 4.5:1
 
 **Current values:**
+
 ```css
 :root {
   --background: #ffffff;
@@ -329,6 +350,7 @@ export function VariationSelector() {
 ```
 
 **If adjustment needed:**
+
 ```css
 :root {
   --muted-foreground: #525252; /* Darker for better contrast */
@@ -336,6 +358,7 @@ export function VariationSelector() {
 ```
 
 **Acceptance Criteria:**
+
 - [ ] All text meets WCAG AA (4.5:1) or AAA (7:1)
 - [ ] Large text (18pt+) meets WCAG AA (3:1)
 - [ ] Tested with automated tools
@@ -344,6 +367,7 @@ export function VariationSelector() {
 ---
 
 ### 6. Image Alt Text Best Practices
+
 **Issue:** Alt text may be generic (just product name).
 
 **Solution:** Add descriptive alt text.
@@ -351,25 +375,29 @@ export function VariationSelector() {
 **Location:** Product images throughout the site
 
 **Bad:**
+
 ```tsx
 <img src="/mantel.jpg" alt="Mantel Floral" />
 ```
 
 **Good:**
+
 ```tsx
-<img 
-  src="/mantel.jpg" 
-  alt="Mantel rectangular con estampado floral rojo y blanco, ideal para 6 personas" 
+<img
+  src="/mantel.jpg"
+  alt="Mantel rectangular con estampado floral rojo y blanco, ideal para 6 personas"
 />
 ```
 
 **Guidelines:**
+
 - Describe what the image shows visually
 - Include relevant details (colors, patterns, size context)
 - Keep under 125 characters if possible
 - Don't start with "Imagen de..." (screen readers already announce "image")
 
 **Acceptance Criteria:**
+
 - [ ] All product images have descriptive alt text
 - [ ] Alt text includes visual details
 - [ ] Decorative images use `alt=""` or `role="presentation"`
@@ -377,6 +405,7 @@ export function VariationSelector() {
 ---
 
 ### 7. Form Validation Announcements
+
 **Issue:** Form errors may not be announced to screen readers.
 
 **Solution:** Use `aria-live` regions.
@@ -386,13 +415,13 @@ export function VariationSelector() {
 ```tsx
 export function ContactForm() {
   const [errors, setErrors] = useState<Record<string, string>>({});
-  
+
   return (
     <form onSubmit={handleSubmit}>
       {/* Error summary (announced to screen readers) */}
       {Object.keys(errors).length > 0 && (
-        <div 
-          role="alert" 
+        <div
+          role="alert"
           aria-live="assertive"
           className="mb-6 p-4 bg-red-50 border-2 border-red-200 rounded-xl"
         >
@@ -406,7 +435,7 @@ export function ContactForm() {
           </ul>
         </div>
       )}
-      
+
       <Input
         id="nombre"
         label="Nombre"
@@ -419,7 +448,7 @@ export function ContactForm() {
           {errors.nombre}
         </span>
       )}
-      
+
       {/* ... rest of form */}
     </form>
   );
@@ -427,6 +456,7 @@ export function ContactForm() {
 ```
 
 **Acceptance Criteria:**
+
 - [ ] Errors are announced when form is submitted
 - [ ] Each field error is associated via `aria-describedby`
 - [ ] `aria-invalid` indicates fields with errors
@@ -437,6 +467,7 @@ export function ContactForm() {
 ## 🔵 Low Priority - Nice to Have
 
 ### 8. Reduced Motion Support
+
 **Issue:** Animations may cause discomfort for users with motion sensitivity.
 
 **Solution:** Respect `prefers-reduced-motion` media query.
@@ -465,6 +496,7 @@ export function ContactForm() {
 ```
 
 **Acceptance Criteria:**
+
 - [ ] All animations respect user preference
 - [ ] Page remains functional without animations
 - [ ] Smooth scroll disabled when motion reduced
@@ -473,6 +505,7 @@ export function ContactForm() {
 ---
 
 ### 9. Focus-Visible Only (Remove Focus Ring for Mouse Users)
+
 **Issue:** Focus rings appear on mouse clicks, which some users find distracting.
 
 **Solution:** Use `:focus-visible` instead of `:focus`.
@@ -480,18 +513,21 @@ export function ContactForm() {
 **Location:** Design tokens and components
 
 **Current:**
+
 ```tsx
-"focus:ring-2 focus:ring-foreground"
+"focus:ring-2 focus:ring-foreground";
 ```
 
 **Improved:**
+
 ```tsx
-"focus-visible:ring-2 focus-visible:ring-foreground focus:outline-none"
+"focus-visible:ring-2 focus-visible:ring-foreground focus:outline-none";
 ```
 
 **Note:** Tailwind 3+ supports `focus-visible` by default. Update components to use `focus-visible:` instead of `focus:` where appropriate.
 
 **Acceptance Criteria:**
+
 - [ ] Focus rings only appear for keyboard navigation
 - [ ] Mouse clicks don't show focus rings
 - [ ] Tab key shows focus rings
@@ -500,6 +536,7 @@ export function ContactForm() {
 ---
 
 ### 10. Landmark Regions
+
 **Issue:** Screen reader users benefit from explicit landmark roles.
 
 **Solution:** Add ARIA landmarks.
@@ -510,15 +547,15 @@ export function ContactForm() {
 // app/layout.tsx
 <body>
   <a href="#main-content">Skip to content</a>
-  
+
   <header role="banner">
     <Header />
   </header>
-  
+
   <main role="main" id="main-content">
     {children}
   </main>
-  
+
   <footer role="contentinfo">
     <Footer />
   </footer>
@@ -526,6 +563,7 @@ export function ContactForm() {
 ```
 
 **For sidebars/filters:**
+
 ```tsx
 <aside role="complementary" aria-label="Filtros de productos">
   <FilterBar />
@@ -535,6 +573,7 @@ export function ContactForm() {
 **Note:** HTML5 semantic elements (`<header>`, `<main>`, `<footer>`, `<aside>`) already provide implicit roles. Explicit roles are mainly for clarity and older browser support.
 
 **Acceptance Criteria:**
+
 - [ ] Main content area has `<main>` or `role="main"`
 - [ ] Navigation has `<nav>` or `role="navigation"`
 - [ ] Footer has `<footer>` or `role="contentinfo"`
@@ -545,18 +584,21 @@ export function ContactForm() {
 ## 🧪 Testing Tools
 
 ### Automated Testing
+
 - **axe DevTools** (Browser extension)
 - **Lighthouse** (Chrome DevTools > Audits)
 - **WAVE** (WebAIM browser extension)
 - **Pa11y** (CLI tool)
 
 ### Manual Testing
+
 - **Keyboard Navigation:** Tab through entire site
 - **Screen Reader:** NVDA (Windows), JAWS (Windows), VoiceOver (Mac)
 - **Browser Zoom:** Test at 200% zoom
 - **Color Blindness:** Chrome extension ColorBlindly
 
 ### Checklist for Manual Testing
+
 - [ ] Can complete all tasks using only keyboard
 - [ ] All interactive elements have visible focus
 - [ ] Screen reader announces all important info
@@ -580,6 +622,7 @@ export function ContactForm() {
 ## ✅ Acceptance Criteria (Overall)
 
 A fully accessible site should:
+
 - [ ] Score 90+ on Lighthouse Accessibility audit
 - [ ] Pass axe DevTools automated tests with 0 critical/serious issues
 - [ ] Be fully navigable via keyboard only
@@ -607,6 +650,7 @@ A fully accessible site should:
 ## 💬 Questions?
 
 For implementation help:
+
 - Reference this document for specifications
 - Check existing tests for patterns
 - Consult WCAG guidelines for standards

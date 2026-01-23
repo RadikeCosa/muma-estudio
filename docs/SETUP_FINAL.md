@@ -1,4 +1,4 @@
-# 🚀 Setup Final - Muma Estudio v1
+# 🚀 Setup Final - fira Estudio v1
 
 **Estado:** Todo completado ✅  
 **Fecha:** 17 de enero de 2026
@@ -21,12 +21,12 @@ NEXT_PUBLIC_WHATSAPP_NUMBER=5492999123456
 # Formato: país + 10 dígitos, sin espacios ni +
 
 # Site URL - REQUERIDO para SEO
-NEXT_PUBLIC_SITE_URL=https://mumaestudio.com
+NEXT_PUBLIC_SITE_URL=https://firaestudio.com
 # Mismo dominio en producción
 
 # Redes Sociales - OPCIONAL pero recomendado
-NEXT_PUBLIC_INSTAGRAM_URL=https://instagram.com/mumaestudio
-NEXT_PUBLIC_CONTACT_EMAIL=contacto@mumaestudio.com
+NEXT_PUBLIC_INSTAGRAM_URL=https://instagram.com/firaestudio
+NEXT_PUBLIC_CONTACT_EMAIL=contacto@firaestudio.com
 
 # Supabase - YA CONFIGURADO
 NEXT_PUBLIC_SUPABASE_URL=...
@@ -40,18 +40,18 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=...
 1. **Crear cuenta:**
    - Ir a https://analytics.google.com
    - Click "Crear cuenta"
-   - Ingresar nombre (ej: "Muma Estudio")
+   - Ingresar nombre (ej: "fira Estudio")
 
 2. **Crear propiedad:**
-   - Ingresar URL: `https://mumaestudio.com`
+   - Ingresar URL: `https://firaestudio.com`
    - País: Argentina
    - Zona horaria: (UTC-3) Buenos Aires
    - Moneda: ARS
 
 3. **Crear data stream:**
    - Seleccionar "Web"
-   - URL: `https://mumaestudio.com`
-   - Nombre: "Web - Muma Estudio"
+   - URL: `https://firaestudio.com`
+   - Nombre: "Web - fira Estudio"
    - Copiar ID de medida (ej: `G-XXXXXXXXXX`)
 
 4. **Configurar .env.local:**
@@ -80,7 +80,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=...
 curl http://localhost:3000/sitemap.xml
 
 # Production
-curl https://mumaestudio.com/sitemap.xml
+curl https://firaestudio.com/sitemap.xml
 ```
 
 Debe mostrar:
@@ -96,7 +96,7 @@ Debe mostrar:
 curl http://localhost:3000/robots.txt
 
 # Production
-curl https://mumaestudio.com/robots.txt
+curl https://firaestudio.com/robots.txt
 ```
 
 Debe permitir: `/`  
@@ -123,7 +123,7 @@ Debe bloquear: `/api/`, `/_next/`, `/private/`
 1. **Registrar sitio:**
    - Ir a https://search.google.com/search-console
    - "Agregar propiedad"
-   - Ingresar `https://mumaestudio.com`
+   - Ingresar `https://firaestudio.com`
 
 2. **Validar dominio:**
    - Descargar archivo HTML
@@ -133,7 +133,7 @@ Debe bloquear: `/api/`, `/_next/`, `/private/`
 3. **Enviar sitemap:**
    - Ir a "Sitemaps"
    - Click "Agregar sitemap"
-   - Ingresar: `https://mumaestudio.com/sitemap.xml`
+   - Ingresar: `https://firaestudio.com/sitemap.xml`
 
 4. **Monitorear:**
    - Esperar 24-48 horas
@@ -212,7 +212,7 @@ npm run start
 4. **Deploy:**
    - Click "Deploy"
    - Esperar ~3 minutos
-   - Verificar en `https://muma-estudio.vercel.app`
+   - Verificar en `https://fira-estudio.vercel.app`
 
 ---
 
@@ -228,7 +228,7 @@ npm run start
 #### Primeros 7 Días
 
 - [ ] Google Search Console indexa páginas
-- [ ] Buscar "Muma Estudio" en Google
+- [ ] Buscar "fira Estudio" en Google
 - [ ] Revisar errores en GSC
 - [ ] Validar JSON-LD en productos
 

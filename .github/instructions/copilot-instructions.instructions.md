@@ -1,5 +1,5 @@
 ---
-title: "GitHub Copilot Instructions - Muma Estudio"
+title: "GitHub Copilot Instructions - Fira Estudio"
 description: "Development guidelines for textile e-commerce with Next.js 16 + Supabase"
 version: "3.0"
 lastUpdated: "2026-01-16"
@@ -11,11 +11,11 @@ stack:
   - Vercel
 ---
 
-# GitHub Copilot Instructions - Muma Estudio
+# GitHub Copilot Instructions - Fira Estudio
 
 ## 🎯 Project Context
 
-**Muma Estudio** is an artisan textile e-commerce (tablecloths, napkins, table runners) with products that have multiple size and color variations.
+**Fira Estudio** is an artisan textile e-commerce (tablecloths, napkins, table runners) with products that have multiple size and color variations.
 
 - **V1 (Current):** Visual catalog + WhatsApp inquiries
 - **V2 (Future):** Shopping cart + Mercado Pago payments
@@ -68,17 +68,20 @@ lib/                # Business logic
 ### Centralized Content & Styles
 
 **Content Files** (all text is centralized):
+
 - `lib/content/home.ts` - Home page text
 - `lib/content/contacto.ts` - Contact page text
 - `lib/content/sobre-nosotros.ts` - About page text
 - `lib/content/productos.ts` - Products page text
 
 **Design Tokens** (all styles are centralized):
+
 - `lib/design/tokens.ts` - COLORS, TYPOGRAPHY, SPACING, COMPONENTS, LAYOUT, ANIMATIONS
 
 **Convention**: Never hardcode text or repeated style classes in components. Always import from centralized files.
 
 **Example (CORRECT)**:
+
 ```typescript
 import { HOME_CONTENT } from "@/lib/content/home";
 import { TYPOGRAPHY, SPACING } from "@/lib/design/tokens";
@@ -95,9 +98,10 @@ export function HeroSection() {
 ```
 
 **Example (INCORRECT)**:
+
 ```typescript
 // ❌ Don't hardcode text
-<h1>Muma Estudio</h1>
+<h1>Fira Estudio</h1>
 
 // ❌ Don't duplicate style strings
 <section className="px-4 py-20 sm:px-6 sm:py-28 lg:px-8 lg:py-36">
@@ -264,12 +268,14 @@ export default function Loading() {
 ```
 
 **Component Structure:**
+
 - Use centralized content: `import { HOME_CONTENT } from "@/lib/content/home"`
 - Use design tokens: `import { TYPOGRAPHY, SPACING } from "@/lib/design/tokens"`
 - Prefer composition over large monolithic components
 - Extract reusable UI components to `components/ui/`
 
 **Naming Conventions:**
+
 - Components: `PascalCase` (ProductCard, VariationSelector)
 - Functions/variables: `camelCase` (getProductos, isLoading)
 - Constants: `UPPER_SNAKE_CASE` (SITE_CONFIG, ERROR_MESSAGES)
@@ -278,6 +284,7 @@ export default function Loading() {
 - Booleans: `is/has/should` prefix (isLoading, hasError, shouldDisplay)
 
 **Example**:
+
 ```typescript
 // ✅ CORRECT: Centralized + tokens
 import { HOME_CONTENT } from "@/lib/content/home";
@@ -287,7 +294,7 @@ import { cn } from "@/lib/utils";
 
 export function HeroSection() {
   const { title, subtitle, cta } = HOME_CONTENT.hero;
-  
+
   return (
     <section className={SPACING.sectionPadding.md}>
       <h1 className={cn(TYPOGRAPHY.heading.page, ANIMATIONS.fadeIn)}>
@@ -302,7 +309,7 @@ export function HeroSection() {
 export function HeroSection() {
   return (
     <section className="px-4 py-20">
-      <h1 className="text-4xl font-bold">Muma Estudio</h1>
+      <h1 className="text-4xl font-bold">Fira Estudio</h1>
       <button>Ver Productos</button>
     </section>
   );

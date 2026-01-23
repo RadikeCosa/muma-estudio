@@ -9,7 +9,7 @@ import { SITE_CONFIG } from "@/lib/constants";
 import { buildMetadata } from "@/lib/seo/metadata";
 
 /**
- * Home Page - Muma Estudio
+ * Home Page - Fira Estudio
  *
  * Estructura:
  * 1. Hero Section - Badge, título, descripción, CTAs

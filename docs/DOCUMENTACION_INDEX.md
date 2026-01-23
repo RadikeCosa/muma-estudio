@@ -1,6 +1,6 @@
 # 📖 Índice de Documentación - Checklist Completado
 
-**Proyecto:** Muma Estudio (Textile E-commerce)  
+**Proyecto:** fira Estudio (Textile E-commerce)  
 **Stack:** Next.js 16 + Supabase + Tailwind CSS  
 **Fecha:** 17 de enero de 2026  
 **Estado:** ✅ 100% COMPLETADO
@@ -150,7 +150,7 @@
 ```bash
 NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX  # Obtener de GA4
 NEXT_PUBLIC_WHATSAPP_NUMBER=5492999123456   # Actualizar con número real
-NEXT_PUBLIC_SITE_URL=https://mumaestudio.com # Ya en .env.local.example
+NEXT_PUBLIC_SITE_URL=https://firaestudio.com # Ya en .env.local.example
 ```
 
 ### Próximos Pasos Inmediatos

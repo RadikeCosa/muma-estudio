@@ -52,7 +52,7 @@ cp .env.local.example .env.local
 # Editar con valores reales
 # NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
 # NEXT_PUBLIC_WHATSAPP_NUMBER=5492999123456
-# NEXT_PUBLIC_SITE_URL=https://mumaestudio.com
+# NEXT_PUBLIC_SITE_URL=https://firaestudio.com
 ```
 
 ### 2. Crear cuenta Google Analytics

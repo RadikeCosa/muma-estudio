@@ -44,25 +44,21 @@ export const ABOUT_CONTENT: AboutContent = {
   },
   image: {
     src: "/images/about.webp",
-    alt: "Taller de Muma Estudio",
+    alt: "Taller de fira Estudio",
   },
   sections: {
     historia: {
       title: "Nuestra Historia",
       icon: Heart,
       paragraphs: [
-        "Muma Estudio nació de la pasión por crear piezas textiles únicas que transformen los espacios cotidianos en lugares especiales. Cada producto es el resultado de un cuidadoso proceso artesanal que combina técnicas tradicionales con diseños contemporáneos.",
-        "Desde nuestros inicios, nos hemos dedicado a trabajar con materiales de primera calidad, buscando siempre la excelencia en cada detalle. Creemos que los textiles para el hogar no son solo elementos decorativos, sino piezas que acompañan momentos importantes y crean memorias.",
-        "Nuestro taller es un espacio donde la creatividad y la artesanía se encuentran, dando vida a manteles, servilletas y caminos de mesa que cuentan historias y reflejan la personalidad de cada hogar.",
+        "Nuestra historia Fira Estudio nace de la idea de que un hogar puede encenderse con belleza simple y auténtica. Cada pieza es única porque lleva nuestra esencia: lindas, para que enamoren a primera vista; útiles, para que se integren naturalmente a tu rutina; y pensadas para usar cada día, porque creemos en la simpleza de lo cotidiano, en las mesas compartidas, en los momentos genuinos. Cada producto es el resultado de un dedicado proceso artesanal. En Fira Estudio seleccionamos textiles premium, diseñamos cada objeto, lo cosemos y lo estampamos manualmente mediante serigrafía, buscando siempre la excelencia en cada detalle",
       ],
     },
     proceso: {
       title: "Proceso Artesanal",
       icon: Sparkles,
       paragraphs: [
-        "Cada pieza que creamos pasa por un meticuloso proceso de elaboración que garantiza su calidad y durabilidad. Seleccionamos cuidadosamente los materiales, priorizando fibras naturales y telas de alta calidad que ofrecen tanto belleza como funcionalidad.",
-        "El diseño de cada producto es pensado para complementar diferentes estilos de decoración, desde lo más clásico hasta lo más contemporáneo. Trabajamos con atención al detalle en cada costura, cada terminación, asegurándonos de que cada pieza sea perfecta antes de llegar a tu hogar.",
-        "Nuestro compromiso es mantener viva la tradición artesanal, adaptándola a las necesidades y gustos actuales, creando productos que perduren en el tiempo tanto en calidad como en estilo.",
+        "Proceso Artesanal Piezas artesanales que encienden tu hogar con calidad y durabilidad. Cada pieza que creamos pasa por un meticuloso proceso de elaboración. Seleccionamos cuidadosamente materiales premium, priorizando fibras naturales y telas de alta calidad que combinan belleza con funcionalidad óptima. Prestamos atención rigurosa a cada costura a mano, cada terminación y cada estampa manual mediante serigrafía.",
       ],
     },
     valores: {

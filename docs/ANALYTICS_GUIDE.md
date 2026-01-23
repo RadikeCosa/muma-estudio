@@ -2,7 +2,7 @@
 
 ## Overview
 
-Muma Estudio uses Google Analytics 4 (GA4) for tracking user interactions and gathering insights about product performance and user behavior.
+fira Estudio uses Google Analytics 4 (GA4) for tracking user interactions and gathering insights about product performance and user behavior.
 
 ## Setup Instructions
 
@@ -24,6 +24,7 @@ NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
 ### 3. Deploy to Production
 
 Google Analytics only loads in production (`NODE_ENV=production`). This means:
+
 - **Development (`npm run dev`)**: Analytics will NOT load
 - **Production (`npm run build && npm run start`)**: Analytics will load
 
@@ -34,6 +35,7 @@ Google Analytics only loads in production (`NODE_ENV=production`). This means:
 Triggered when a user clicks the "Consultar por WhatsApp" button.
 
 **Parameters:**
+
 - `event_category`: "engagement"
 - `event_label`: Product name
 - `producto_id`: Product UUID
@@ -45,6 +47,7 @@ Triggered when a user clicks the "Consultar por WhatsApp" button.
 - `value`: Price value (for conversion tracking)
 
 **Usage in GA4:**
+
 - Measure engagement with WhatsApp contact
 - Track which products generate most inquiries
 - Understand price points that convert
@@ -54,6 +57,7 @@ Triggered when a user clicks the "Consultar por WhatsApp" button.
 Triggered automatically when a product detail page loads.
 
 **Parameters:**
+
 - `event_category`: "ecommerce"
 - `event_label`: Product name
 - `producto_id`: Product UUID
@@ -64,6 +68,7 @@ Triggered automatically when a product detail page loads.
 - `value`: Price value
 
 **Usage in GA4:**
+
 - Track most viewed products
 - Measure engagement funnel
 - Identify popular categories
@@ -73,12 +78,14 @@ Triggered automatically when a product detail page loads.
 Triggered when a user clicks on a category filter.
 
 **Parameters:**
+
 - `event_category`: "navigation"
 - `event_label`: Category name
 - `filter_type`: "category"
 - `filter_value`: Category slug
 
 **Usage in GA4:**
+
 - Understand navigation patterns
 - Identify popular categories
 - Optimize category organization
@@ -88,6 +95,7 @@ Triggered when a user clicks on a category filter.
 Triggered when a user selects a product variation (size/color).
 
 **Parameters:**
+
 - `event_category`: "ecommerce"
 - `event_label`: Full variation description
 - `producto_id`: Product UUID
@@ -98,6 +106,7 @@ Triggered when a user selects a product variation (size/color).
 - `value`: Price value
 
 **Usage in GA4:**
+
 - Track most popular variations
 - Understand size/color preferences
 - Optimize inventory
@@ -155,12 +164,14 @@ Triggered when a user selects a product variation (size/color).
 ### Common Issues
 
 **Analytics not loading:**
+
 - ✅ Check `NEXT_PUBLIC_GA_MEASUREMENT_ID` is set correctly
 - ✅ Verify you're running in production mode
 - ✅ Check browser console for errors
 - ✅ Ensure ad blockers are disabled for testing
 
 **Events not firing:**
+
 - ✅ Check browser console for `gtag` errors
 - ✅ Verify `window.gtag` exists in console
 - ✅ Check Network tab for blocked requests
@@ -228,10 +239,7 @@ To add a new custom event:
 1. **Define the event in `lib/analytics/gtag.ts`:**
 
 ```typescript
-export function trackNewEvent(
-  param1: string,
-  param2: number
-): void {
+export function trackNewEvent(param1: string, param2: number): void {
   if (!canTrack()) return;
 
   window.gtag!("event", "new_event_name", {
@@ -264,6 +272,7 @@ const handleAction = () => {
 ### Loading Strategy
 
 Google Analytics uses `@next/third-parties/google` which implements:
+
 - Async script loading
 - Deferred execution
 - No blocking of page render

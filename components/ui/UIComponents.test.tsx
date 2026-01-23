@@ -24,7 +24,7 @@ describe("UI Components Phase 2 - Specification Compliance", () => {
           label="Email"
           placeholder="tu@email.com"
           required
-        />
+        />,
       );
 
       expect(screen.getByLabelText(/Email/)).toBeInTheDocument();
@@ -33,37 +33,20 @@ describe("UI Components Phase 2 - Specification Compliance", () => {
     });
 
     it("displays error message when error prop is provided", () => {
-      render(
-        <Input
-          id="test"
-          label="Test"
-          error="Este campo es requerido"
-        />
-      );
+      render(<Input id="test" label="Test" error="Este campo es requerido" />);
 
       expect(screen.getByText("Este campo es requerido")).toBeInTheDocument();
     });
 
     it("displays helper text when provided and no error", () => {
-      render(
-        <Input
-          id="test"
-          label="Test"
-          helperText="Texto de ayuda"
-        />
-      );
+      render(<Input id="test" label="Test" helperText="Texto de ayuda" />);
 
       expect(screen.getByText("Texto de ayuda")).toBeInTheDocument();
     });
 
     it("does not display helper text when error is present", () => {
       render(
-        <Input
-          id="test"
-          label="Test"
-          error="Error"
-          helperText="Helper"
-        />
+        <Input id="test" label="Test" error="Error" helperText="Helper" />,
       );
 
       expect(screen.getByText("Error")).toBeInTheDocument();
@@ -79,11 +62,13 @@ describe("UI Components Phase 2 - Specification Compliance", () => {
           name="message"
           label="Mensaje"
           placeholder="Escribe aquí..."
-        />
+        />,
       );
 
       expect(screen.getByLabelText(/Mensaje/)).toBeInTheDocument();
-      expect(screen.getByPlaceholderText("Escribe aquí...")).toBeInTheDocument();
+      expect(
+        screen.getByPlaceholderText("Escribe aquí..."),
+      ).toBeInTheDocument();
     });
 
     it("applies resize-none class", () => {
@@ -125,7 +110,7 @@ describe("UI Components Phase 2 - Specification Compliance", () => {
       render(
         <Card>
           <p>Content</p>
-        </Card>
+        </Card>,
       );
 
       expect(screen.getByText("Content")).toBeInTheDocument();
@@ -135,7 +120,7 @@ describe("UI Components Phase 2 - Specification Compliance", () => {
       const { container } = render(
         <Card hover>
           <p>Content</p>
-        </Card>
+        </Card>,
       );
 
       const card = container.firstChild as HTMLElement;
@@ -146,7 +131,7 @@ describe("UI Components Phase 2 - Specification Compliance", () => {
       const { rerender, container } = render(
         <Card padding="sm">
           <p>Content</p>
-        </Card>
+        </Card>,
       );
       let card = container.firstChild as HTMLElement;
       expect(card.className).toContain("p-6");
@@ -154,7 +139,7 @@ describe("UI Components Phase 2 - Specification Compliance", () => {
       rerender(
         <Card padding="lg">
           <p>Content</p>
-        </Card>
+        </Card>,
       );
       card = container.firstChild as HTMLElement;
       expect(card.className).toContain("p-10");
@@ -167,13 +152,11 @@ describe("UI Components Phase 2 - Specification Compliance", () => {
         <PageHeader
           title="Contacto"
           description="¿Tenés alguna consulta? Envianos un mensaje."
-        />
+        />,
       );
 
       expect(screen.getByText("Contacto")).toBeInTheDocument();
-      expect(
-        screen.getByText(/¿Tenés alguna consulta\?/)
-      ).toBeInTheDocument();
+      expect(screen.getByText(/¿Tenés alguna consulta\?/)).toBeInTheDocument();
     });
 
     it("shows DecorativeBadge by default", () => {
@@ -184,7 +167,9 @@ describe("UI Components Phase 2 - Specification Compliance", () => {
     });
 
     it("hides DecorativeBadge when showBadge is false", () => {
-      const { container } = render(<PageHeader title="Test" showBadge={false} />);
+      const { container } = render(
+        <PageHeader title="Test" showBadge={false} />,
+      );
       const badge = container.querySelector(".inline-flex");
       expect(badge).not.toBeInTheDocument();
     });
@@ -196,12 +181,12 @@ describe("UI Components Phase 2 - Specification Compliance", () => {
         <ContactInfoItem
           icon={Mail}
           title="Email"
-          content="info@mumaestudio.com"
-        />
+          content="info@firaestudio.com"
+        />,
       );
 
       expect(screen.getByText("Email")).toBeInTheDocument();
-      expect(screen.getByText("info@mumaestudio.com")).toBeInTheDocument();
+      expect(screen.getByText("info@firaestudio.com")).toBeInTheDocument();
     });
 
     it("renders as link when href is provided", () => {
@@ -209,14 +194,14 @@ describe("UI Components Phase 2 - Specification Compliance", () => {
         <ContactInfoItem
           icon={Mail}
           title="Email"
-          content="info@mumaestudio.com"
-          href="mailto:info@mumaestudio.com"
-        />
+          content="info@firaestudio.com"
+          href="mailto:info@firaestudio.com"
+        />,
       );
 
-      const link = screen.getByText("info@mumaestudio.com");
+      const link = screen.getByText("info@firaestudio.com");
       expect(link.tagName).toBe("A");
-      expect(link).toHaveAttribute("href", "mailto:info@mumaestudio.com");
+      expect(link).toHaveAttribute("href", "mailto:info@firaestudio.com");
     });
 
     it("adds target blank for external links", () => {
@@ -224,13 +209,13 @@ describe("UI Components Phase 2 - Specification Compliance", () => {
         <ContactInfoItem
           icon={Mail}
           title="Website"
-          content="mumaestudio.com"
-          href="https://mumaestudio.com"
+          content="firaestudio.com"
+          href="https://firaestudio.com"
           external
-        />
+        />,
       );
 
-      const link = screen.getByText("mumaestudio.com");
+      const link = screen.getByText("firaestudio.com");
       expect(link).toHaveAttribute("target", "_blank");
       expect(link).toHaveAttribute("rel", "noopener noreferrer");
     });

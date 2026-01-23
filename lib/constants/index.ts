@@ -11,16 +11,17 @@ const SITE_KEYWORDS = [
   "caminos de mesa",
   "artesanal",
   "Argentina",
+  "Neuquén",
 ];
 
 /** Configuración del sitio */
 export const SITE_CONFIG = {
-  name: "Muma Estudio",
+  name: "Fira Estudio",
   tagline: "Creaciones Textiles y Digitales",
   description:
-    "Textiles artesanales para tu hogar. Manteles, servilletas y caminos de mesa únicos, hechos a mano en Argentina.",
-  url: process.env.NEXT_PUBLIC_SITE_URL || "https://mumaestudio.com",
-  email: "contacto@mumaestudio.com",
+    "Piezas artesanales que encienden tu hogar. Creamos manteles, servilletas, caminos de mesa y accesorios de cocina con dedicación y cuidado artesanal. Lindos. Útiles. Para usar cada día.",
+  url: process.env.NEXT_PUBLIC_SITE_URL,
+  email: process.env.NEXT_PUBLIC_CONTACT_EMAIL,
   locale: "es_AR",
   keywords: SITE_KEYWORDS, // ← Sin as const aquí
   /** Subtítulo para el footer, configurable */

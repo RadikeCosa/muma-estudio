@@ -1,5 +1,5 @@
 ---
-title: "WhatsApp Integration - Muma Estudio"
+title: "WhatsApp Integration - Fira Estudio"
 description: "WhatsApp contact link generation with analytics tracking and rate limiting"
 version: "1.0"
 lastUpdated: "2026-01-19"
@@ -30,16 +30,16 @@ const url = WHATSAPP.getUrl("Hola! Tengo una consulta sobre los productos.");
 
 // Product inquiry
 const url = WHATSAPP.getUrl(
-  `Hola! Me interesa el ${producto.nombre}. ¿Está disponible?`
+  `Hola! Me interesa el ${producto.nombre}. ¿Está disponible?`,
 );
 
 // With variation details
 const url = WHATSAPP.getUrl(
   `Hola! Consulta sobre:\n` +
-  `Producto: ${producto.nombre}\n` +
-  `Tamaño: ${variacion.tamanio}\n` +
-  `Color: ${variacion.color}\n` +
-  `Precio: ${formatPrice(variacion.precio)}`
+    `Producto: ${producto.nombre}\n` +
+    `Tamaño: ${variacion.tamanio}\n` +
+    `Color: ${variacion.color}\n` +
+    `Precio: ${formatPrice(variacion.precio)}`,
 );
 ```
 
@@ -62,6 +62,7 @@ trackWhatsAppClick(producto, variacion);
 ```
 
 **Tracked Data**:
+
 - `producto_id`, `producto_nombre`, `producto_slug`
 - `variacion_tamanio`, `variacion_color`, `variacion_precio` (if provided)
 - `value` (variation price or product base price)
@@ -92,7 +93,7 @@ export function WhatsAppButton({ producto, variacion }) {
       alert(`Por favor esperá ${Math.ceil(timeUntilReset / 1000)}s antes de consultar nuevamente.`);
       return;
     }
-    
+
     trackWhatsAppClick(producto, variacion);
     // Open WhatsApp...
   };
@@ -106,6 +107,7 @@ export function WhatsAppButton({ producto, variacion }) {
 ```
 
 **Configuration**:
+
 - `maxActions: 5` - Maximum 5 clicks
 - `windowMs: 60000` - Per 60 seconds (1 minute)
 - `key: "whatsapp_clicks"` - Unique identifier in localStorage
@@ -117,6 +119,7 @@ export function WhatsAppButton({ producto, variacion }) {
 ### Best Practices
 
 ✅ **DO**:
+
 - Use Spanish (Argentine dialect)
 - Keep messages under 250 characters for mobile
 - Include product name and key details
@@ -124,6 +127,7 @@ export function WhatsAppButton({ producto, variacion }) {
 - Line breaks with `\n` for readability
 
 ❌ **DON'T**:
+
 - Don't use emojis (professional context)
 - Don't include URLs (WhatsApp auto-detects)
 - Don't encode special characters manually (handled by `getUrl()`)
@@ -132,18 +136,21 @@ export function WhatsAppButton({ producto, variacion }) {
 ### Example Messages
 
 **General Inquiry**:
+
 ```typescript
 const message = "Hola! Quisiera consultar sobre los productos disponibles.";
 ```
 
 **Product Inquiry**:
+
 ```typescript
 const message = `Hola! Me interesa el ${producto.nombre}. ¿Cuál es el tiempo de entrega?`;
 ```
 
 **Detailed Inquiry**:
+
 ```typescript
-const message = 
+const message =
   `Hola! Consulta sobre:\n` +
   `\n` +
   `Producto: ${producto.nombre}\n` +
@@ -188,6 +195,7 @@ export const WHATSAPP = {
 ### Manual Testing
 
 1. **Verify message format**:
+
    ```typescript
    console.log(WHATSAPP.getUrl("Test message"));
    // Output: https://wa.me/5492999123456?text=Test%20message

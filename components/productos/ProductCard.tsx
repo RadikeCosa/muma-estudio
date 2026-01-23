@@ -62,7 +62,7 @@ export function ProductCard({ producto, imagenPrincipal }: ProductCardProps) {
       <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-muted/30 to-muted">
         <Image
           src={imageSrc}
-          alt={`${producto.nombre} - Textil artesanal de Muma Estudio`}
+          alt={`${producto.nombre} - Textil artesanal de fira Estudio`}
           fill
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           className="

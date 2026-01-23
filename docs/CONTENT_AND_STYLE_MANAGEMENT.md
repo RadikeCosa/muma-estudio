@@ -1,13 +1,15 @@
 # Content and Style Management Guide
 
 ## Overview
-After the refactor (Phases 1-8), Muma Estudio follows a centralized architecture for content and styling. This guide explains how to make changes without touching component code.
+
+After the refactor (Phases 1-8), fira Estudio follows a centralized architecture for content and styling. This guide explains how to make changes without touching component code.
 
 ---
 
 ## 📝 Managing Content (Text Changes)
 
 ### Content Files Location
+
 All text content is centralized in `lib/content/`:
 
 ```
@@ -30,12 +32,12 @@ lib/content/
 export const HOME_CONTENT = {
   hero: {
     badge: "Textiles Artesanales Únicos",
-    title: "Muma Estudio", // ← Change this
+    title: "fira Estudio", // ← Change this
     subtitle: "Textiles artesanales para tu hogar", // ← Or this
     description: "Your new description here...",
     // ...
-  }
-}
+  },
+};
 ```
 
 **Result:** Title updates on home page automatically, no component changes needed.
@@ -50,11 +52,11 @@ export const CONTACTO_CONTENT = {
     fields: {
       nombre: {
         label: "Nombre Completo", // ← Change label
-        placeholder: "Juan Pérez" // ← Change placeholder
-      }
-    }
-  }
-}
+        placeholder: "Juan Pérez", // ← Change placeholder
+      },
+    },
+  },
+};
 ```
 
 #### Example 3: Add New About Section
@@ -64,25 +66,25 @@ export const CONTACTO_CONTENT = {
 ```typescript
 export const ABOUT_CONTENT = {
   sections: {
-    newSection: { // ← Add new section
+    newSection: {
+      // ← Add new section
       title: "Nuestro Compromiso",
       icon: Award, // Import from lucide-react
-      paragraphs: [
-        "First paragraph...",
-        "Second paragraph..."
-      ]
-    }
-  }
-}
+      paragraphs: ["First paragraph...", "Second paragraph..."],
+    },
+  },
+};
 ```
 
 Then use in component:
+
 ```typescript
 // app/sobre-nosotros/page.tsx
 const { newSection } = ABOUT_CONTENT.sections;
 ```
 
 ### TypeScript Benefits
+
 - **Autocomplete:** IDE suggests all available content keys
 - **Type Safety:** Prevents typos and missing fields
 - **Refactoring:** Rename content keys across the project safely
@@ -92,6 +94,7 @@ const { newSection } = ABOUT_CONTENT.sections;
 ## 🎨 Managing Styles (Visual Changes)
 
 ### Style Files Location
+
 All design tokens are centralized in `lib/design/`:
 
 ```
@@ -108,10 +111,10 @@ lib/design/
 
 ```typescript
 export const COLORS = {
-  foreground: "text-foreground",   // Main text color
-  background: "bg-background",     // Main background
-  muted: "text-muted bg-muted",   // Secondary text/bg
-  border: "border-border",         // Border color
+  foreground: "text-foreground", // Main text color
+  background: "bg-background", // Main background
+  muted: "text-muted bg-muted", // Secondary text/bg
+  border: "border-border", // Border color
   accent: "text-accent bg-accent", // Accent color
 } as const;
 ```
@@ -129,6 +132,7 @@ export const COLORS = {
 ```
 
 **How to Change:**
+
 1. Update CSS variable in `globals.css`
 2. Styles update across entire site automatically
 
@@ -160,6 +164,7 @@ import { TYPOGRAPHY } from "@/lib/design/tokens";
 ```
 
 **To Change Font Sizes:**
+
 1. Update token definition in `tokens.ts`
 2. All components using that token update automatically
 
@@ -199,7 +204,7 @@ export const COMPONENTS = {
   button: {
     base: "inline-flex items-center justify-center gap-2 rounded-xl...",
     hover: "transition-all duration-300 hover:shadow-xl hover:scale-[1.02]",
-  }
+  },
 } as const;
 ```
 
@@ -247,11 +252,11 @@ import { Button } from "@/components/ui/Button";
 ```typescript
 import { Input } from "@/components/ui/Input";
 
-<Input 
-  id="email" 
-  label="Email" 
-  placeholder="tu@email.com" 
-  required 
+<Input
+  id="email"
+  label="Email"
+  placeholder="tu@email.com"
+  required
   error="Invalid email"
   helperText="We'll never share your email"
 />
@@ -262,11 +267,11 @@ import { Input } from "@/components/ui/Input";
 ```typescript
 import { Textarea } from "@/components/ui/Textarea";
 
-<Textarea 
-  id="message" 
-  label="Mensaje" 
-  rows={5} 
-  required 
+<Textarea
+  id="message"
+  label="Mensaje"
+  rows={5}
+  required
 />
 ```
 
@@ -289,8 +294,8 @@ import { Card } from "@/components/ui/Card";
 ```typescript
 import { PageHeader } from "@/components/ui/PageHeader";
 
-<PageHeader 
-  title="Productos" 
+<PageHeader
+  title="Productos"
   description="Textiles artesanales únicos"
   showBadge={true}
 />
@@ -314,11 +319,11 @@ import { Heart } from "lucide-react";
 import { ContactInfoItem } from "@/components/ui/ContactInfoItem";
 import { Mail } from "lucide-react";
 
-<ContactInfoItem 
-  icon={Mail} 
-  title="Email" 
-  content="contacto@mumaestudio.com" 
-  href="mailto:contacto@mumaestudio.com"
+<ContactInfoItem
+  icon={Mail}
+  title="Email"
+  content="contacto@firaestudio.com"
+  href="mailto:contacto@firaestudio.com"
   external
 />
 ```
@@ -330,6 +335,7 @@ import { Mail } from "lucide-react";
 ### Scenario 1: Change Site-Wide Primary Color
 
 **Steps:**
+
 1. Open `app/globals.css`
 2. Update `--foreground` and `--accent` variables
 3. Save file
@@ -345,6 +351,7 @@ import { Mail } from "lucide-react";
 ### Scenario 2: Update All Button Sizes
 
 **Steps:**
+
 1. Open `components/ui/Button.tsx`
 2. Update `buttonVariants` size definitions
 3. All buttons across site update
@@ -359,6 +366,7 @@ size: {
 ### Scenario 3: Change Page Heading Style Globally
 
 **Steps:**
+
 1. Open `lib/design/tokens.ts`
 2. Update `TYPOGRAPHY.heading.page`
 3. All page headers update (home, productos, contacto, sobre-nosotros)
@@ -372,6 +380,7 @@ heading: {
 ### Scenario 4: Add New Content Section
 
 **Steps:**
+
 1. Add content to appropriate file in `lib/content/`
 2. Create/use component in page
 3. Component automatically uses centralized styles
@@ -413,26 +422,31 @@ const { testimonials } = HOME_CONTENT;
 ## ✅ Benefits of This Architecture
 
 ### 1. Separation of Concerns
+
 - **Content editors:** Change text without touching code
 - **Designers:** Update styles centrally
 - **Developers:** Focus on functionality
 
 ### 2. Consistency
+
 - All buttons look the same (unless explicitly styled differently)
 - All headings follow same typography scale
 - All spacing follows same system
 
 ### 3. Maintainability
+
 - Change a color once, updates everywhere
 - Rename a content key, TypeScript finds all usages
 - No style duplication
 
 ### 4. Type Safety
+
 - Content keys autocomplete in IDE
 - Compile-time errors for missing content
 - Prevents runtime errors
 
 ### 5. Scalability
+
 - Add new pages quickly using existing patterns
 - New components inherit design system automatically
 - Easy to add new content sections
@@ -553,6 +567,7 @@ import { Card } from "@/components/ui/Card";
 If you find old code not following this pattern:
 
 ### Before (Old Pattern):
+
 ```typescript
 // Hardcoded in component
 export function ContactPage() {
@@ -571,6 +586,7 @@ export function ContactPage() {
 ```
 
 ### After (Refactored Pattern):
+
 ```typescript
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Input } from "@/components/ui/Input";
@@ -578,7 +594,7 @@ import { CONTACTO_CONTENT } from "@/lib/content/contacto";
 
 export function ContactPage() {
   const { page, form } = CONTACTO_CONTENT;
-  
+
   return (
     <div>
       <PageHeader title={page.title} description={page.description} />
@@ -592,6 +608,7 @@ export function ContactPage() {
 ```
 
 **Benefits:**
+
 - Content can be changed without touching component
 - Input styles managed centrally
 - TypeScript prevents typos
@@ -610,6 +627,7 @@ export function ContactPage() {
 ## 💬 Questions?
 
 For questions about this architecture, reference:
+
 - `.github/instructions/copilot-instructions.instructions.md` - Core coding guidelines
 - `.github/skills/` - Specific implementation patterns
 - This document - Content and style management
@@ -623,13 +641,15 @@ For questions about this architecture, reference:
 ### New Components
 
 #### Badge
+
 - **Location:** `components/ui/Badge.tsx`
 - **Variants:** success, warning, info, error
 - **Props:** variant, children, showDot, className
 - **Usage:**
+
   ```tsx
   import { Badge } from "@/components/ui/Badge";
-  
+
   <Badge variant="success" showDot>Stock disponible</Badge>
   <Badge variant="error">Agotado</Badge>
   <Badge variant="warning">¡Solo quedan 3!</Badge>
@@ -637,13 +657,15 @@ For questions about this architecture, reference:
   ```
 
 #### ErrorDisplay
+
 - **Location:** `components/errors/ErrorDisplay.tsx`
 - **Types:** network, database, generic
 - **Replaces:** NetworkError, DatabaseError, GenericError (now deleted)
 - **Usage:**
+
   ```tsx
   import { ErrorDisplay } from "@/components/errors/ErrorDisplay";
-  
+
   <ErrorDisplay type="network" onRetry={handleRetry} />
   <ErrorDisplay type="database" onRetry={handleRetry} />
   <ErrorDisplay type="generic" onRetry={handleRetry} error={error} />
@@ -653,13 +675,15 @@ For questions about this architecture, reference:
 
 All tokens are in `lib/design/tokens.ts`:
 
-#### COMPONENTS.header.*
+#### COMPONENTS.header.\*
+
 - `base` - Fixed header with backdrop blur
 - `container` - Header content container
 - `logo` - Logo text styles
 - `menuButton` - Mobile menu button
 
-#### COMPONENTS.footer.*
+#### COMPONENTS.footer.\*
+
 - `base` - Footer base styles
 - `container` - Footer content container
 - `logo` - Footer logo text
@@ -670,7 +694,8 @@ All tokens are in `lib/design/tokens.ts`:
 - `socialIcon` - Individual social icon
 - `copyright` - Copyright text
 
-#### COMPONENTS.mobileNav.*
+#### COMPONENTS.mobileNav.\*
+
 - `hamburger` - Hamburger button container
 - `hamburgerLine` - Individual hamburger line
 - `overlay` - Menu backdrop overlay
@@ -679,7 +704,8 @@ All tokens are in `lib/design/tokens.ts`:
 - `mobileMenuAlt` - Alternative mobile menu style
 - `closeButton` - Close button
 
-#### COMPONENTS.errorContainer.*
+#### COMPONENTS.errorContainer.\*
+
 - `wrapper` - Outer container
 - `content` - Inner content area
 - `icon` - Error icon container
@@ -687,39 +713,45 @@ All tokens are in `lib/design/tokens.ts`:
 - `message` - Error message
 - `button` - Retry button
 
-#### COMPONENTS.badge.*
+#### COMPONENTS.badge.\*
+
 - `base` - Badge base styles
 - `success/warning/info/error` - Variant styles
 - `dot` - Status dot
 - `dotSuccess/dotWarning/dotInfo/dotError` - Dot variants
 
-#### COMPONENTS.pagination.*
+#### COMPONENTS.pagination.\*
+
 - `nav` - Pagination nav container
 - `button` - Pagination button base
 - `buttonActive` - Active button state
 - `buttonDisabled` - Disabled button state
 - `pageInfo` - Page counter text
 
-#### COMPONENTS.filter.*
+#### COMPONENTS.filter.\*
+
 - `sidebar` - Filter sidebar container
 - `sectionTitle` - Section heading
 - `checkbox` - Checkbox input
 - `checkboxLabel` - Checkbox label container
 - `checkboxText` - Checkbox label text
 
-#### COMPONENTS.colorSwatch.*
+#### COMPONENTS.colorSwatch.\*
+
 - `container` - Swatches container
 - `button` - Individual swatch button
 - `buttonSelected` - Selected state
 - `buttonDisabled` - Disabled state
 - `buttonHover` - Hover effects
 
-#### COMPONENTS.heroBadge.*
+#### COMPONENTS.heroBadge.\*
+
 - `base` - Hero section badge
 
 ### Migration Examples
 
 #### Before (Hardcoded):
+
 ```tsx
 // ❌ Hardcoded classes
 <div className="w-full sm:w-64 p-6 bg-white rounded-2xl border-2 border-border/50 shadow-lg">
@@ -729,6 +761,7 @@ All tokens are in `lib/design/tokens.ts`:
 ```
 
 #### After (Using Tokens):
+
 ```tsx
 // ✅ Using centralized tokens
 import { COMPONENTS } from "@/lib/design/tokens";
@@ -736,7 +769,7 @@ import { COMPONENTS } from "@/lib/design/tokens";
 <aside className={COMPONENTS.filter.sidebar}>
   <h3 className={COMPONENTS.filter.sectionTitle}>Categorías</h3>
   <input className={COMPONENTS.filter.checkbox} />
-</aside>
+</aside>;
 ```
 
 ### Refactored Components
@@ -744,11 +777,13 @@ import { COMPONENTS } from "@/lib/design/tokens";
 The following components now use centralized design tokens:
 
 **Layout:**
+
 - `components/layout/Header.tsx` - Uses `COMPONENTS.header.*`
 - `components/layout/Footer.tsx` - Uses `COMPONENTS.footer.*`
 - `components/layout/MobileNav.tsx` - Uses `COMPONENTS.mobileNav.*`
 
 **Products:**
+
 - `components/productos/StockBadge.tsx` - Uses `Badge` component
 - `components/productos/WhatsAppButton.tsx` - Uses `cn()` utility
 - `components/productos/Pagination.tsx` - Uses `COMPONENTS.pagination.*`
@@ -756,9 +791,11 @@ The following components now use centralized design tokens:
 - `components/productos/ColorSwatches.tsx` - Uses `COMPONENTS.colorSwatch.*`
 
 **Home:**
+
 - `components/home/HeroSection.tsx` - Uses `COMPONENTS.heroBadge.*`
 
 **Errors:**
+
 - All error pages now use unified `ErrorDisplay` component
 
 ### Benefits

@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { ArrowRight } from "lucide-react";
 import { getCategorias } from "@/lib/supabase/queries";
 import type { Categoria } from "@/lib/types";
+import { HOME_CONTENT } from "@/lib/content/home";
 
 /**
  * CollectionsGrid - Grid 2x2 de colecciones con manteles full-width
@@ -150,11 +151,11 @@ export async function CollectionsGrid() {
 
         {/* Heading oculto para aria-labelledby */}
         <h2 id="collections-section-title" className="sr-only">
-          Nuestras Colecciones
+          {HOME_CONTENT.categories.title}
         </h2>
         <SectionHeader
-          title="Nuestras Colecciones"
-          description="Explora nuestra colección de textiles artesanales"
+          title={HOME_CONTENT.categories.title}
+          description={HOME_CONTENT.categories.description}
         />
 
         {/* Collections Grid */}

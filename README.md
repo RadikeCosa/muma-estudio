@@ -1,10 +1,10 @@
-# Muma Estudio
+# Fira Estudio
 
 E-commerce de productos textiles artesanales (manteles, servilletas y caminos de mesa).
 
 ## 📋 Descripción del Proyecto
 
-Muma Estudio es una tienda en línea especializada en creaciones textiles y digitales. La plataforma permite a los clientes explorar un catálogo de productos con variaciones de tamaño y color, y realizar consultas directamente por WhatsApp.
+Fira Estudio es una tienda en línea especializada en creaciones textiles y digitales. La plataforma permite a los clientes explorar un catálogo de productos con variaciones de tamaño y color, y realizar consultas directamente por WhatsApp.
 
 **Estado actual (V1):** Catálogo de productos + consultas por WhatsApp
 **Próxima versión (V2):** Integración con Mercado Pago para compras online
@@ -28,17 +28,20 @@ Asegúrate de tener instalado:
 ## 🚀 Instalación
 
 1. **Clonar el repositorio:**
+
 ```bash
-git clone https://github.com/RadikeCosa/muma-estudio.git
-cd muma-estudio
+git clone https://github.com/RadikeCosa/fira-estudio.git
+cd fira-estudio
 ```
 
 2. **Instalar dependencias:**
+
 ```bash
 npm install
 ```
 
 3. **Configurar variables de entorno:**
+
 ```bash
 cp .env.local.example .env.local
 ```
@@ -46,6 +49,7 @@ cp .env.local.example .env.local
 Edita `.env.local` con tus valores reales.
 
 4. **Ejecutar en modo desarrollo:**
+
 ```bash
 npm run dev
 ```
@@ -58,10 +62,10 @@ Crea un archivo `.env.local` en la raíz del proyecto con las siguientes variabl
 
 ```env
 # Instagram URL
-NEXT_PUBLIC_INSTAGRAM_URL=https://instagram.com/mumaestudio
+NEXT_PUBLIC_INSTAGRAM_URL=https://instagram.com/firaestudio
 
 # Contact Email
-NEXT_PUBLIC_CONTACT_EMAIL=contacto@mumaestudio.com
+NEXT_PUBLIC_CONTACT_EMAIL=firaestudio@gmail.com
 
 # Google Analytics Measurement ID
 NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
@@ -70,7 +74,7 @@ NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
 NEXT_PUBLIC_WHATSAPP_NUMBER=5492999123456
 
 # Site URL (for SEO and sitemap generation)
-NEXT_PUBLIC_SITE_URL=https://mumaestudio.com
+NEXT_PUBLIC_SITE_URL=https://firaestudio.com
 ```
 
 > **Nota:** Todas las variables que comienzan con `NEXT_PUBLIC_` son accesibles desde el lado del cliente.
@@ -78,9 +82,11 @@ NEXT_PUBLIC_SITE_URL=https://mumaestudio.com
 ### Variables Requeridas vs Opcionales
 
 **Requeridas:**
+
 - `NEXT_PUBLIC_SITE_URL` - URL base del sitio para sitemap y SEO
 
 **Opcionales:**
+
 - `NEXT_PUBLIC_GA_MEASUREMENT_ID` - Si no se configura, Google Analytics no se cargará
 - `NEXT_PUBLIC_WHATSAPP_NUMBER` - Número de contacto para consultas
 - `NEXT_PUBLIC_INSTAGRAM_URL` - Link a Instagram
@@ -103,6 +109,7 @@ NEXT_PUBLIC_SITE_URL=https://mumaestudio.com
 Este proyecto utiliza una estrategia dual de testing:
 
 ### Node:test (Lógica Pura)
+
 Para funciones utilitarias, repositories y servicios que no dependen de React:
 
 ```bash
@@ -110,11 +117,13 @@ npm run test:node
 ```
 
 **Archivos testeados:**
+
 - `lib/utils/` - Funciones utilitarias (formatters, slugify, truncateText, isDefined)
 - `lib/seo/` - Generación de schemas SEO (Product, Breadcrumb, Organization)
 - `lib/analytics/` - Funciones de tracking (WhatsApp, product view, category filter)
 
 ### Vitest (Componentes React)
+
 Para componentes React y tests que necesitan jsdom:
 
 ```bash
@@ -129,17 +138,20 @@ npm run test:coverage
 ```
 
 **Componentes testeados:**
+
 - `components/productos/ProductCard` - Tarjeta de producto con imagen y precio
 - `components/productos/CategoryFilter` - Filtro de categorías con analytics
 - `components/productos/RelatedProducts` - Productos relacionados
 - `components/ui/Breadcrumbs` - Navegación breadcrumb con JSON-LD
 
 ### Ejecutar todos los tests
+
 ```bash
 npm test
 ```
 
 ### Estructura de Tests
+
 ```
 lib/
 ├── utils/
@@ -161,11 +173,10 @@ components/
 
 > 📖 **Guía completa de testing:** Ver [docs/TESTING.md](docs/TESTING.md) para patrones, convenciones y mejores prácticas.
 
-
 ## 📁 Estructura del Proyecto
 
 ```
-muma-estudio/
+Fira-estudio/
 ├── app/                      # App Router de Next.js
 │   ├── page.tsx             # Página principal
 │   ├── layout.tsx           # Layout principal
@@ -213,13 +224,13 @@ muma-estudio/
 ```typescript
 // ✅ Bien
 interface Product {
-  nombre: string;  // Datos en español
+  nombre: string; // Datos en español
   precio: number;
 }
 
 // ❌ Evitar
 let data: any;
-const products = [];  // Sin tipo explícito
+const products = []; // Sin tipo explícito
 ```
 
 ### React
@@ -285,15 +296,18 @@ Seguimos [Conventional Commits](https://www.conventionalcommits.org/):
 El proyecto incluye integración con Google Analytics 4 para tracking de eventos personalizados:
 
 **Eventos Implementados:**
+
 - `whatsapp_click` - Clicks en botón de WhatsApp
 - `view_item` - Visualización de productos
 - `filter_products` - Uso de filtros de categoría
 - `select_item` - Selección de variaciones
 
 **Configuración:**
+
 1. Crear una propiedad GA4 en [Google Analytics](https://analytics.google.com)
 2. Copiar el Measurement ID (formato: `G-XXXXXXXXXX`)
 3. Agregar a `.env.local`:
+
 ```env
 NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
 ```
@@ -303,20 +317,24 @@ NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
 ### SEO Features
 
 **Structured Data (Schema.org):**
+
 - Product schema con información completa
 - BreadcrumbList para navegación
 - Organization schema para homepage
 
 **Metadata Dinámica:**
+
 - OpenGraph tags para redes sociales
 - Twitter Cards
 - Meta descriptions optimizadas
 
 **Archivos Generados:**
+
 - `robots.txt` - Configuración de crawlers
 - `sitemap.xml` - Mapa del sitio dinámico con productos
 
 **Acceso:**
+
 - `/robots.txt` - Ver configuración de robots
 - `/sitemap.xml` - Ver sitemap generado
 
@@ -335,22 +353,29 @@ Para más información sobre el esquema de base de datos, ver `.github/reference
 ## 🎨 Nuevas Características (V1.1)
 
 ### Filtro de Categorías
+
 Componente de filtrado horizontal con scroll para explorar productos por categoría:
+
 - Click tracking automático en Google Analytics
 - Estado activo persistente con query params
 - Diseño responsive con scroll horizontal en móvil
 
 ### Productos Relacionados
+
 Muestra automáticamente hasta 4 productos de la misma categoría en la página de detalle.
 
 ### Breadcrumbs
+
 Navegación breadcrumb con:
+
 - Datos estructurados (Schema.org BreadcrumbList)
 - Enlaces funcionales para mejorar UX
 - Iconos de Lucide React
 
 ### Utilities
+
 Nuevas funciones utilitarias en `lib/utils/`:
+
 - `formatPrice()` - Formato consistente de precios ARS
 - `truncateText()` - Truncar texto con elipsis
 - `slugify()` - Generar slugs URL-safe
@@ -368,8 +393,8 @@ Para contribuir al proyecto:
 
 ## 📄 Licencia
 
-Este es un proyecto privado de Muma Estudio.
+Este es un proyecto privado de Fira Estudio.
 
 ---
 
-**Muma Estudio** - Creaciones Textiles y Digitales
+**Fira Estudio** - Creaciones Textiles y Digitales

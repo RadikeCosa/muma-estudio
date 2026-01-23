@@ -30,7 +30,7 @@ describe("ProductCard", () => {
     render(<ProductCard producto={mockProducto} />);
 
     const image = screen.getByAltText(
-      "Mantel Floral - Textil artesanal de Muma Estudio"
+      "Mantel Floral - Textil artesanal de fira Estudio",
     );
     expect(image).toBeInTheDocument();
   });
@@ -38,11 +38,11 @@ describe("ProductCard", () => {
   it("renders custom image when provided", () => {
     const customImage = "/images/productos/custom.jpg";
     render(
-      <ProductCard producto={mockProducto} imagenPrincipal={customImage} />
+      <ProductCard producto={mockProducto} imagenPrincipal={customImage} />,
     );
 
     const image = screen.getByAltText(
-      "Mantel Floral - Textil artesanal de Muma Estudio"
+      "Mantel Floral - Textil artesanal de fira Estudio",
     );
     expect(image).toHaveAttribute("src", expect.stringContaining("custom.jpg"));
   });
@@ -85,11 +85,11 @@ describe("ProductCard", () => {
     render(<ProductCard producto={mockProducto} />);
 
     const image = screen.getByAltText(
-      "Mantel Floral - Textil artesanal de Muma Estudio"
+      "Mantel Floral - Textil artesanal de fira Estudio",
     );
     expect(image).toHaveAttribute(
       "src",
-      expect.stringContaining("producto-sin-imagen")
+      expect.stringContaining("producto-sin-imagen"),
     );
   });
 

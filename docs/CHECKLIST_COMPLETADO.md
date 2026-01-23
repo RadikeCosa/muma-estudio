@@ -1,4 +1,4 @@
-# ✅ Checklist Completado - Muma Estudio v1 Features
+# ✅ Checklist Completado - fira Estudio v1 Features
 
 **Fecha:** 17 de enero de 2026  
 **Estado:** 100% Completado ✨
@@ -211,7 +211,7 @@ Configuración:
 
 - Allow: todos los directorios públicos
 - Disallow: /api/, /\_next/, /private/
-- Sitemap: https://mumaestudio.com/sitemap.xml
+- Sitemap: https://firaestudio.com/sitemap.xml
 
 #### 5.3 Structured Data (JSON-LD)
 
@@ -308,13 +308,13 @@ NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
 NEXT_PUBLIC_WHATSAPP_NUMBER=5492999123456
 
 # Site URL (para sitemap y Open Graph)
-NEXT_PUBLIC_SITE_URL=https://mumaestudio.com
+NEXT_PUBLIC_SITE_URL=https://firaestudio.com
 
 # Instagram (para Organization schema)
-NEXT_PUBLIC_INSTAGRAM_URL=https://instagram.com/mumaestudio
+NEXT_PUBLIC_INSTAGRAM_URL=https://instagram.com/firaestudio
 
 # Contacto
-NEXT_PUBLIC_CONTACT_EMAIL=contacto@mumaestudio.com
+NEXT_PUBLIC_CONTACT_EMAIL=contacto@firaestudio.com
 
 # Supabase (ya existente)
 NEXT_PUBLIC_SUPABASE_URL=https://...
@@ -352,10 +352,10 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=...
 
 ```bash
 # 1. Verificar sitemap
-curl https://mumaestudio.com/sitemap.xml
+curl https://firaestudio.com/sitemap.xml
 
 # 2. Verificar robots.txt
-curl https://mumaestudio.com/robots.txt
+curl https://firaestudio.com/robots.txt
 
 # 3. Probar navegación
 - Ir a /productos

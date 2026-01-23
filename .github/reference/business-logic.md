@@ -1,13 +1,13 @@
 ---
 title: "Business Logic Reference"
-description: "Detailed business rules and workflows for Muma Estudio"
+description: "Detailed business rules and workflows for Fira Estudio"
 version: "1.0"
 lastUpdated: "2026-01-16"
 ---
 
 # Business Logic Reference
 
-Complete business rules, workflows, and operational guidelines for Muma Estudio e-commerce.
+Complete business rules, workflows, and operational guidelines for Fira Estudio e-commerce.
 
 ---
 
@@ -119,7 +119,7 @@ DELETE FROM productos WHERE id = 'product-uuid';
 ### Happy Path
 
 ```
-User visits mumaestudio.com
+User visits firaestudio.com
          ↓
 1. Home Page
    - Featured products (destacado = true)
@@ -545,7 +545,7 @@ export async function generateMetadata({ params }): Promise<Metadata> {
   const precioDesde = Math.min(...producto.variaciones.map((v) => v.precio));
 
   return {
-    title: `${producto.nombre} | Muma Estudio`,
+    title: `${producto.nombre} | Fira Estudio`,
     description: producto.descripcion.slice(0, 160),
     keywords: [
       producto.nombre,
@@ -584,7 +584,7 @@ const structuredData = {
   image: producto.imagenes.map((i) => i.url),
   brand: {
     "@type": "Brand",
-    name: "Muma Estudio",
+    name: "Fira Estudio",
   },
   offers: {
     "@type": "AggregateOffer",

@@ -1,4 +1,4 @@
-# Testing Guide - Muma Estudio
+# Testing Guide - fira Estudio
 
 Esta guía documenta la estrategia de testing del proyecto, convenciones, patrones y mejores prácticas.
 
@@ -18,12 +18,12 @@ Esta guía documenta la estrategia de testing del proyecto, convenciones, patron
 
 ### ¿Por qué dos herramientas de testing?
 
-**Muma Estudio** utiliza una estrategia **dual de testing** optimizada para diferentes tipos de código:
+**fira Estudio** utiliza una estrategia **dual de testing** optimizada para diferentes tipos de código:
 
-| Herramienta | Para qué | Por qué |
-|------------|----------|---------|
-| **node:test** | Lógica pura (utils, SEO, analytics) | ✅ Built-in en Node.js 20+<br>✅ Cero configuración<br>✅ Ultra rápido<br>✅ Sin dependencias externas |
-| **Vitest** | Componentes React | ✅ Soporte nativo de JSX/TSX<br>✅ jsdom incluido<br>✅ Compatible con Testing Library<br>✅ HMR y watch mode |
+| Herramienta   | Para qué                            | Por qué                                                                                                       |
+| ------------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| **node:test** | Lógica pura (utils, SEO, analytics) | ✅ Built-in en Node.js 20+<br>✅ Cero configuración<br>✅ Ultra rápido<br>✅ Sin dependencias externas        |
+| **Vitest**    | Componentes React                   | ✅ Soporte nativo de JSX/TSX<br>✅ jsdom incluido<br>✅ Compatible con Testing Library<br>✅ HMR y watch mode |
 
 ### Principios Fundamentales
 
@@ -40,12 +40,14 @@ Esta guía documenta la estrategia de testing del proyecto, convenciones, patron
 ### Cuándo usar node:test
 
 Usa **node:test** para:
+
 - ✅ Funciones utilitarias (`formatPrice`, `slugify`, `truncateText`)
 - ✅ Generadores de datos (schemas SEO, structured data)
 - ✅ Lógica de negocio pura (cálculos, transformaciones)
 - ✅ Funciones que no dependen de React, DOM o APIs del navegador
 
 ❌ **NO uses node:test** para:
+
 - Componentes React (usa Vitest)
 - Tests que necesiten `jsdom` o APIs del navegador
 - Tests que requieran JSX/TSX
@@ -61,10 +63,10 @@ describe("myFunction", () => {
   it("should do something specific", () => {
     // Arrange - preparar datos
     const input = "test data";
-    
+
     // Act - ejecutar función
     const result = myFunction(input);
-    
+
     // Assert - verificar resultado
     assert.equal(result, "expected output");
   });
@@ -117,10 +119,7 @@ describe("slugify", () => {
   });
 
   it("creates URL-safe slugs from product names", () => {
-    assert.equal(
-      slugify("Mantel Floral 150x200"),
-      "mantel-floral-150x200"
-    );
+    assert.equal(slugify("Mantel Floral 150x200"), "mantel-floral-150x200");
   });
 });
 
@@ -172,7 +171,7 @@ describe("generateProductSchema", () => {
     assert.equal(schema["@context"], "https://schema.org");
     assert.equal(schema["@type"], "Product");
     assert.equal(schema.name, "Mantel Floral");
-    
+
     // Verificar ofertas
     assert.ok(schema.offers);
     assert.equal(schema.offers["@type"], "AggregateOffer");
@@ -180,13 +179,12 @@ describe("generateProductSchema", () => {
   });
 
   it("generates PreOrder availability when stock is zero", () => {
-    const producto = { /* ... */ };
+    const producto = {
+      /* ... */
+    };
     const schema = generateProductSchema(producto);
-    
-    assert.equal(
-      schema.offers.availability,
-      "https://schema.org/PreOrder"
-    );
+
+    assert.equal(schema.offers.availability, "https://schema.org/PreOrder");
   });
 });
 ```
@@ -202,7 +200,7 @@ describe("function with dependencies", () => {
   beforeEach(() => {
     // Guardar original
     originalFetch = global.fetch;
-    
+
     // Mockear
     global.fetch = mock.fn(async () => ({
       ok: true,
@@ -242,6 +240,7 @@ npx c8 npm run test:node
 ### Cuándo usar Vitest
 
 Usa **Vitest** para:
+
 - ✅ Componentes React (ProductCard, CategoryFilter, etc.)
 - ✅ Tests que necesiten `jsdom` (manipulación DOM)
 - ✅ Tests con Testing Library
@@ -294,15 +293,15 @@ describe("MyComponent", () => {
 
 ```typescript
 // Preferir getBy* para elementos que DEBEN existir
-screen.getByText("Submit");          // Falla si no existe
-screen.getByRole("button");          // Más semántico
-screen.getByLabelText("Email");      // Para forms
+screen.getByText("Submit"); // Falla si no existe
+screen.getByRole("button"); // Más semántico
+screen.getByLabelText("Email"); // Para forms
 
 // Usar queryBy* para elementos que PUEDEN no existir
-screen.queryByText("Optional");      // Retorna null si no existe
+screen.queryByText("Optional"); // Retorna null si no existe
 
 // Usar findBy* para elementos asíncronos
-await screen.findByText("Loaded");   // Espera hasta que aparezca
+await screen.findByText("Loaded"); // Espera hasta que aparezca
 ```
 
 ### Ejemplo Real: Test de ProductCard
@@ -325,21 +324,21 @@ describe("ProductCard", () => {
 
   it("renders product information correctly", () => {
     render(<ProductCard producto={mockProducto} />);
-    
+
     expect(screen.getByText("Mantel Floral")).toBeInTheDocument();
     expect(screen.getByText(/Desde \$/)).toBeInTheDocument();
   });
 
   it("renders image with correct alt text", () => {
     render(<ProductCard producto={mockProducto} />);
-    
+
     const image = screen.getByAltText(/Mantel Floral/);
     expect(image).toBeInTheDocument();
   });
 
   it("renders link to product detail page", () => {
     render(<ProductCard producto={mockProducto} />);
-    
+
     const link = screen.getByRole("link");
     expect(link).toHaveAttribute("href", "/productos/mantel-floral");
   });
@@ -347,13 +346,13 @@ describe("ProductCard", () => {
   it("renders destacado badge when producto.destacado is true", () => {
     const destacado = { ...mockProducto, destacado: true };
     render(<ProductCard producto={destacado} />);
-    
+
     expect(screen.getByText("Destacado")).toBeInTheDocument();
   });
 
   it("does not render destacado badge when false", () => {
     render(<ProductCard producto={mockProducto} />);
-    
+
     expect(screen.queryByText("Destacado")).not.toBeInTheDocument();
   });
 });
@@ -392,9 +391,9 @@ describe("CategoryFilter", () => {
     vi.mocked(useSearchParams).mockReturnValue({
       get: vi.fn().mockReturnValue(null),
     } as any);
-    
+
     render(<CategoryFilter categorias={mockCategorias} />);
-    
+
     expect(screen.getByText("Manteles")).toBeInTheDocument();
     expect(screen.getByText("Servilletas")).toBeInTheDocument();
   });
@@ -403,9 +402,9 @@ describe("CategoryFilter", () => {
     vi.mocked(useSearchParams).mockReturnValue({
       get: vi.fn().mockReturnValue("manteles"),
     } as any);
-    
+
     render(<CategoryFilter categorias={mockCategorias} />);
-    
+
     const mantelesBtn = screen.getByText("Manteles");
     expect(mantelesBtn).toHaveClass("bg-foreground");
   });
@@ -429,8 +428,8 @@ vi.mock("@/lib/supabase/queries", () => ({
 describe("RelatedProducts", () => {
   it("renders related products correctly", async () => {
     vi.mocked(queries.getProductosRelacionados).mockResolvedValue([
-      { id: "1", nombre: "Producto A", slug: "producto-a", /* ... */ },
-      { id: "2", nombre: "Producto B", slug: "producto-b", /* ... */ },
+      { id: "1", nombre: "Producto A", slug: "producto-a" /* ... */ },
+      { id: "2", nombre: "Producto B", slug: "producto-b" /* ... */ },
     ]);
 
     // Server Component: render con await
@@ -438,7 +437,7 @@ describe("RelatedProducts", () => {
       await RelatedProducts({
         productoId: "prod-1",
         categoriaId: "cat-1",
-      })
+      }),
     );
 
     expect(screen.getByText("Productos Relacionados")).toBeInTheDocument();
@@ -502,6 +501,7 @@ npx vitest --ui
 ### Nombres de Tests
 
 ✅ **BIEN** - Descriptivos y en español:
+
 ```typescript
 it("convierte texto a minúsculas", () => {});
 it("renderiza badge destacado cuando producto.destacado es true", () => {});
@@ -509,6 +509,7 @@ it("retorna null cuando no hay categoría", () => {});
 ```
 
 ❌ **MAL** - Vagos o en inglés mezclado:
+
 ```typescript
 it("works", () => {});
 it("test slugify", () => {});
@@ -520,7 +521,9 @@ it("should test the component", () => {});
 ```typescript
 describe("ComponentName", () => {
   // Setup común
-  const mockData = { /* ... */ };
+  const mockData = {
+    /* ... */
+  };
 
   // Tests agrupados por feature
   describe("rendering", () => {
@@ -558,12 +561,12 @@ it("calculates discount correctly", () => {
 
 ### Coverage Goals
 
-| Tipo de Código | Coverage Mínimo | Razón |
-|----------------|-----------------|-------|
-| Utils críticos | 90%+ | Usados en toda la app |
-| SEO/Analytics | 80%+ | Impacto en negocio |
-| Components UI | 70%+ | Cambios frecuentes |
-| Types/Config | 0% | No ejecutables |
+| Tipo de Código | Coverage Mínimo | Razón                 |
+| -------------- | --------------- | --------------------- |
+| Utils críticos | 90%+            | Usados en toda la app |
+| SEO/Analytics  | 80%+            | Impacto en negocio    |
+| Components UI  | 70%+            | Cambios frecuentes    |
+| Types/Config   | 0%              | No ejecutables        |
 
 ---
 
@@ -668,7 +671,7 @@ describe("formatPrice", () => {
 ```typescript
 it("renders link with correct href", () => {
   render(<ProductCard producto={mock} />);
-  
+
   const link = screen.getByRole("link");
   expect(link).toHaveAttribute("href", "/productos/mantel-floral");
 });
@@ -693,10 +696,10 @@ it("hides badge when destacado is false", () => {
 ```typescript
 it("renders JSON-LD script", () => {
   const { container } = render(<Breadcrumbs items={[...]} />);
-  
+
   const script = container.querySelector('script[type="application/ld+json"]');
   const jsonLd = JSON.parse(script?.textContent || "{}");
-  
+
   expect(jsonLd["@type"]).toBe("BreadcrumbList");
   expect(jsonLd.itemListElement).toHaveLength(2);
 });
@@ -717,28 +720,28 @@ on: [push, pull_request]
 jobs:
   test:
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
-      
+          node-version: "20"
+          cache: "npm"
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Run node:test tests
         run: npm run test:node
-      
+
       - name: Run Vitest tests
         run: npm run test:unit
-      
+
       - name: Generate coverage
         run: npm run test:coverage
-      
+
       - name: Upload coverage
         uses: codecov/codecov-action@v3
         with:

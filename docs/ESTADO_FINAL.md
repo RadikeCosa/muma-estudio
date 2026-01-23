@@ -1,7 +1,7 @@
 # 🎉 ESTADO FINAL - CHECKLIST COMPLETADO
 
 **Fecha:** 17 de enero de 2026  
-**Proyecto:** Muma Estudio (Textile E-commerce)  
+**Proyecto:** fira Estudio (Textile E-commerce)  
 **Build Status:** ✅ SUCCESS
 
 ---
@@ -194,11 +194,11 @@ Warnings:          ~15 (solo Tailwind) ⚠️ Ignorable
 # REQUERIDOS
 NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
 NEXT_PUBLIC_WHATSAPP_NUMBER=5492999123456
-NEXT_PUBLIC_SITE_URL=https://mumaestudio.com
+NEXT_PUBLIC_SITE_URL=https://firaestudio.com
 
 # RECOMENDADOS
-NEXT_PUBLIC_INSTAGRAM_URL=https://instagram.com/mumaestudio
-NEXT_PUBLIC_CONTACT_EMAIL=contacto@mumaestudio.com
+NEXT_PUBLIC_INSTAGRAM_URL=https://instagram.com/firaestudio
+NEXT_PUBLIC_CONTACT_EMAIL=contacto@firaestudio.com
 
 # YA CONFIGURADOS
 NEXT_PUBLIC_SUPABASE_URL=...
@@ -227,7 +227,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=...
 
 **Estado:** 🟢 **LISTO PARA PRODUCCIÓN**
 
-El proyecto Muma Estudio ahora tiene:
+El proyecto fira Estudio ahora tiene:
 
 ✨ **SEO Premium** - Sitemap, robots.txt, JSON-LD, Open Graph  
 📊 **Analytics** - GA4 con eventos customizados  

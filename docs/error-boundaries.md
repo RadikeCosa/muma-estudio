@@ -1,17 +1,20 @@
 # Error Boundaries Implementation
 
 ## Overview
-This implementation provides specific error boundaries for different types of errors in Muma Estudio, replacing the generic error handler with context-aware error components.
+
+This implementation provides specific error boundaries for different types of errors in fira Estudio, replacing the generic error handler with context-aware error components.
 
 ## Files Created
 
 ### Core Error Classification
+
 - **`lib/errors/types.ts`** - Error classification system
   - `ErrorType` enum: NETWORK, DATABASE, NOT_FOUND, VALIDATION, UNKNOWN
   - `classifyError(error: Error): ErrorType` function
   - Detects patterns in error messages to classify errors
 
 ### Error Components
+
 All components follow consistent design patterns with Tailwind CSS:
 
 1. **`components/errors/NetworkError.tsx`**
@@ -39,12 +42,14 @@ All components follow consistent design patterns with Tailwind CSS:
    - Barrel export for easy imports
 
 ### Updated Files
+
 - **`app/productos/error.tsx`**
   - Uses `classifyError()` to determine error type
   - Renders appropriate error component via switch statement
   - Passes `reset` callback to components with retry buttons
 
 ### Testing
+
 - **`lib/errors/types.test.ts`**
   - Comprehensive tests for `classifyError` function
   - Tests for all error types: Network, Database, Not Found, Validation, Unknown
@@ -52,6 +57,7 @@ All components follow consistent design patterns with Tailwind CSS:
   - Tests special cases (e.g., PGRST116 → NOT_FOUND)
 
 ### Demo Page (for testing)
+
 - **`app/test-errors/page.tsx`**
   - Interactive demo page to view all error components
   - Visit `/test-errors` to see all error states
@@ -66,24 +72,29 @@ classifyError(error: Error): ErrorType
 ### Detection Patterns:
 
 **NETWORK** - Connection issues
+
 - Keywords: "fetch", "network", "conexión", "connection", "timeout", "econnrefused"
 - Example: `Error("fetch failed")` → NETWORK
 
 **DATABASE** - Supabase/PostgreSQL errors
+
 - Keywords: "pgrst", "database", "postgres", "supabase"
 - Special case: "pgrst116" → NOT_FOUND (row not found)
 - Example: `Error("PGRST301: JWT expired")` → DATABASE
 
 **NOT_FOUND** - Missing resources
+
 - Keywords: "404", "not found", "no encontrado"
 - Also: PGRST116 errors
 - Example: `Error("404 - Not Found")` → NOT_FOUND
 
 **VALIDATION** - Input validation errors
+
 - Keywords: "validation", "validación", "invalid", "inválido"
 - Example: `Error("Validation failed")` → VALIDATION
 
 **UNKNOWN** - Default fallback
+
 - Any error that doesn't match above patterns
 - Example: `Error("Something went wrong")` → UNKNOWN
 
@@ -115,6 +126,7 @@ export default function ProductosError({ error, reset }: ErrorBoundaryProps) {
 ## Design Consistency
 
 All error components follow the same structure:
+
 1. Centered container with max-width and padding
 2. Border and background (muted)
 3. Icon in colored circle (16x16 container, 8x8 icon)
@@ -123,6 +135,7 @@ All error components follow the same structure:
 6. Development-only error details (where applicable)
 
 ## Accessibility
+
 - Semantic HTML structure
 - Proper heading hierarchy
 - Keyboard accessible buttons/links
@@ -130,12 +143,15 @@ All error components follow the same structure:
 - ARIA-friendly error messages
 
 ## Testing
+
 To test the implementation:
+
 1. Visit `/test-errors` to see all error states
 2. Simulate errors in development to trigger actual error boundaries
 3. Run tests: `npm run test:node` (tests the classifyError function)
 
 ## Future Enhancements
+
 - Add animations for error transitions
 - Add error tracking/logging integration
 - Add "Report Problem" button for production errors

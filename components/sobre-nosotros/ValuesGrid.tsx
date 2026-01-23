@@ -20,10 +20,12 @@ export function ValuesGrid() {
         {valores.items.map((value, index) => (
           <Card key={index} hover className="group">
             <Icon icon={value.icon} size="md" animated className="mb-6" />
-            <h3 className={`mb-4 ${TYPOGRAPHY.heading.card} ${COLORS.foreground}`}>
+            <h3
+              className={`mb-4 ${TYPOGRAPHY.heading.card} ${COLORS.foreground}`}
+            >
               {value.title}
             </h3>
-            <p className={`${TYPOGRAPHY.body.base} ${COLORS.muted}`}>
+            <p className={`${TYPOGRAPHY.body.base} text-muted-foreground`}>
               {value.description}
             </p>
           </Card>

@@ -63,14 +63,15 @@ export const CONTACTO_CONTENT: ContactContent = {
       },
     },
     submitButton: "Enviar Consulta por WhatsApp",
-    submitHelperText: "Al enviar, abriremos WhatsApp con tu mensaje pre-cargado",
+    submitHelperText:
+      "Al enviar, abriremos WhatsApp con tu mensaje pre-cargado",
   },
   info: {
     title: "Información de Contacto",
     items: {
       email: {
         title: "Email",
-        value: "contacto@mumaestudio.com",
+        value: "contacto@firaestudio.com",
       },
       whatsapp: {
         title: "WhatsApp",
@@ -78,7 +79,7 @@ export const CONTACTO_CONTENT: ContactContent = {
       },
       instagram: {
         title: "Instagram",
-        handle: "@mumaestudio",
+        handle: "@firaestudio",
       },
     },
   },

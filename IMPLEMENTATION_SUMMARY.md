@@ -2,13 +2,14 @@
 
 ## Overview
 
-This PR implements the final assembly of the Muma Estudio home page, integrating all components as specified in PR #4 requirements.
+This PR implements the final assembly of the Fira Estudio home page, integrating all components as specified in PR #4 requirements.
 
 ## What Was Implemented
 
 ### 1. New Components Created (5 total)
 
 #### `components/home/TextureDivider.tsx`
+
 - Full-width panoramic texture divider
 - Grayscale filter with opacity for boutique aesthetic
 - Next.js Image optimization with lazy loading
@@ -16,6 +17,7 @@ This PR implements the final assembly of the Muma Estudio home page, integrating
 - **Lines:** 49
 
 #### `components/home/FeaturedProducts.tsx`
+
 - **Server Component** (async) that fetches from Supabase
 - Displays products with `destacado = true`
 - Offset grid layout (2nd and 4th items offset for visual interest)
@@ -25,6 +27,7 @@ This PR implements the final assembly of the Muma Estudio home page, integrating
 - **Lines:** 87
 
 #### `components/home/CollectionsGrid.tsx`
+
 - 2x2 grid layout with manteles full-width on top
 - Hover effects with image scaling and gradient overlays
 - Responsive aspect ratios (21:9 for featured, 2:3 for others)
@@ -33,6 +36,7 @@ This PR implements the final assembly of the Muma Estudio home page, integrating
 - **Lines:** 141
 
 #### `components/home/ContactSection.tsx`
+
 - Centered CTA section for customer inquiries
 - Decorative badge and border lines for boutique aesthetic
 - Configurable title, description, and CTA text
@@ -41,6 +45,7 @@ This PR implements the final assembly of the Muma Estudio home page, integrating
 - **Lines:** 74
 
 #### `components/layout/ProgressBar.tsx`
+
 - **Client Component** with scroll tracking
 - Fixed position at top of page (z-index: 50)
 - Real-time scroll percentage calculation
@@ -52,10 +57,12 @@ This PR implements the final assembly of the Muma Estudio home page, integrating
 ### 2. Updated Files
 
 #### `app/page.tsx` (Complete Rewrite)
+
 **Before:** 66 lines with old components
 **After:** 65 lines with new structure
 
 Changes:
+
 - Replaced `FeaturedProductsSection` → `FeaturedProducts`
 - Replaced `CategoriesSection` → `CollectionsGrid`
 - Replaced `FinalCTASection` → `ContactSection`
@@ -65,7 +72,9 @@ Changes:
 - Removed JSON-LD structured data (moved to layout or specific pages)
 
 #### `app/layout.tsx` (Font Update)
+
 Changes:
+
 - Replaced Geist Sans + Geist Mono → Inter + Playfair Display
 - Simplified metadata (using SITE_CONFIG)
 - Maintained Google Analytics and Speed Insights
@@ -74,7 +83,9 @@ Changes:
 ### 3. Documentation
 
 #### `IMAGES_NEEDED.md` (190 lines)
+
 Complete guide for image assets:
+
 - Image specifications (dimensions, formats, optimization)
 - Collection images (manteles, servilletas, caminos)
 - Texture image (linen close-up)
@@ -86,34 +97,41 @@ Complete guide for image assets:
 ## Technical Compliance
 
 ### ✅ TypeScript Strict Mode
+
 - All explicit types on parameters and return values
 - No `any` types used
 - Proper use of `interface` for objects
 - Business property names in Spanish, code/comments in English
 
 ### ✅ Server vs Client Components
+
 **Server Components (default):**
+
 - `HomePage` (app/page.tsx)
 - `FeaturedProducts` (fetches from Supabase)
 - `CollectionsGrid`
 - `ContactSection`
 
 **Client Components ('use client'):**
+
 - `ProgressBar` (needs useState/useEffect for scroll tracking)
 
 ### ✅ Supabase Patterns
+
 - Server component uses `getProductos()` from queries layer
 - Filters by `destacado = true` (not `disponible`)
 - Handles empty results gracefully
 - Uses existing query infrastructure
 
 ### ✅ Component Patterns
+
 - Consistent naming: PascalCase for components, camelCase for functions
 - Props interfaces with TSDoc comments
 - Loading states handled (FeaturedProducts returns null if empty)
 - Error handling in queries layer
 
 ### ✅ Styling with Tailwind
+
 - Mobile-first approach (base → sm → md → lg breakpoints)
 - Centralized design tokens from `lib/design/tokens.ts`
 - Utility-first classes
@@ -121,6 +139,7 @@ Complete guide for image assets:
 - Dark mode support (text-foreground, bg-background)
 
 ### ✅ Constants & Configuration
+
 - All imports use absolute paths (`@/`)
 - SITE_CONFIG imported from `lib/constants`
 - Design tokens from `lib/design/tokens`
@@ -129,7 +148,7 @@ Complete guide for image assets:
 ## File Structure
 
 ```
-muma-estudio/
+fira-estudio/
 ├── app/
 │   ├── layout.tsx          (updated - fonts)
 │   └── page.tsx            (rewritten - new components)
@@ -159,6 +178,7 @@ muma-estudio/
 ## Testing Status
 
 ### ✅ Completed
+
 - [x] TypeScript type checking (no errors in new code)
 - [x] ESLint (1 warning fixed)
 - [x] File structure validation
@@ -167,11 +187,13 @@ muma-estudio/
 - [x] Accessibility features (ARIA, alt texts)
 
 ### ⚠️ Limited (Environment Constraints)
+
 - [ ] Production build (fails on Google Fonts fetch - expected in sandbox)
 - [ ] Visual testing (requires dev server with DB connection)
 - [ ] Performance testing (Lighthouse)
 
 ### 📋 User Testing Required
+
 - [ ] Database setup (mark products as `destacado = true`)
 - [ ] Add real collection/texture images
 - [ ] Visual verification on multiple devices
@@ -191,13 +213,17 @@ muma-estudio/
 ## Migration Notes
 
 ### Removed Components
+
 These old components can be safely deleted after this PR is merged:
+
 - `components/home/FeaturedProductsSection.tsx` (49 lines)
 - `components/home/CategoriesSection.tsx` (57 lines)
 - `components/home/FinalCTASection.tsx` (28 lines)
 
 ### Unchanged Components
+
 These components are still in use:
+
 - `components/home/HeroSection.tsx` (existing implementation)
 - `components/layout/Header.tsx`
 - `components/layout/Footer.tsx`
@@ -207,9 +233,10 @@ These components are still in use:
 ## Next Steps
 
 1. **Database Setup:**
+
    ```sql
-   UPDATE productos 
-   SET destacado = true 
+   UPDATE productos
+   SET destacado = true
    WHERE slug IN ('mantel-floral', 'servilletas-lino', 'camino-mesa-rustico', 'mantel-beige');
    ```
 

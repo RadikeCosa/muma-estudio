@@ -7,10 +7,13 @@ import type { MetadataRoute } from "next";
 import { getProductosFresh } from "@/lib/supabase/queries";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://mumaestudio.com";
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://firaestudio.com";
 
   // Fetch all active products
-  const { items: productos } = await getProductosFresh({ page: 1, pageSize: 500 });
+  const { items: productos } = await getProductosFresh({
+    page: 1,
+    pageSize: 500,
+  });
 
   // Generate product URLs
   const productUrls: MetadataRoute.Sitemap = productos.map((producto) => ({

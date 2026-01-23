@@ -196,7 +196,7 @@ import { Metadata } from "next";
 
 ```bash
 NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX  # Your GA4 Measurement ID
-NEXT_PUBLIC_SITE_URL=https://mumaestudio.com  # Used in sitemap
+NEXT_PUBLIC_SITE_URL=https://firaestudio.com  # Used in sitemap
 ```
 
 ---

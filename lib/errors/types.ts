@@ -1,5 +1,5 @@
 /**
- * Error classification system for Muma Estudio
+ * Error classification system for fira Estudio
  * Provides specific error types and classification logic
  */
 
@@ -22,10 +22,10 @@ export enum ErrorType {
 /**
  * Classifies an error into a specific ErrorType
  * Detects common error patterns from network, database, and application errors
- * 
+ *
  * @param error - The error to classify
  * @returns The classified ErrorType
- * 
+ *
  * @example
  * ```ts
  * const error = new Error("fetch failed");
@@ -34,7 +34,7 @@ export enum ErrorType {
  */
 export function classifyError(error: Error): ErrorType {
   const errorMessage = (error.message || "").toLowerCase();
-  
+
   // Network errors: fetch failures, connection issues
   if (
     errorMessage.includes("fetch") ||
@@ -46,7 +46,7 @@ export function classifyError(error: Error): ErrorType {
   ) {
     return ErrorType.NETWORK;
   }
-  
+
   // Database errors: Supabase PGRST codes
   if (
     errorMessage.includes("pgrst") ||
@@ -60,7 +60,7 @@ export function classifyError(error: Error): ErrorType {
     }
     return ErrorType.DATABASE;
   }
-  
+
   // Not found errors: 404 status codes
   if (
     errorMessage.includes("404") ||
@@ -69,7 +69,7 @@ export function classifyError(error: Error): ErrorType {
   ) {
     return ErrorType.NOT_FOUND;
   }
-  
+
   // Validation errors
   if (
     errorMessage.includes("validation") ||
@@ -79,7 +79,7 @@ export function classifyError(error: Error): ErrorType {
   ) {
     return ErrorType.VALIDATION;
   }
-  
+
   // Default to unknown
   return ErrorType.UNKNOWN;
 }

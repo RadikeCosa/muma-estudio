@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document explains how caching is implemented in the Muma Estudio application, with special attention to Next.js 16 compatibility requirements.
+This document explains how caching is implemented in the fira Estudio application, with special attention to Next.js 16 compatibility requirements.
 
 ## Next.js 16 Compatibility
 

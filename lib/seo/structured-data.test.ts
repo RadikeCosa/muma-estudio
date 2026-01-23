@@ -75,7 +75,7 @@ describe("generateProductSchema", () => {
 
     // Verify brand
     assert.equal(schema.brand["@type"], "Brand");
-    assert.equal(schema.brand.name, "Muma Estudio");
+    assert.equal(schema.brand.name, "fira Estudio");
 
     // Verify image
     assert.ok(schema.image?.includes("/images/productos/mantel-floral.jpg"));
@@ -92,8 +92,8 @@ describe("generateProductSchema", () => {
     assert.ok(Array.isArray(schema.additionalProperty));
     assert.ok(
       schema.additionalProperty.some(
-        (prop: any) => prop.name === "Tiempo de fabricación"
-      )
+        (prop: any) => prop.name === "Tiempo de fabricación",
+      ),
     );
   });
 
@@ -135,10 +135,7 @@ describe("generateProductSchema", () => {
 
     const schema = generateProductSchema(producto);
 
-    assert.equal(
-      schema.offers.availability,
-      "https://schema.org/PreOrder"
-    );
+    assert.equal(schema.offers.availability, "https://schema.org/PreOrder");
   });
 
   it("handles product with no images", () => {
@@ -302,7 +299,7 @@ describe("generateOrganizationSchema", () => {
 
     assert.equal(schema["@context"], "https://schema.org");
     assert.equal(schema["@type"], "Organization");
-    assert.equal(schema.name, "Muma Estudio");
+    assert.equal(schema.name, "fira Estudio");
     assert.ok(schema.description);
     assert.ok(schema.url);
   });

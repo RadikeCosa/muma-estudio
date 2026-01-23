@@ -1,13 +1,13 @@
 ---
 title: "Database Schema Reference"
-description: "Complete Supabase database schema for Muma Estudio"
+description: "Complete Supabase database schema for Fira Estudio"
 version: "1.0"
 lastUpdated: "2026-01-16"
 ---
 
 # Database Schema Reference
 
-Complete PostgreSQL schema documentation for Muma Estudio's Supabase database.
+Complete PostgreSQL schema documentation for Fira Estudio's Supabase database.
 
 ## Tables Overview
 
@@ -40,11 +40,13 @@ CREATE INDEX idx_categorias_orden ON categorias(orden);
 ```
 
 **Business Rules:**
+
 - `slug` must be unique and URL-safe (lowercase, hyphens only)
 - `orden` determines display order in navigation (lower = first)
 - Categories cannot be deleted if products reference them
 
 **Example Data:**
+
 ```sql
 INSERT INTO categorias (nombre, slug, orden) VALUES
   ('Manteles', 'manteles', 1),
@@ -83,6 +85,7 @@ CREATE INDEX idx_productos_categoria_activo ON productos(categoria_id, activo);
 ```
 
 **Business Rules:**
+
 - `slug` must be unique and URL-safe
 - `activo = false` hides product from catalog (soft delete)
 - `destacado = true` shows product first in listings
@@ -90,6 +93,7 @@ CREATE INDEX idx_productos_categoria_activo ON productos(categoria_id, activo);
 - Deleting a category sets `categoria_id` to NULL (not deleted)
 
 **Important Fields:**
+
 - `tiempo_fabricacion` - Manufacturing time (e.g., "2-3 días hábiles")
 - `material` - Fabric material description (e.g., "100% algodón")
 - `cuidados` - Care instructions (e.g., "Lavar a máquina, 30°C")
@@ -120,6 +124,7 @@ CREATE INDEX idx_variaciones_sku ON variaciones(sku);
 ```
 
 **Business Rules:**
+
 - Each combination of `producto_id + tamanio + color` must be unique
 - `precio` is stored in cents (e.g., 15000 = $15,000 ARS)
 - `stock = 0` means "available on request" (not out of stock)
@@ -128,6 +133,7 @@ CREATE INDEX idx_variaciones_sku ON variaciones(sku);
 - `sku` is optional but must be unique if provided
 
 **Example Data:**
+
 ```sql
 INSERT INTO variaciones (producto_id, tamanio, color, precio, stock, activo) VALUES
   ('prod-uuid-1', '150x200cm', 'Rojo', 15000, 5, true),
@@ -159,6 +165,7 @@ CREATE INDEX idx_imagenes_principal ON imagenes_producto(producto_id, es_princip
 ```
 
 **Business Rules:**
+
 - Each product should have exactly one `es_principal = true` image
 - `orden` determines display order (lower = first)
 - `url` can be relative path (e.g., "/images/productos/...") or full URL
@@ -166,6 +173,7 @@ CREATE INDEX idx_imagenes_principal ON imagenes_producto(producto_id, es_princip
 - Deleting a product cascades to delete all images
 
 **Important Notes:**
+
 - Images are sorted in JavaScript after fetching (Supabase limitation with joins)
 - Principal image is used for product cards and meta tags
 - Images can be shared between variations or specific to one
@@ -194,6 +202,7 @@ CREATE INDEX idx_consultas_created ON consultas(created_at DESC);
 ```
 
 **Business Rules:**
+
 - `producto_id` is optional (general inquiries have NULL)
 - `respondida` tracks if admin has replied
 - Currently not used in V1 (all inquiries go through WhatsApp)
@@ -304,11 +313,13 @@ export type ProductoCompleto = Producto & {
 ## Row Level Security (RLS)
 
 **Current State (V1):**
+
 - RLS is **disabled** for public access
 - All queries use service role key
 - Tables are readable by anonymous users
 
 **Future State (V2):**
+
 ```sql
 -- Enable RLS on all tables
 ALTER TABLE categorias ENABLE ROW LEVEL SECURITY;
@@ -368,6 +379,7 @@ CREATE POLICY "Authenticated users can upload"
 ```
 
 **File Structure:**
+
 ```
 productos/
 ├── {producto-slug}/
@@ -398,7 +410,7 @@ BEGIN
       AND activo = true
   )
   WHERE id = NEW.producto_id;
-  
+
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -420,7 +432,7 @@ BEGIN
       AND id != NEW.id
       AND es_principal = true;
   END IF;
-  
+
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -446,6 +458,7 @@ CREATE TRIGGER imagenes_principal_trigger
 6. **Add tables** for cart, orders, and user accounts
 
 **Data Integrity Checks:**
+
 ```sql
 -- Check for products without variations
 SELECT p.id, p.nombre
@@ -474,17 +487,20 @@ WHERE v.activo = true
 ## Performance Considerations
 
 **Indexes:**
+
 - All foreign keys have indexes
 - Composite indexes on frequently queried combinations (`categoria_id, activo`)
 - Slug columns indexed for fast lookups
 
 **Query Optimization:**
+
 - Use `SELECT *` only when all columns needed
 - Fetch relations in a single query (avoid N+1)
 - Order nested relations in JavaScript (Supabase limitation)
 - Cache product listings with Next.js revalidation
 
 **Monitoring:**
+
 ```sql
 -- Check for slow queries (enable pg_stat_statements)
 SELECT query, calls, total_exec_time, mean_exec_time

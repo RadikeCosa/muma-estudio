@@ -1,6 +1,6 @@
 /**
  * Rate Limit API Route
- * 
+ *
  * Server-side rate limiting by IP address with separate configurations
  * for different action types (whatsapp, contact).
  */
@@ -33,7 +33,7 @@ const rateLimitStore = new Map<string, RateLimitRecord>();
 /**
  * Extracts client IP address from request headers
  * Priority: x-forwarded-for > x-real-ip > fallback to "unknown"
- * 
+ *
  * @param req - Next.js request object
  * @returns Client IP address or "unknown"
  */
@@ -57,9 +57,9 @@ async function getClientIP(req: NextRequest): Promise<string> {
 
 /**
  * POST endpoint - Check rate limit for an action
- * 
+ *
  * Expected body: { action: "whatsapp" | "contact" }
- * 
+ *
  * Returns:
  * - 200: { allowed: true }
  * - 429: { allowed: false, resetIn: number, message: string }
@@ -75,7 +75,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     if (!action || !(action in RATE_LIMITS)) {
       return NextResponse.json(
         { error: "Invalid action. Must be 'whatsapp' or 'contact'" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -109,7 +109,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
             resetIn,
             message: `Rate limit exceeded. Try again in ${Math.ceil(resetIn / 1000)} seconds.`,
           },
-          { status: 429 }
+          { status: 429 },
         );
       }
 
@@ -163,7 +163,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
 /**
  * GET endpoint - Health check
- * 
+ *
  * Returns:
  * - 200: { status: "ok", activeRecords: number }
  */
@@ -180,7 +180,7 @@ export async function GET(): Promise<NextResponse> {
  */
 
 // Use a symbol in global scope to ensure singleton across module reloads
-const CLEANUP_INTERVAL_KEY = Symbol.for("muma.rateLimitCleanup");
+const CLEANUP_INTERVAL_KEY = Symbol.for("fira.rateLimitCleanup");
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const globalWithCleanup = global as any;

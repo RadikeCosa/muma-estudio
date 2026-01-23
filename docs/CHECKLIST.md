@@ -1,4 +1,4 @@
-# ✅ CHECKLIST COMPLETADO - Muma Estudio
+# ✅ CHECKLIST COMPLETADO - fira Estudio
 
 **Fecha de completación:** 17 de enero de 2026  
 **Estado:** 🟢 100% COMPLETADO
@@ -154,11 +154,11 @@ NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
 NEXT_PUBLIC_WHATSAPP_NUMBER=5492999123456
 
 # URL del sitio (para sitemap y Open Graph)
-NEXT_PUBLIC_SITE_URL=https://mumaestudio.com
+NEXT_PUBLIC_SITE_URL=https://firaestudio.com
 
 # Redes sociales (para Organization schema)
-NEXT_PUBLIC_INSTAGRAM_URL=https://instagram.com/mumaestudio
-NEXT_PUBLIC_CONTACT_EMAIL=contacto@mumaestudio.com
+NEXT_PUBLIC_INSTAGRAM_URL=https://instagram.com/firaestudio
+NEXT_PUBLIC_CONTACT_EMAIL=contacto@firaestudio.com
 
 # Supabase (ya configurado)
 NEXT_PUBLIC_SUPABASE_URL=...
@@ -208,7 +208,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=...
 
 1. **Completar .env.local** con valores reales
 2. **Crear cuenta Google Analytics 4** en https://analytics.google.com
-3. **Verificar sitemap** en https://mumaestudio.com/sitemap.xml
+3. **Verificar sitemap** en https://firaestudio.com/sitemap.xml
 4. **Enviar a Google Search Console**
 5. **Testear Open Graph** compartiendo en redes
 6. **Validar JSON-LD** en https://validator.schema.org/

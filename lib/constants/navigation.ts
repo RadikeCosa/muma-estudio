@@ -30,14 +30,12 @@ export const NAV_LINKS: NavLink[] = [
 export const SOCIAL_LINKS = {
   instagram: {
     label: "Instagram",
-    href: process.env.NEXT_PUBLIC_INSTAGRAM_URL || "https://instagram.com/mumaestudio",
+    href: process.env.NEXT_PUBLIC_INSTAGRAM_URL,
     ariaLabel: "Instagram",
   },
   email: {
     label: "Email",
-    href: process.env.NEXT_PUBLIC_CONTACT_EMAIL 
-      ? `mailto:${process.env.NEXT_PUBLIC_CONTACT_EMAIL}`
-      : "mailto:contacto@mumaestudio.com",
+    href: `mailto:${process.env.NEXT_PUBLIC_CONTACT_EMAIL}`,
     ariaLabel: "Email",
   },
 } as const;
