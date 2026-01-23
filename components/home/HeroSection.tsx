@@ -33,7 +33,10 @@ export function HeroSection({ customClassName }: HeroSectionProps) {
             ANIMATIONS.fadeIn,
           )}
         >
-          {title}
+          <span className="font-sugo-display text-[1.2em] sm:text-[1.4em] lg:text-[1.6em]">
+            fira
+          </span>{" "}
+          <span className="font-open-sans">estudio</span>
         </h1>
         <p
           className={cn(

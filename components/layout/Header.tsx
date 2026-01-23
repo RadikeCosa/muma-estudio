@@ -24,7 +24,12 @@ export function Header() {
         <div className={COMPONENTS.header.container}>
           {/* Logo */}
           <Link href="/" className="hover:opacity-70 transition-opacity">
-            <h1 className={COMPONENTS.header.logo}>{SITE_CONFIG.name}</h1>
+            <h1 className={COMPONENTS.header.logo}>
+              <span className="font-sugo-display text-[1.2em] sm:text-[1.4em] lg:text-[1.6em]">
+                fira
+              </span>{" "}
+              <span className="font-open-sans">estudio</span>
+            </h1>
           </Link>
 
           {/* Desktop Navigation */}
