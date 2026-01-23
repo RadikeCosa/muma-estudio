@@ -1,26 +1,11 @@
 import { HOME_CONTENT } from "@/lib/content/home";
-import { SPACING, ANIMATIONS, COMPONENTS, BLOBS } from "@/lib/design/tokens";
+import { SPACING, ANIMATIONS, BLOBS } from "@/lib/design/tokens";
 import { Button } from "@/components/ui/Button";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface HeroSectionProps {
   customClassName?: string;
-}
-
-function HeroBadge() {
-  return (
-    <div
-      className={cn(
-        COMPONENTS.heroBadge.base,
-        ANIMATIONS.shimmer,
-        ANIMATIONS.fadeIn,
-      )}
-    >
-      <Sparkles className="h-4 w-4 text-foreground" />
-      <span>{HOME_CONTENT.hero.badge}</span>
-    </div>
-  );
 }
 
 export function HeroSection({ customClassName }: HeroSectionProps) {
@@ -42,7 +27,6 @@ export function HeroSection({ customClassName }: HeroSectionProps) {
       </div>
 
       <div className="mx-auto max-w-4xl text-center relative z-10">
-        <HeroBadge />
         <h1
           className={cn(
             "mb-6 text-5xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-foreground via-foreground to-foreground/70 sm:text-6xl lg:text-7xl",

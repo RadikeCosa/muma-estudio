@@ -5,7 +5,7 @@ export const HOME_CONTENT = {
   hero: {
     badge: "Textiles Artesanales Únicos",
     title: "Fira Estudio", // Este valor puede ser reemplazado dinámicamente si es necesario
-    subtitle: "Textiles artesanales para tu hogar",
+    subtitle: "Textiles Artesanales Únicos",
     description:
       "Creamos manteles, servilletas, caminos de mesa y accesorios de cocina con dedicación y cuidado artesanal. Lindos. Útiles. Para usar cada día.",
     cta: {
