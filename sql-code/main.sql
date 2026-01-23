@@ -86,8 +86,4 @@ CREATE POLICY "Public read variaciones" ON variaciones FOR SELECT USING (activo 
 CREATE POLICY "Public read imagenes" ON imagenes_producto FOR SELECT USING (true);
 CREATE POLICY "Public insert consultas" ON consultas FOR INSERT WITH CHECK (true);
 
--- Datos iniciales
-INSERT INTO categorias (nombre, slug, descripcion, orden) VALUES
-  ('Manteles', 'manteles', 'Manteles para todo tipo de ocasiones', 1, '/images/productos/manteles/mantel-beige.jpg', true),
-  ('Servilletas', 'servilletas', 'Servilletas de tela de alta calidad', 2, '/images/productos/servilletas/servilleta-azul.jpg', false),
-  ('Caminos de Mesa', 'caminos-de-mesa', 'Caminos decorativos para tu mesa', 3, '/images/productos/caminos/camino-blanco (1).jpg', false);
+

@@ -31,7 +31,7 @@ export function WhatsAppButton({ producto, variacion }: WhatsAppButtonProps) {
     windowMs: 60000,
     key: "whatsapp_clicks",
   });
-  
+
   // Construir mensaje pre-formateado
   const construirMensaje = (): string => {
     let mensaje = `Hola! Me interesa este producto de ${SITE_CONFIG.name}: `;
@@ -41,7 +41,7 @@ export function WhatsAppButton({ producto, variacion }: WhatsAppButtonProps) {
       mensaje += ` - Tamaño: ${variacion.tamanio}`;
       mensaje += `, Color: ${variacion.color}`;
       mensaje += `, Precio: ${formatPrice(variacion.precio)}`;
-      
+
       // Agregar pregunta según disponibilidad de stock
       if (variacion.stock === 0) {
         mensaje += `. ¿Cuál es el tiempo de fabricación?`;
@@ -65,20 +65,20 @@ export function WhatsAppButton({ producto, variacion }: WhatsAppButtonProps) {
       // Note: Consider replacing with toast notification for better UX
       // For now, using alert() for simplicity (no dependencies required)
       alert(
-        `Por favor, esperá un momento antes de volver a consultar.\nDisponible en ${seconds} segundo${seconds !== 1 ? "s" : ""}.`
+        `Por favor, esperá un momento antes de volver a consultar.\nDisponible en ${seconds} segundo${seconds !== 1 ? "s" : ""}.`,
       );
       return;
     }
 
     // Record the action
     const success = recordAction();
-    
+
     // Double-check if we just hit the limit
     if (!success || isRateLimited) {
       e.preventDefault();
       const seconds = Math.ceil(timeUntilReset / 1000);
       alert(
-        `Por favor, esperá un momento antes de volver a consultar.\nDisponible en ${seconds} segundo${seconds !== 1 ? "s" : ""}.`
+        `Por favor, esperá un momento antes de volver a consultar.\nDisponible en ${seconds} segundo${seconds !== 1 ? "s" : ""}.`,
       );
       return;
     }
@@ -108,15 +108,16 @@ export function WhatsAppButton({ producto, variacion }: WhatsAppButtonProps) {
         "transition-all duration-300",
         "focus:outline-none focus:ring-2 focus:ring-offset-2",
         isRateLimited
-          ? "bg-gradient-to-r from-gray-400 to-gray-300 cursor-not-allowed text-white focus:ring-gray-400"
-          : "bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 text-white hover:shadow-xl hover:scale-[1.02] focus:ring-green-500"
+          ? "bg-linear-to-r from-gray-400 to-gray-300 cursor-not-allowed text-white focus:ring-gray-400"
+          : "bg-linear-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 text-white hover:shadow-xl hover:scale-[1.02] focus:ring-green-500",
       )}
       aria-disabled={isRateLimited}
     >
       <MessageCircle
         className={cn(
           "w-5 h-5",
-          !isRateLimited && "motion-safe:transition-transform motion-safe:group-hover:rotate-12"
+          !isRateLimited &&
+            "motion-safe:transition-transform motion-safe:group-hover:rotate-12",
         )}
       />
       <span>{getButtonText()}</span>

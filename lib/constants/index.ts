@@ -44,9 +44,7 @@ export const WHATSAPP = {
    * @returns URL completa de WhatsApp
    */
   getUrl: (message: string): string => {
-    const timestamp = Date.now();
-    const hash = timestamp.toString(36); // Base36 para acortar
-    return `https://wa.me/${WHATSAPP.number}?text=${encodeURIComponent(message)}&_t=${hash}`;
+    return `https://wa.me/${WHATSAPP.number}?text=${encodeURIComponent(message)}`;
   },
 } as const;
 
