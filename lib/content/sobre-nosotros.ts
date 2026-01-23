@@ -51,14 +51,19 @@ export const ABOUT_CONTENT: AboutContent = {
       title: "Nuestra Historia",
       icon: Heart,
       paragraphs: [
-        "Nuestra historia Fira Estudio nace de la idea de que un hogar puede encenderse con belleza simple y auténtica. Cada pieza es única porque lleva nuestra esencia: lindas, para que enamoren a primera vista; útiles, para que se integren naturalmente a tu rutina; y pensadas para usar cada día, porque creemos en la simpleza de lo cotidiano, en las mesas compartidas, en los momentos genuinos. Cada producto es el resultado de un dedicado proceso artesanal. En Fira Estudio seleccionamos textiles premium, diseñamos cada objeto, lo cosemos y lo estampamos manualmente mediante serigrafía, buscando siempre la excelencia en cada detalle",
+        "Fira Estudio nace de la idea de que un hogar puede encenderse con belleza simple y auténtica.",
+        "Cada pieza es única porque lleva nuestra esencia: lindas, para que enamoren a primera vista; útiles, para que se integren naturalmente a tu rutina; y pensadas para usar cada día, porque creemos en la simpleza de lo cotidiano, en las mesas compartidas, en los momentos genuinos.",
+        "Cada producto es el resultado de un dedicado proceso artesanal. En Fira Estudio seleccionamos textiles premium, diseñamos cada objeto, lo cosemos y lo estampamos manualmente mediante serigrafía, buscando siempre la excelencia en cada detalle.",
       ],
     },
     proceso: {
       title: "Proceso Artesanal",
       icon: Sparkles,
       paragraphs: [
-        "Proceso Artesanal Piezas artesanales que encienden tu hogar con calidad y durabilidad. Cada pieza que creamos pasa por un meticuloso proceso de elaboración. Seleccionamos cuidadosamente materiales premium, priorizando fibras naturales y telas de alta calidad que combinan belleza con funcionalidad óptima. Prestamos atención rigurosa a cada costura a mano, cada terminación y cada estampa manual mediante serigrafía.",
+        "Piezas artesanales que encienden tu hogar con calidad y durabilidad.",
+        "Cada pieza que creamos pasa por un meticuloso proceso de elaboración.",
+        "Seleccionamos cuidadosamente materiales premium, priorizando fibras naturales y telas de alta calidad que combinan belleza con funcionalidad óptima.",
+        "Prestamos atención rigurosa a cada costura a mano, cada terminación y cada estampa manual mediante serigrafía.",
       ],
     },
     valores: {
@@ -75,7 +80,7 @@ export const ABOUT_CONTENT: AboutContent = {
           icon: Heart,
           title: "Diseño Consciente",
           description:
-            "Creemos en el diseño con propósito. Cada elemento de nuestros productos está pensado para ser funcional, bello y duradero, evitando tendencias pasajeras y apostando por lo atemporal.",
+            "Diseñamos con propósito. Cada uno de nuestros productos está pensado para ser funcional, bello y duradero apostando por lo atemporal.",
         },
         {
           icon: Leaf,
